@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Box } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	interface Props {
 		containerId: string;
@@ -25,19 +26,19 @@
 	<div class="text-xs space-y-1">
 		{#if ipv4Address}
 			<div>
-				<span class="text-muted-foreground">IPv4: </span>
+				<span class="text-muted-foreground">{m.container_tile_ipv4()}</span>
 				<code class="text-foreground">{ipv4Address}</code>
 			</div>
 		{/if}
 		{#if ipv6Address}
 			<div>
-				<span class="text-muted-foreground">IPv6: </span>
+				<span class="text-muted-foreground">{m.container_tile_ipv6()}</span>
 				<code class="text-foreground">{ipv6Address}</code>
 			</div>
 		{/if}
 		{#if macAddress}
 			<div>
-				<span class="text-muted-foreground">MAC: </span>
+				<span class="text-muted-foreground">{m.container_tile_mac()}</span>
 				<code class="text-foreground">{macAddress}</code>
 			</div>
 		{/if}

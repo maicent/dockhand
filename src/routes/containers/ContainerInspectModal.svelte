@@ -21,6 +21,7 @@
 	import FileBrowserPanel from './FileBrowserPanel.svelte';
 	import { formatDateTime } from '$lib/stores/settings';
 	import { formatHostPortUrl } from '$lib/utils/url';
+	import * as m from '$lib/paraglide/messages';
 
 	interface Props {
 		open: boolean;
@@ -315,7 +316,7 @@
 			const host = extractHostFromUrl(env.host);
 			if (host) return formatHostPortUrl(host, publicPort);
 		}
-		// No public IP available for socket or hawser-edge
+		// {m.container_inspect_no()} public IP available for socket or hawser-edge
 		return null;
 	}
 
@@ -555,7 +556,7 @@
 	}
 
 	function formatMemory(bytes: number): string {
-		if (!bytes) return 'unlimited';
+		if (!bytes) return m.container_inspect_unlimited();
 		const mb = bytes / (1024 * 1024);
 		if (mb < 1024) return `${mb.toFixed(0)} MB`;
 		return `${(mb / 1024).toFixed(2)} GB`;
@@ -641,7 +642,7 @@
 		<Dialog.Header class="shrink-0">
 			<Dialog.Title class="flex items-center gap-2">
 				<Box class="w-5 h-5" />
-				Container details:
+				{m.container_inspect_title()}
 				{#if isEditing}
 					<input
 						type="text"
@@ -657,7 +658,7 @@
 					<button
 						type="button"
 						onclick={saveRename}
-						title="Save"
+						title={m.common_save()}
 						disabled={renaming}
 						class="p-1 rounded hover:bg-muted transition-colors"
 					>
@@ -670,7 +671,7 @@
 					<button
 						type="button"
 						onclick={cancelEditing}
-						title="Cancel"
+						title={m.common_cancel()}
 						disabled={renaming}
 						class="p-1 rounded hover:bg-muted transition-colors"
 					>
@@ -681,7 +682,7 @@
 					<button
 						type="button"
 						onclick={startEditing}
-						title="Rename container"
+						title={m.container_inspect_rename()}
 						class="p-0.5 rounded hover:bg-muted transition-colors ml-0.5"
 					>
 						<Pencil class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -706,14 +707,14 @@
 							</button>
 						</Tooltip.Trigger>
 						<Tooltip.Content>
-							<p class="text-xs whitespace-nowrap">Open stack "{composeStack}"</p>
+							<p class="text-xs whitespace-nowrap"><span>{m.container_inspect_open_stack({ composeStack })}</span></p>
 						</Tooltip.Content>
 					</Tooltip.Root>
 				{/if}
 				{#if containerData?.State?.Running && !loading}
 					<span class="inline-flex items-center gap-1.5 ml-2 text-xs {isLiveConnected ? 'text-emerald-500' : 'text-muted-foreground'}" title={isLiveConnected ? 'Receiving live updates' : 'Connection lost'}>
 						<Wifi class="w-3.5 h-3.5 {isLiveConnected ? 'animate-pulse' : ''}" />
-						{isLiveConnected ? 'Live' : 'Offline'}
+						{isLiveConnected ? m.container_inspect_live() : m.container_inspect_offline()}
 					</span>
 				{/if}
 				{#if containerData && !loading}
@@ -724,10 +725,10 @@
 							{#if onStop}
 								<ConfirmPopover
 									open={confirmStopOpen}
-									action="Stop"
+									action={m.container_inspect_stop()}
 									itemType="container"
 									itemName={displayName || containerId.slice(0, 12)}
-									title="Stop"
+									title={m.container_inspect_stop()}
 									onConfirm={doStop}
 									onOpenChange={(o) => confirmStopOpen = o}
 								>
@@ -739,10 +740,10 @@
 							{#if onRestart}
 								<ConfirmPopover
 									open={confirmRestartOpen}
-									action="Restart"
+									action={m.container_inspect_restart()}
 									itemType="container"
 									itemName={displayName || containerId.slice(0, 12)}
-									title="Restart"
+									title={m.container_inspect_restart()}
 									variant="secondary"
 									onConfirm={doRestart}
 									onOpenChange={(o) => confirmRestartOpen = o}
@@ -757,7 +758,7 @@
 								<button
 									type="button"
 									onclick={doStart}
-									title="Start"
+									title={m.container_inspect_start()}
 									disabled={starting}
 									class="p-1 rounded hover:bg-muted transition-colors cursor-pointer disabled:opacity-50"
 								>
@@ -769,7 +770,7 @@
 							<button
 								type="button"
 								onclick={doEdit}
-								title="Edit"
+								title={m.container_inspect_edit()}
 								class="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
 							>
 								<Pencil class="w-4 h-4 text-muted-foreground hover:text-foreground" />
@@ -778,10 +779,10 @@
 						{#if onRemove}
 							<ConfirmPopover
 								open={confirmRemoveOpen}
-								action="Delete"
+								action={m.container_inspect_delete()}
 								itemType="container"
 								itemName={displayName || containerId.slice(0, 12)}
-								title="Delete"
+								title={m.container_inspect_delete()}
 								variant="destructive"
 								onConfirm={doRemove}
 								onOpenChange={(o) => confirmRemoveOpen = o}
@@ -795,7 +796,7 @@
 							variant="outline"
 							size="sm"
 							onclick={() => showRawJson = true}
-							title="View raw inspect data"
+							title={m.container_inspect_view_raw()}
 							class="ml-1"
 						>
 							<Code class="w-4 h-4 mr-1.5" />
@@ -818,18 +819,18 @@
 			{:else if containerData}
 				<Tabs.Root bind:value={activeTab} class="w-full h-full flex flex-col">
 					<Tabs.List class="w-full justify-start shrink-0 flex-wrap h-auto min-h-10 bg-muted rounded-lg">
-						<Tabs.Trigger value="overview" onclick={() => showLogs = false}>Overview</Tabs.Trigger>
-						<Tabs.Trigger value="logs" onclick={() => showLogs = true}>Logs</Tabs.Trigger>
-						<Tabs.Trigger value="layers" onclick={() => showLogs = false}>Layers</Tabs.Trigger>
-						<Tabs.Trigger value="processes" onclick={() => { showLogs = false; if (processesAutoRefresh) startProcessesCollection(); else fetchProcesses(); }}>Processes</Tabs.Trigger>
-						<Tabs.Trigger value="network" onclick={() => showLogs = false}>Network</Tabs.Trigger>
-						<Tabs.Trigger value="mounts" onclick={() => showLogs = false}>Mounts</Tabs.Trigger>
-						<Tabs.Trigger value="files" onclick={() => showLogs = false}>Files</Tabs.Trigger>
-						<Tabs.Trigger value="env" onclick={() => showLogs = false}>Environment</Tabs.Trigger>
-						<Tabs.Trigger value="labels" onclick={() => showLogs = false}>Labels</Tabs.Trigger>
-						<Tabs.Trigger value="security" onclick={() => showLogs = false}>Security</Tabs.Trigger>
-						<Tabs.Trigger value="resources" onclick={() => showLogs = false}>Resources</Tabs.Trigger>
-						<Tabs.Trigger value="health" onclick={() => showLogs = false}>Health</Tabs.Trigger>
+						<Tabs.Trigger value="overview" onclick={() => showLogs = false}>{m.container_inspect_tab_overview()}</Tabs.Trigger>
+						<Tabs.Trigger value="logs" onclick={() => showLogs = true}>{m.container_inspect_tab_logs()}</Tabs.Trigger>
+						<Tabs.Trigger value="layers" onclick={() => showLogs = false}>{m.container_inspect_tab_layers()}</Tabs.Trigger>
+						<Tabs.Trigger value="processes" onclick={() => { showLogs = false; if (processesAutoRefresh) startProcessesCollection(); else fetchProcesses(); }}>{m.container_inspect_tab_processes()}</Tabs.Trigger>
+						<Tabs.Trigger value="network" onclick={() => showLogs = false}>{m.container_inspect_tab_network()}</Tabs.Trigger>
+						<Tabs.Trigger value="mounts" onclick={() => showLogs = false}>{m.container_inspect_tab_mounts()}</Tabs.Trigger>
+						<Tabs.Trigger value="files" onclick={() => showLogs = false}>{m.container_inspect_tab_files()}</Tabs.Trigger>
+						<Tabs.Trigger value="env" onclick={() => showLogs = false}>{m.container_inspect_tab_env()}</Tabs.Trigger>
+						<Tabs.Trigger value="labels" onclick={() => showLogs = false}>{m.container_inspect_tab_labels()}</Tabs.Trigger>
+						<Tabs.Trigger value="security" onclick={() => showLogs = false}>{m.container_inspect_tab_security()}</Tabs.Trigger>
+						<Tabs.Trigger value="resources" onclick={() => showLogs = false}>{m.container_inspect_tab_resources()}</Tabs.Trigger>
+						<Tabs.Trigger value="health" onclick={() => showLogs = false}>{m.container_inspect_tab_health()}</Tabs.Trigger>
 					</Tabs.List>
 
 					<!-- Overview Tab -->
@@ -841,7 +842,7 @@
 								<div class="p-3 border border-border rounded-lg">
 									<div class="flex items-center gap-2 mb-2">
 										<Cpu class="w-4 h-4 text-blue-500" />
-										<span class="text-xs font-medium">CPU</span>
+										<span class="text-xs font-medium">{m.container_inspect_cpu()}</span>
 										<span class="ml-auto text-sm font-bold">{currentStats?.cpuPercent?.toFixed(1) ?? '—'}%</span>
 									</div>
 									{#if cpuHistory.length >= 2}
@@ -858,14 +859,14 @@
 											/>
 										</svg>
 									{:else}
-										<div class="h-8 flex items-center justify-center text-xs text-muted-foreground">Loading...</div>
+										<div class="h-8 flex items-center justify-center text-xs text-muted-foreground"><span>{m.container_inspect_loading()}</span></div>
 									{/if}
 								</div>
 								<!-- Memory -->
 								<div class="p-3 border border-border rounded-lg">
 									<div class="flex items-center gap-2 mb-2">
 										<MemoryStick class="w-4 h-4 text-green-500" />
-										<span class="text-xs font-medium">Memory</span>
+										<span class="text-xs font-medium">{m.container_inspect_memory_label()}</span>
 										<span class="ml-auto text-sm font-bold">{currentStats?.memoryPercent?.toFixed(1) ?? '—'}%</span>
 									</div>
 									{#if memoryHistory.length >= 2}
@@ -882,7 +883,7 @@
 											/>
 										</svg>
 									{:else}
-										<div class="h-8 flex items-center justify-center text-xs text-muted-foreground">Loading...</div>
+										<div class="h-8 flex items-center justify-center text-xs text-muted-foreground"><span>{m.container_inspect_loading()}</span></div>
 									{/if}
 									<div class="text-2xs text-muted-foreground mt-1">
 										{formatBytes(currentStats?.memoryUsage ?? 0)} / {formatBytes(currentStats?.memoryLimit ?? 0)}
@@ -896,11 +897,11 @@
 									</div>
 									<div class="space-y-1 text-xs">
 										<div class="flex justify-between">
-											<span class="text-muted-foreground">RX:</span>
+											<span class="text-muted-foreground">{m.container_inspect_rx()}</span>
 											<span class="font-mono">{formatBytes(currentStats?.networkRx ?? 0)}</span>
 										</div>
 										<div class="flex justify-between">
-											<span class="text-muted-foreground">TX:</span>
+											<span class="text-muted-foreground">{m.container_inspect_tx()}</span>
 											<span class="font-mono">{formatBytes(currentStats?.networkTx ?? 0)}</span>
 										</div>
 									</div>
@@ -913,11 +914,11 @@
 									</div>
 									<div class="space-y-1 text-xs">
 										<div class="flex justify-between">
-											<span class="text-muted-foreground">Read:</span>
+											<span class="text-muted-foreground">{m.container_inspect_read()}</span>
 											<span class="font-mono">{formatBytes(currentStats?.blockRead ?? 0)}</span>
 										</div>
 										<div class="flex justify-between">
-											<span class="text-muted-foreground">Write:</span>
+											<span class="text-muted-foreground">{m.container_inspect_write()}</span>
 											<span class="font-mono">{formatBytes(currentStats?.blockWrite ?? 0)}</span>
 										</div>
 									</div>
@@ -926,19 +927,19 @@
 								<div class="p-3 border border-border rounded-lg">
 									<div class="flex items-center gap-2 mb-2">
 										<Activity class="w-4 h-4 text-pink-500" />
-										<span class="text-xs font-medium">Processes</span>
+										<span class="text-xs font-medium">{m.container_inspect_processes_label()}</span>
 										<button
 											type="button"
 											class="ml-auto text-sm font-bold hover:text-foreground/80 transition-colors"
 											onclick={() => activeTab = 'processes'}
-											title="View process list"
+											title={m.container_inspect_view_process_list()}
 										>
 											{processesData?.Processes?.length ?? '—'}
 										</button>
 									</div>
 									<div class="h-8 flex items-center justify-center text-2xs text-muted-foreground">
 										{#if processesData?.Processes?.length}
-											running in container
+											{m.container_inspect_running_in_container()}
 										{:else if processesLoading}
 											<Loader2 class="w-3 h-3 animate-spin" />
 										{:else}
@@ -955,25 +956,25 @@
 							<div class="space-y-3">
 								<h3 class="text-sm font-semibold flex items-center gap-2">
 									<Info class="w-4 h-4" />
-									Status
+									{m.container_inspect_status()}
 								</h3>
 								<div class="grid grid-cols-2 gap-2 text-sm">
 									<div>
-										<p class="text-muted-foreground text-xs">State</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_state()}</p>
 										<Badge variant={getStateColor(containerData.State?.Status || 'unknown')}>
 											{containerData.State?.Status || 'unknown'}
 										</Badge>
 									</div>
 									<div>
-										<p class="text-muted-foreground text-xs">Restart Policy</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_restart_policy()}</p>
 										<Badge variant="outline">{containerData.HostConfig?.RestartPolicy?.Name || 'no'}</Badge>
 									</div>
 									<div>
-										<p class="text-muted-foreground text-xs">Exit Code</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_exit_code()}</p>
 										<code class="text-xs">{containerData.State?.ExitCode ?? 'N/A'}</code>
 									</div>
 									<div>
-										<p class="text-muted-foreground text-xs">Restart Count</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_restart_count()}</p>
 										<code class="text-xs">{containerData.RestartCount ?? 0}</code>
 									</div>
 								</div>
@@ -981,22 +982,22 @@
 
 							<!-- Basic Info -->
 							<div class="space-y-3">
-								<h3 class="text-sm font-semibold">Basic information</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_basic_info()}</h3>
 								<div class="grid grid-cols-2 gap-2 text-sm">
 									<div>
 										<p class="text-muted-foreground text-xs">ID</p>
 										<code class="text-xs">{containerData.Id?.slice(0, 12)}</code>
 									</div>
 									<div>
-										<p class="text-muted-foreground text-xs">Platform</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_platform()}</p>
 										<p class="text-xs">{containerData.Platform || 'N/A'}</p>
 									</div>
 									<div>
-										<p class="text-muted-foreground text-xs">Created</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_created()}</p>
 										<p class="text-xs">{formatDate(containerData.Created)}</p>
 									</div>
 									<div>
-										<p class="text-muted-foreground text-xs">Started</p>
+										<p class="text-muted-foreground text-xs">{m.container_inspect_started()}</p>
 										<p class="text-xs">{formatDate(containerData.State?.StartedAt)}</p>
 									</div>
 								</div>
@@ -1005,7 +1006,7 @@
 
 						<!-- Image -->
 						<div class="space-y-2">
-							<h3 class="text-sm font-semibold">Image</h3>
+							<h3 class="text-sm font-semibold">{m.container_inspect_image()}</h3>
 							<div class="flex items-center gap-2 p-2 bg-muted rounded">
 								<code class="text-xs break-all flex-1">{containerData.Config?.Image || 'N/A'}</code>
 							</div>
@@ -1014,7 +1015,7 @@
 						<!-- Command -->
 						{#if containerData.Path || containerData.Args}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">Command</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_command()}</h3>
 								<div class="p-2 bg-muted rounded">
 									<code class="text-xs break-all">
 										{containerData.Path || ''} {containerData.Args?.join(' ') || ''}
@@ -1030,7 +1031,7 @@
 						{#if !containerData.State?.Running}
 							<div class="flex items-center gap-2 text-sm text-muted-foreground py-8 justify-center">
 								<Moon class="w-5 h-5" />
-								<span>Container is not running</span>
+								<span>{m.container_inspect_not_running()}</span>
 							</div>
 						{:else if processesLoading}
 							<div class="flex items-center justify-center py-8">
@@ -1064,10 +1065,10 @@
 								</table>
 							</div>
 							<div class="text-xs text-muted-foreground pt-2">
-								{processesData.Processes.length} process(es)
+								{processesData.Processes.length}<span>{m.container_inspect_processes_count({ count: processesData.Processes.length })}</span>
 							</div>
 						{:else}
-							<p class="text-sm text-muted-foreground">No processes found</p>
+							<p class="text-sm text-muted-foreground">{m.container_inspect_no_processes()}</p>
 						{/if}
 					</Tabs.Content>
 
@@ -1093,7 +1094,7 @@
 								visible={activeTab === 'layers'}
 							/>
 						{:else}
-							<p class="text-sm text-muted-foreground py-8 text-center">No image information available</p>
+							<p class="text-sm text-muted-foreground py-8 text-center">{m.container_inspect_no_image_info()}</p>
 						{/if}
 					</Tabs.Content>
 
@@ -1101,18 +1102,18 @@
 					<Tabs.Content value="network" class="space-y-4 overflow-auto">
 						<!-- Network Mode -->
 						<div class="space-y-2">
-							<h3 class="text-sm font-semibold">Network mode</h3>
+							<h3 class="text-sm font-semibold">{m.container_inspect_network_mode()}</h3>
 							<Badge variant="outline">{networkModeLabel}</Badge>
 						</div>
 
 						<!-- DNS Settings -->
 						{#if containerData.HostConfig?.Dns?.length > 0 || containerData.HostConfig?.DnsSearch?.length > 0 || containerData.HostConfig?.DnsOptions?.length > 0}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">DNS configuration</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_dns_config()}</h3>
 								<div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
 									{#if containerData.HostConfig?.Dns?.length > 0}
 										<div class="p-2 bg-muted rounded">
-											<p class="text-xs text-muted-foreground mb-1">DNS Servers</p>
+											<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_dns_servers()}</p>
 											{#each containerData.HostConfig.Dns as dns}
 												<code class="text-xs block">{dns}</code>
 											{/each}
@@ -1120,7 +1121,7 @@
 									{/if}
 									{#if containerData.HostConfig?.DnsSearch?.length > 0}
 										<div class="p-2 bg-muted rounded">
-											<p class="text-xs text-muted-foreground mb-1">DNS Search</p>
+											<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_dns_search()}</p>
 											{#each containerData.HostConfig.DnsSearch as search}
 												<code class="text-xs block">{search}</code>
 											{/each}
@@ -1128,7 +1129,7 @@
 									{/if}
 									{#if containerData.HostConfig?.DnsOptions?.length > 0}
 										<div class="p-2 bg-muted rounded">
-											<p class="text-xs text-muted-foreground mb-1">DNS Options</p>
+											<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_dns_options()}</p>
 											{#each containerData.HostConfig.DnsOptions as opt}
 												<code class="text-xs block">{opt}</code>
 											{/each}
@@ -1141,7 +1142,7 @@
 						<!-- Extra Hosts -->
 						{#if containerData.HostConfig?.ExtraHosts?.length > 0}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">Extra hosts</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_extra_hosts()}</h3>
 								<div class="space-y-1">
 									{#each containerData.HostConfig.ExtraHosts as host}
 										<div class="text-xs p-2 bg-muted rounded">
@@ -1154,10 +1155,10 @@
 
 						<!-- Networks -->
 						<div class="space-y-2">
-							<h3 class="text-sm font-semibold">Connected networks</h3>
+							<h3 class="text-sm font-semibold">{m.container_inspect_connected_networks()}</h3>
 							{#if isSharedNetworkMode}
 								<p class="text-xs text-muted-foreground">
-									Network namespace is shared via <code class="px-1 py-0.5 rounded bg-muted">{containerData.HostConfig?.NetworkMode}</code> — additional networks cannot be attached.
+									{m.container_inspect_network_shared({ mode: containerData.HostConfig?.NetworkMode })} <code class="px-1 py-0.5 rounded bg-muted">{containerData.HostConfig?.NetworkMode}</code> — additional networks cannot be attached.
 								</p>
 							{:else if containerData.NetworkSettings?.Networks && Object.keys(containerData.NetworkSettings.Networks).length > 0}
 								<div class="space-y-2">
@@ -1182,38 +1183,38 @@
 														{:else}
 															<Unlink class="w-3 h-3 mr-1" />
 														{/if}
-														Leave
+														{m.container_inspect_leave()}
 													</Button>
 												{/if}
 											</div>
 											<div class="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
 												{#if networkData.IPAddress}
 													<div>
-														<p class="text-muted-foreground">IPv4</p>
+														<p class="text-muted-foreground">{m.container_inspect_ipv4()}</p>
 														<code>{networkData.IPAddress}</code>
 													</div>
 												{/if}
 												{#if networkData.GlobalIPv6Address}
 													<div>
-														<p class="text-muted-foreground">IPv6</p>
+														<p class="text-muted-foreground">{m.container_inspect_ipv6()}</p>
 														<code>{networkData.GlobalIPv6Address}</code>
 													</div>
 												{/if}
 												{#if networkData.MacAddress}
 													<div>
-														<p class="text-muted-foreground">MAC</p>
+														<p class="text-muted-foreground">{m.container_inspect_mac()}</p>
 														<code>{networkData.MacAddress}</code>
 													</div>
 												{/if}
 												{#if networkData.Gateway}
 													<div>
-														<p class="text-muted-foreground">Gateway</p>
+														<p class="text-muted-foreground">{m.container_inspect_gateway()}</p>
 														<code>{networkData.Gateway}</code>
 													</div>
 												{/if}
 												{#if networkData.Aliases?.length > 0}
 													<div class="col-span-2">
-														<p class="text-muted-foreground">Aliases</p>
+														<p class="text-muted-foreground">{m.container_inspect_aliases()}</p>
 														<code>{networkData.Aliases.join(', ')}</code>
 													</div>
 												{/if}
@@ -1222,7 +1223,7 @@
 									{/each}
 								</div>
 							{:else}
-								<p class="text-xs text-muted-foreground">No networks connected.</p>
+								<p class="text-xs text-muted-foreground">{m.container_inspect_no_networks()}</p>
 							{/if}
 
 							<!-- Join network dropdown -->
@@ -1234,12 +1235,12 @@
 												{@const net = unconnectedNetworks.find(n => n.id === selectedNetwork)}
 												<span class="flex items-center gap-2">
 													<Network class="w-3 h-3 text-muted-foreground" />
-													{net?.name || 'Unknown'}
+													{net?.name || m.container_inspect_unknown()}
 													<Badge variant="outline" class="text-[10px] px-1 py-0">{net?.driver}</Badge>
 												</span>
 											{:else}
 												<span class="text-muted-foreground">
-													{networksLoading ? 'Loading networks...' : unconnectedNetworks.length > 0 ? 'Join a network...' : 'No networks available'}
+													{networksLoading ? m.container_inspect_loading_networks() : unconnectedNetworks.length > 0 ? m.container_inspect_join_network() : m.container_inspect_no_networks_available()}
 												</span>
 											{/if}
 										</Select.Trigger>
@@ -1266,7 +1267,7 @@
 										{:else}
 											<Link class="w-3.5 h-3.5 mr-1" />
 										{/if}
-										Join
+										{m.container_inspect_join()}
 									</Button>
 								</div>
 							{/if}
@@ -1276,7 +1277,7 @@
 						{#if containerData.NetworkSettings?.Ports && Object.keys(containerData.NetworkSettings.Ports).length > 0}
 							{@const inspectParsedUrl = parseCustomUrl(containerData.Config?.Labels?.['dockhand.url'])}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">Port mappings</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_port_mappings()}</h3>
 								<div class="flex flex-wrap gap-2">
 									{#if inspectParsedUrl}
 										<div class="flex items-center gap-2 text-xs p-2 bg-primary/10 rounded">
@@ -1285,7 +1286,7 @@
 												target="_blank"
 												rel="noopener noreferrer"
 												class="inline-flex items-center gap-1 text-primary hover:underline"
-												title="Open {inspectParsedUrl.url}"
+												title={m.container_inspect_open_url({ url: inspectParsedUrl.url })}
 											>
 												<Globe class="w-3 h-3" />
 												<span>{inspectParsedUrl.name || inspectParsedUrl.url.replace(/^https?:\/\//, '')}</span>
@@ -1305,7 +1306,7 @@
 															target="_blank"
 															rel="noopener noreferrer"
 															class="inline-flex items-center gap-1 text-primary hover:underline"
-															title="Open {url}"
+															title={m.container_inspect_open_url({ url })}
 														>
 															<code>{portParsedOverride?.name ?? `${binding.HostIp || '0.0.0.0'}:${binding.HostPort}`}</code>
 															<ExternalLink class="w-3 h-3" />
@@ -1319,7 +1320,7 @@
 											{/each}
 										{:else}
 											<div class="flex items-center gap-2 text-xs p-2 bg-amber-500/10 border border-amber-500/20 rounded">
-												<code class="text-amber-600 dark:text-amber-400">exposed</code>
+												<code class="text-amber-600 dark:text-amber-400">{m.container_inspect_exposed()}</code>
 												<code class="text-amber-600 dark:text-amber-400">{containerPort}</code>
 											</div>
 										{/if}
@@ -1338,27 +1339,27 @@
 										<div class="flex items-center justify-between">
 											<Badge variant="outline" class="text-xs">{mount.Type}</Badge>
 											<Badge variant={mount.RW ? 'default' : 'secondary'} class="text-xs">
-												{mount.RW ? 'Read/Write' : 'Read-Only'}
+												{mount.RW ? m.container_inspect_read_write() : m.container_inspect_read_only()}
 											</Badge>
 										</div>
 										<div class="grid grid-cols-1 lg:grid-cols-2 gap-2 text-xs">
 											<div>
-												<p class="text-muted-foreground">Source</p>
+												<p class="text-muted-foreground">{m.container_inspect_source()}</p>
 												<code class="break-all">{mount.Source || mount.Name || 'N/A'}</code>
 											</div>
 											<div>
-												<p class="text-muted-foreground">Destination</p>
+												<p class="text-muted-foreground">{m.container_inspect_destination()}</p>
 												<code class="break-all">{mount.Destination}</code>
 											</div>
 											{#if mount.Driver}
 												<div>
-													<p class="text-muted-foreground">Driver</p>
+													<p class="text-muted-foreground">{m.container_inspect_driver()}</p>
 													<code>{mount.Driver}</code>
 												</div>
 											{/if}
 											{#if mount.Propagation}
 												<div>
-													<p class="text-muted-foreground">Propagation</p>
+													<p class="text-muted-foreground">{m.container_inspect_propagation()}</p>
 													<code>{mount.Propagation}</code>
 												</div>
 											{/if}
@@ -1367,7 +1368,7 @@
 								{/each}
 							</div>
 						{:else}
-							<p class="text-sm text-muted-foreground">No mounts configured</p>
+							<p class="text-sm text-muted-foreground">{m.container_inspect_no_mounts()}</p>
 						{/if}
 					</Tabs.Content>
 
@@ -1381,12 +1382,12 @@
 						{:else if containerData.State?.Paused}
 							<div class="flex items-center gap-2 text-sm text-muted-foreground py-8 justify-center">
 								<Moon class="w-5 h-5" />
-								<span>Container is paused</span>
+								<span>{m.container_inspect_container_paused()}</span>
 							</div>
 						{:else}
 							<div class="flex items-center gap-2 text-sm text-muted-foreground py-8 justify-center">
 								<Moon class="w-5 h-5" />
-								<span>Container is not running</span>
+								<span>{m.container_inspect_not_running()}</span>
 							</div>
 						{/if}
 					</Tabs.Content>
@@ -1397,9 +1398,7 @@
 							<div class="flex items-start gap-2 text-xs p-2.5 rounded border border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300">
 								<Info class="w-3.5 h-3.5 shrink-0 mt-0.5" />
 								<div class="min-w-0">
-									{containerData.divergence.env.length} env var{containerData.divergence.env.length === 1 ? '' : 's'} differ from the image:
-									<span class="font-mono">{containerData.divergence.env.join(', ')}</span>.
-									Values set by you at create time will stay. To reset to the image's current values, Remove &amp; Deploy.
+									{m.container_inspect_env_differ({ count: containerData.divergence.env.length, vars: containerData.divergence.env.join(', ') })}
 								</div>
 							</div>
 						{/if}
@@ -1417,7 +1416,7 @@
 								{/each}
 							</div>
 						{:else}
-							<p class="text-sm text-muted-foreground">No environment variables</p>
+							<p class="text-sm text-muted-foreground">{m.container_inspect_no_env()}</p>
 						{/if}
 					</Tabs.Content>
 
@@ -1427,9 +1426,7 @@
 							<div class="flex items-start gap-2 text-xs p-2.5 rounded border border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300">
 								<Info class="w-3.5 h-3.5 shrink-0 mt-0.5" />
 								<div class="min-w-0">
-									{containerData.divergence.labels.length} label{containerData.divergence.labels.length === 1 ? '' : 's'} differ from the image:
-									<span class="font-mono">{containerData.divergence.labels.join(', ')}</span>.
-									Values set by you at create time will stay. To reset to the image's current values, Remove &amp; Deploy.
+									{m.container_inspect_labels_differ({ count: containerData.divergence.labels.length, vars: containerData.divergence.labels.join(', ') })}
 								</div>
 							</div>
 						{/if}
@@ -1442,13 +1439,13 @@
 							<div class="flex items-center gap-2">
 								<Input
 									type="search"
-									placeholder="Filter labels..."
+									placeholder={m.container_inspect_filter_labels()}
 									bind:value={labelFilter}
 									class="h-8 text-xs flex-1"
 								/>
 								<span class="text-xs text-muted-foreground shrink-0">
 									{visibleLabels.length === allLabels.length
-										? `${allLabels.length} label${allLabels.length === 1 ? '' : 's'}`
+										? m.container_inspect_labels_count({ count: allLabels.length })
 										: `${visibleLabels.length} of ${allLabels.length}`}
 								</span>
 								<Button
@@ -1456,14 +1453,14 @@
 									size="sm"
 									onclick={() => copyAllLabels(visibleLabels)}
 									disabled={visibleLabels.length === 0}
-									title={copiedAllLabels ? 'Copied!' : 'Copy visible labels as key=value lines'}
+									title={copiedAllLabels ? m.container_inspect_copied() : m.container_inspect_copy_visible_labels()}
 								>
 									{#if copiedAllLabels}
 										<Check class="w-3 h-3 mr-1.5 text-green-500" />
 										Copied
 									{:else}
 										<Copy class="w-3 h-3 mr-1.5" />
-										Copy all
+										{m.container_inspect_copy_all()}
 									{/if}
 								</Button>
 							</div>
@@ -1481,7 +1478,7 @@
 												type="button"
 												onclick={() => copyLabel(key, value)}
 												class="shrink-0 p-1 rounded hover:bg-background/50 transition-colors opacity-0 group-hover:opacity-100 {copiedLabel === key ? '!opacity-100' : ''}"
-												title={copiedLabel === key ? 'Copied!' : 'Copy label'}
+												title={copiedLabel === key ? m.container_inspect_copied() : m.container_inspect_copy_label()}
 											>
 												{#if copiedLabel === key}
 													<Check class="w-3 h-3 text-green-500" />
@@ -1493,35 +1490,35 @@
 									{/each}
 								</div>
 							{:else}
-								<p class="text-sm text-muted-foreground">No labels match "{labelFilter}"</p>
+								<p class="text-sm text-muted-foreground">{m.container_inspect_no_labels_match({ filter: labelFilter })} "{labelFilter}"</p>
 							{/if}
 						{:else}
-							<p class="text-sm text-muted-foreground">No labels</p>
+							<p class="text-sm text-muted-foreground">{m.container_inspect_no()} labels</p>
 						{/if}
 					</Tabs.Content>
 
 					<!-- Security Tab -->
 					<Tabs.Content value="security" class="space-y-4 overflow-auto">
-						<!-- Privileged & User -->
+						<!-- {m.container_inspect_privileged()} & User -->
 						<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
 							<div class="p-3 border border-border rounded-lg">
-								<p class="text-xs text-muted-foreground mb-1">Privileged</p>
+								<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_privileged()}</p>
 								<Badge variant={containerData.HostConfig?.Privileged ? 'destructive' : 'secondary'}>
-									{containerData.HostConfig?.Privileged ? 'Yes' : 'No'}
+									{containerData.HostConfig?.Privileged ? m.container_inspect_yes() : m.container_inspect_no()}
 								</Badge>
 							</div>
 							<div class="p-3 border border-border rounded-lg">
-								<p class="text-xs text-muted-foreground mb-1">Read-only Root</p>
+								<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_readonly_root()}</p>
 								<Badge variant={containerData.HostConfig?.ReadonlyRootfs ? 'default' : 'outline'}>
-									{containerData.HostConfig?.ReadonlyRootfs ? 'Yes' : 'No'}
+									{containerData.HostConfig?.ReadonlyRootfs ? m.container_inspect_yes() : m.container_inspect_no()}
 								</Badge>
 							</div>
 							<div class="p-3 border border-border rounded-lg">
-								<p class="text-xs text-muted-foreground mb-1">User</p>
+								<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_user()}</p>
 								<code class="text-xs">{containerData.Config?.User || 'root'}</code>
 							</div>
 							<div class="p-3 border border-border rounded-lg">
-								<p class="text-xs text-muted-foreground mb-1">User Namespace</p>
+								<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_user_namespace()}</p>
 								<code class="text-xs">{containerData.HostConfig?.UsernsMode || 'host'}</code>
 							</div>
 						</div>
@@ -1529,7 +1526,7 @@
 						<!-- Security Options -->
 						{#if containerData.HostConfig?.SecurityOpt?.length > 0}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">Security options</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_security_options()}</h3>
 								<div class="space-y-1">
 									{#each containerData.HostConfig.SecurityOpt as opt}
 										<div class="text-xs p-2 bg-muted rounded">
@@ -1540,17 +1537,17 @@
 							</div>
 						{/if}
 
-						<!-- AppArmor / Seccomp -->
+						<!-- AppArmor / {m.container_inspect_seccomp()} -->
 						<div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
 							{#if containerData.AppArmorProfile !== undefined}
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">AppArmor Profile</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_apparmor_profile()}</p>
 									<code class="text-xs">{containerData.AppArmorProfile || 'unconfined'}</code>
 								</div>
 							{/if}
 							{#if containerData.HostConfig?.SecurityOpt?.some((o: string) => o.startsWith('seccomp'))}
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">Seccomp</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_seccomp()}</p>
 									<code class="text-xs">
 										{containerData.HostConfig.SecurityOpt.find((o: string) => o.startsWith('seccomp'))?.split('=')[1] || 'default'}
 									</code>
@@ -1558,11 +1555,11 @@
 							{/if}
 						</div>
 
-						<!-- Capabilities -->
+						<!-- {m.container_inspect_capabilities()} -->
 						<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 							{#if containerData.HostConfig?.CapAdd?.length > 0}
 								<div class="space-y-2">
-									<h3 class="text-sm font-semibold text-green-600 dark:text-green-400">Added capabilities</h3>
+									<h3 class="text-sm font-semibold text-green-600 dark:text-green-400">{m.container_inspect_added_capabilities()}</h3>
 									<div class="flex flex-wrap gap-1">
 										{#each containerData.HostConfig.CapAdd as cap}
 											<Badge variant="outline" class="text-xs bg-green-500/10">{cap}</Badge>
@@ -1572,7 +1569,7 @@
 							{/if}
 							{#if containerData.HostConfig?.CapDrop?.length > 0}
 								<div class="space-y-2">
-									<h3 class="text-sm font-semibold text-red-600 dark:text-red-400">Dropped capabilities</h3>
+									<h3 class="text-sm font-semibold text-red-600 dark:text-red-400">{m.container_inspect_dropped_capabilities()}</h3>
 									<div class="flex flex-wrap gap-1">
 										{#each containerData.HostConfig.CapDrop as cap}
 											<Badge variant="outline" class="text-xs bg-red-500/10">{cap}</Badge>
@@ -1583,7 +1580,7 @@
 						</div>
 
 						{#if !containerData.HostConfig?.CapAdd?.length && !containerData.HostConfig?.CapDrop?.length && !containerData.HostConfig?.SecurityOpt?.length}
-							<p class="text-sm text-muted-foreground">Default security settings</p>
+							<p class="text-sm text-muted-foreground">{m.container_inspect_default_security()}</p>
 						{/if}
 					</Tabs.Content>
 
@@ -1593,41 +1590,41 @@
 						<div class="space-y-2">
 							<h3 class="text-sm font-semibold flex items-center gap-2">
 								<Settings2 class="w-4 h-4" />
-								Resource limits
+								{m.container_inspect_resource_limits()}
 							</h3>
 							<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">CPU Shares</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_cpu_shares()}</p>
 									<code class="text-sm">{containerData.HostConfig?.CpuShares || 'default'}</code>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">CPUs</p>
-									<code class="text-sm">{containerData.HostConfig?.NanoCpus ? (containerData.HostConfig.NanoCpus / 1e9).toFixed(2) : 'unlimited'}</code>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_cpus()}</p>
+									<code class="text-sm">{containerData.HostConfig?.NanoCpus ? (containerData.HostConfig.NanoCpus / 1e9).toFixed(2) : m.container_inspect_unlimited()}</code>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">Memory</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_memory_label()}</p>
 									<code class="text-sm">{formatMemory(containerData.HostConfig?.Memory)}</code>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">Memory Swap</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_memory_swap()}</p>
 									<code class="text-sm">{formatMemory(containerData.HostConfig?.MemorySwap)}</code>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">Memory Reservation</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_memory_reservation()}</p>
 									<code class="text-sm">{formatMemory(containerData.HostConfig?.MemoryReservation)}</code>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">PIDs Limit</p>
-									<code class="text-sm">{containerData.HostConfig?.PidsLimit ?? 'unlimited'}</code>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_pids_limit()}</p>
+									<code class="text-sm">{containerData.HostConfig?.PidsLimit ?? m.container_inspect_unlimited()}</code>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">OOM Kill</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_oom_kill()}</p>
 									<Badge variant={containerData.HostConfig?.OomKillDisable ? 'destructive' : 'default'}>
-										{containerData.HostConfig?.OomKillDisable ? 'Disabled' : 'Enabled'}
+										{containerData.HostConfig?.OomKillDisable ? m.container_inspect_disabled() : m.container_inspect_enabled()}
 									</Badge>
 								</div>
 								<div class="p-3 border border-border rounded-lg">
-									<p class="text-xs text-muted-foreground mb-1">CPU Period/Quota</p>
+									<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_cpu_period_quota()}</p>
 									<code class="text-sm">
 										{containerData.HostConfig?.CpuPeriod || 0}/{containerData.HostConfig?.CpuQuota || 0}
 									</code>
@@ -1635,10 +1632,10 @@
 							</div>
 						</div>
 
-						<!-- Ulimits -->
+						<!-- {m.container_inspect_ulimits()} -->
 						{#if containerData.HostConfig?.Ulimits?.length > 0}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">Ulimits</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_ulimits()}</h3>
 								<div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
 									{#each containerData.HostConfig.Ulimits as ulimit}
 										<div class="flex justify-between text-xs p-2 bg-muted rounded">
@@ -1650,10 +1647,10 @@
 							</div>
 						{/if}
 
-						<!-- Devices -->
+						<!-- {m.container_inspect_devices()} -->
 						{#if containerData.HostConfig?.Devices?.length > 0}
 							<div class="space-y-2">
-								<h3 class="text-sm font-semibold">Devices</h3>
+								<h3 class="text-sm font-semibold">{m.container_inspect_devices()}</h3>
 								<div class="space-y-1">
 									{#each containerData.HostConfig.Devices as device}
 										<div class="text-xs p-2 bg-muted rounded flex gap-2">
@@ -1669,35 +1666,35 @@
 							</div>
 						{/if}
 
-						<!-- GPU / Device Requests -->
+						<!-- {m.container_inspect_gpu()} / Device Requests -->
 						{#if containerData.HostConfig?.DeviceRequests?.length > 0 || (containerData.HostConfig?.Runtime && containerData.HostConfig.Runtime !== 'runc')}
 							<div class="space-y-2">
 								<h3 class="text-sm font-semibold flex items-center gap-2">
 									<Gpu class="w-4 h-4" />
-									GPU
+									{m.container_inspect_gpu()}
 								</h3>
 								<div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
 									{#if containerData.HostConfig?.Runtime}
 										<div class="p-3 border border-border rounded-lg">
-											<p class="text-xs text-muted-foreground mb-1">Runtime</p>
+											<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_runtime()}</p>
 											<code class="text-sm">{containerData.HostConfig.Runtime}</code>
 										</div>
 									{/if}
 									{#if containerData.HostConfig?.DeviceRequests?.length > 0}
 										{@const req = containerData.HostConfig.DeviceRequests[0]}
 										<div class="p-3 border border-border rounded-lg">
-											<p class="text-xs text-muted-foreground mb-1">Count</p>
-											<code class="text-sm">{req.Count === -1 ? 'All' : req.Count}</code>
+											<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_count()}</p>
+											<code class="text-sm">{req.Count === -1 ? m.container_inspect_all() : req.Count}</code>
 										</div>
 										{#if req.Driver}
 											<div class="p-3 border border-border rounded-lg">
-												<p class="text-xs text-muted-foreground mb-1">Driver</p>
+												<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_driver()}</p>
 												<code class="text-sm">{req.Driver}</code>
 											</div>
 										{/if}
 										{#if req.DeviceIDs?.length > 0}
 											<div class="p-3 border border-border rounded-lg col-span-full">
-												<p class="text-xs text-muted-foreground mb-1">Device IDs</p>
+												<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_device_ids()}</p>
 												<div class="flex flex-wrap gap-1.5">
 													{#each req.DeviceIDs as id}
 														<Badge variant="secondary" class="text-2xs">{id}</Badge>
@@ -1707,7 +1704,7 @@
 										{/if}
 										{#if req.Capabilities?.length > 0}
 											<div class="p-3 border border-border rounded-lg col-span-full">
-												<p class="text-xs text-muted-foreground mb-1">Capabilities</p>
+												<p class="text-xs text-muted-foreground mb-1">{m.container_inspect_capabilities()}</p>
 												<div class="flex flex-wrap gap-1.5">
 													{#each req.Capabilities.flat() as cap}
 														<Badge variant="outline" class="text-2xs bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400">{cap}</Badge>
@@ -1722,18 +1719,18 @@
 
 						<!-- Cgroup -->
 						<div class="space-y-2">
-							<h3 class="text-sm font-semibold">Cgroup settings</h3>
+							<h3 class="text-sm font-semibold">{m.container_inspect_cgroup_settings()}</h3>
 							<div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
 								<div class="p-2 bg-muted rounded">
-									<p class="text-xs text-muted-foreground">Cgroup</p>
+									<p class="text-xs text-muted-foreground">{m.container_inspect_cgroup()}</p>
 									<code class="text-xs">{containerData.HostConfig?.Cgroup || 'default'}</code>
 								</div>
 								<div class="p-2 bg-muted rounded">
-									<p class="text-xs text-muted-foreground">Cgroup Parent</p>
+									<p class="text-xs text-muted-foreground">{m.container_inspect_cgroup_parent()}</p>
 									<code class="text-xs">{containerData.HostConfig?.CgroupParent || 'default'}</code>
 								</div>
 								<div class="p-2 bg-muted rounded">
-									<p class="text-xs text-muted-foreground">Cgroupns Mode</p>
+									<p class="text-xs text-muted-foreground">{m.container_inspect_cgroupns_mode()}</p>
 									<code class="text-xs">{containerData.HostConfig?.CgroupnsMode || 'host'}</code>
 								</div>
 							</div>
@@ -1747,48 +1744,48 @@
 						{@const formatNs = (ns: number) => ns ? `${ns / 1e9}s` : '-'}
 						{#if healthConfig || healthState}
 							<div class="flex flex-col flex-1 min-h-0 gap-4">
-								<!-- Healthcheck Configuration -->
+								<!-- Healthcheck {m.container_inspect_health_config()} -->
 								{#if healthConfig && healthConfig.Test && healthConfig.Test.length > 0}
 									<div class="shrink-0">
-										<h3 class="text-sm font-semibold mb-2">Configuration</h3>
+										<h3 class="text-sm font-semibold mb-2">{m.container_inspect_health_config()}</h3>
 										<div class="grid grid-cols-2 gap-3 text-sm">
 											<div class="col-span-2">
-												<p class="text-muted-foreground">Command</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_command()}</p>
 												<code class="text-xs break-all">{healthConfig.Test.join(' ')}</code>
 											</div>
 											<div>
-												<p class="text-muted-foreground">Interval</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_interval()}</p>
 												<code class="text-xs">{formatNs(healthConfig.Interval)}</code>
 											</div>
 											<div>
-												<p class="text-muted-foreground">Timeout</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_timeout()}</p>
 												<code class="text-xs">{formatNs(healthConfig.Timeout)}</code>
 											</div>
 											<div>
-												<p class="text-muted-foreground">Retries</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_retries()}</p>
 												<code class="text-xs">{healthConfig.Retries || '-'}</code>
 											</div>
 											<div>
-												<p class="text-muted-foreground">Start period</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_start_period()}</p>
 												<code class="text-xs">{formatNs(healthConfig.StartPeriod)}</code>
 											</div>
 										</div>
 									</div>
 								{/if}
 
-								<!-- Runtime Status -->
+								<!-- {m.container_inspect_runtime()} Status -->
 								{#if healthState}
 									<div class="shrink-0">
-										<h3 class="text-sm font-semibold mb-2">Status</h3>
+										<h3 class="text-sm font-semibold mb-2">{m.container_inspect_health_status()}</h3>
 										<div class="grid grid-cols-2 gap-3 text-sm">
 											<div>
-												<p class="text-muted-foreground">Current status</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_current_status()}</p>
 												<Badge variant={healthState.Status === 'healthy' ? 'default' : healthState.Status === 'starting' ? 'secondary' : 'destructive'}>
 													{healthState.Status}
 												</Badge>
 											</div>
 											<div>
-												<p class="text-muted-foreground">Failing streak</p>
+												<p class="text-muted-foreground">{m.container_inspect_health_failing_streak()}</p>
 												<code class="text-xs">{healthState.FailingStreak || 0}</code>
 											</div>
 										</div>
@@ -1796,7 +1793,7 @@
 
 									{#if healthState.Log && healthState.Log.length > 0}
 										<div class="flex flex-col flex-1 min-h-0">
-											<h3 class="text-sm font-semibold mb-2 shrink-0">Health check log</h3>
+											<h3 class="text-sm font-semibold mb-2 shrink-0">{m.container_inspect_health_log()}</h3>
 											<div class="space-y-1 overflow-y-auto flex-1">
 												{#each healthState.Log.slice(-5) as log}
 													<div class="p-2 border border-border rounded text-xs space-y-1">
@@ -1815,11 +1812,11 @@
 										</div>
 									{/if}
 								{:else if healthConfig}
-									<p class="text-sm text-muted-foreground">Waiting for first health check to complete...</p>
+									<p class="text-sm text-muted-foreground">{m.container_inspect_health_waiting()}</p>
 								{/if}
 							</div>
 						{:else}
-							<p class="text-sm text-muted-foreground">No health check configured</p>
+							<p class="text-sm text-muted-foreground">{m.container_inspect_no()} health check configured</p>
 						{/if}
 					</Tabs.Content>
 				</Tabs.Root>
@@ -1827,7 +1824,7 @@
 		</div>
 
 		<Dialog.Footer class="shrink-0">
-			<Button variant="outline" onclick={() => (open = false)}>Close</Button>
+			<Button variant="outline" onclick={() => (open = false)}>{m.container_inspect_close()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
@@ -1843,16 +1840,16 @@
 					variant="outline"
 					size="sm"
 					onclick={copyJson}
-					title={jsonCopied === 'ok' ? 'Copied!' : 'Copy to clipboard'}
+					title={jsonCopied === 'ok' ? m.container_inspect_copied() : m.container_inspect_copy_to_clipboard()}
 				>
 					{#if jsonCopied === 'error'}
 						<Tooltip.Root open>
 							<Tooltip.Trigger>
 								<XCircle class="w-4 h-4 mr-1.5 text-red-500" />
 							</Tooltip.Trigger>
-							<Tooltip.Content>Copy requires HTTPS</Tooltip.Content>
+							<Tooltip.Content>{m.container_inspect_copy_failed()}</Tooltip.Content>
 						</Tooltip.Root>
-						<span class="text-red-500">Failed</span>
+						<span class="text-red-500">{m.container_inspect_failed()}</span>
 					{:else if jsonCopied === 'ok'}
 						<Check class="w-4 h-4 mr-1.5 text-green-500" />
 						<span class="text-green-500">Copied!</span>
@@ -1878,7 +1875,7 @@
 			</div>
 		</div>
 		<Dialog.Footer class="shrink-0">
-			<Button variant="outline" onclick={() => showRawJson = false}>Close</Button>
+			<Button variant="outline" onclick={() => showRawJson = false}>{m.container_inspect_close()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

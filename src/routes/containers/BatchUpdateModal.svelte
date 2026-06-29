@@ -14,6 +14,7 @@
 	import UpdateSummaryStats from '$lib/components/UpdateSummaryStats.svelte';
 	import ScannerSeverityPills from '$lib/components/ScannerSeverityPills.svelte';
 	import { watchJob } from '$lib/utils/sse-fetch';
+	import * as m from '$lib/paraglide/messages';
 
 	interface Props {
 		open: boolean;
@@ -451,7 +452,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 		<Dialog.Header class="shrink-0">
 			<Dialog.Title class="flex items-center gap-2">
 				<CircleArrowUp class="w-5 h-5 text-amber-500" />
-				Updating containers
+				{m.container_batch_title()}
 				{#if vulnerabilityCriteria !== 'never'}
 					<span class="ml-2">
 						<VulnerabilityCriteriaBadge criteria={vulnerabilityCriteria} />
@@ -467,14 +468,14 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 						</span>
 						<span class="text-muted-foreground ml-2">({currentIndex}/{totalCount})</span>
 					{:else}
-						Processing {currentIndex} of {totalCount} containers...
+						{m.container_batch_status_processing({current: currentIndex, total: totalCount})}
 					{/if}
 				{:else if status === 'complete'}
-					Update complete
+					{m.container_batch_status_complete()}
 				{:else if status === 'error'}
-					Update failed
+					{m.container_batch_status_error()}
 				{:else}
-					Preparing to update {containerIds.length} container{containerIds.length > 1 ? 's' : ''}...
+					{m.container_batch_status_preparing({count: containerIds.length})}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -483,7 +484,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 			<!-- Progress bar -->
 			<div class="space-y-2 shrink-0">
 				<div class="flex items-center justify-between text-sm">
-					<span class="text-muted-foreground">Progress</span>
+					<span class="text-muted-foreground">{m.container_batch_progress()}</span>
 					<Badge variant="secondary">{currentIndex}/{totalCount}</Badge>
 				</div>
 				<Progress value={progressPercentage} class="h-2" />
@@ -500,7 +501,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 							onclick={() => filterMode = 'updated'}
 						>
 							<CheckCircle2 class="w-3 h-3 mr-1" />
-							Updated ({summary.success})
+							{m.container_batch_filter_updated()} ({summary.success})
 						</Button>
 						<Button
 							variant={filterMode === 'failed' ? 'destructive' : 'outline'}
@@ -509,7 +510,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 							onclick={() => filterMode = 'failed'}
 						>
 							<XCircle class="w-3 h-3 mr-1" />
-							Failed ({summary.failed + summary.blocked})
+							{m.container_batch_filter_failed()} ({summary.failed + summary.blocked})
 						</Button>
 					</div>
 				{/if}
@@ -555,7 +556,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 											class="h-6 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/50"
 											onclick={() => forceUpdateContainer(item.containerId)}
 										>
-											Update anyway
+											{m.container_batch_update_anyway()}
 										</Button>
 									{/if}
 								{/if}
@@ -564,7 +565,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 										type="button"
 										onclick={() => toggleLogs(item.containerId)}
 										class="p-1 hover:bg-muted rounded cursor-pointer"
-										title={item.showLogs ? 'Hide logs' : 'Show logs'}
+										title={item.showLogs ? m.container_batch_hide_logs() : m.container_batch_show_logs()}
 									>
 										{#if item.showLogs}
 											<ChevronDown class="w-4 h-4 text-muted-foreground" />
@@ -598,17 +599,17 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 									{#if item.vulnerabilities && item.vulnerabilities.length > 0}
 										<div class="border-t border-dashed my-1 border-muted-foreground/30"></div>
 										<div class="text-muted-foreground text-[10px] uppercase tracking-wider font-medium mb-1">
-											{item.vulnerabilities.length}{item.vulnerabilities.length >= 100 ? '+' : ''} vulnerabilities found
+											{m.container_batch_vulns_found({count: item.vulnerabilities.length + (item.vulnerabilities.length >= 100 ? '+' : '')})}
 										</div>
 										<div>
 											<table class="w-full">
 												<thead>
 													<tr class="text-left text-muted-foreground border-b">
-														<th class="pb-1 pr-2 font-medium">CVE</th>
-														<th class="pb-1 pr-2 font-medium">Severity</th>
-														<th class="pb-1 pr-2 font-medium">Package</th>
-														<th class="pb-1 pr-2 font-medium">Version</th>
-														<th class="pb-1 font-medium">Fixed</th>
+														<th class="pb-1 pr-2 font-medium">{m.container_batch_cve()}</th>
+														<th class="pb-1 pr-2 font-medium">{m.container_batch_severity()}</th>
+														<th class="pb-1 pr-2 font-medium">{m.container_batch_package()}</th>
+														<th class="pb-1 pr-2 font-medium">{m.container_batch_version()}</th>
+														<th class="pb-1 font-medium">{m.container_batch_fixed()}</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -641,7 +642,7 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 											</table>
 											{#if item.vulnerabilities.length > 50}
 												<div class="text-muted-foreground mt-1">
-													...and {item.vulnerabilities.length - 50} more
+													{m.container_batch_more_vulns({count: item.vulnerabilities.length - 50})}
 												</div>
 											{/if}
 										</div>
@@ -678,11 +679,11 @@ const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2,
 			{#if status === 'updating'}
 				<Button variant="outline" disabled>
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-					Updating...
+					{m.container_batch_updating()}
 				</Button>
 			{:else}
 				<Button variant="outline" onclick={handleClose}>
-					Close
+					{m.common_close()}
 				</Button>
 			{/if}
 		</Dialog.Footer>

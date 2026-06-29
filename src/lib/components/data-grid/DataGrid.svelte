@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { CheckSquare, Square as SquareIcon, ArrowUp, ArrowDown, ArrowUpDown, ChevronDown, ChevronRight } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
 	import { columnResize } from '$lib/actions/column-resize';
 	import { gridPreferencesStore } from '$lib/stores/grid-preferences';
 	import { getAllColumnConfigs } from '$lib/config/grid-columns';
@@ -610,7 +611,7 @@
 					<th class="text-right py-2 px-2 font-medium actions-col" style="width: {getDisplayWidth(colId)}px">
 						{#if colId === 'actions'}
 							<div class="flex items-center justify-end gap-1">
-								<span>Actions</span>
+								<span>{m.common_actions()}</span>
 								<ColumnSettingsPopover {gridId} />
 							</div>
 						{/if}
@@ -735,7 +736,7 @@
 				<th class="text-right py-2 px-2 font-medium actions-col" style="width: {getDisplayWidth(colId)}px">
 					{#if colId === 'actions'}
 						<div class="flex items-center justify-end gap-1">
-							<span>Actions</span>
+							<span>{m.common_actions()}</span>
 							<ColumnSettingsPopover {gridId} />
 						</div>
 					{:else if headerCell}

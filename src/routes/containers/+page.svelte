@@ -336,7 +336,7 @@
 					...statusTypes,
 					{
 						value: UPDATE_AVAILABLE_FILTER_VALUE,
-						label: 'Update available',
+						label: m.containers_tooltip_update_available(),
 						icon: CircleArrowUp,
 						color: 'text-amber-500'
 					}
@@ -410,7 +410,7 @@
 
 	function bulkStart() {
 		startBatchOperation(
-			`Starting ${selectedStopped.length} container${selectedStopped.length !== 1 ? 's' : ''}`,
+			m.containers_batch_op_starting({ count: selectedStopped.length, plural: selectedStopped.length !== 1 ? 's' : '' }),
 			'start',
 			selectedStopped
 		);
@@ -418,7 +418,7 @@
 
 	function bulkStop() {
 		startBatchOperation(
-			`Stopping ${selectedRunning.length} container${selectedRunning.length !== 1 ? 's' : ''}`,
+			m.containers_batch_op_stopping({ count: selectedRunning.length, plural: selectedRunning.length !== 1 ? 's' : '' }),
 			'stop',
 			selectedRunning
 		);
@@ -426,7 +426,7 @@
 
 	function bulkRestart() {
 		startBatchOperation(
-			`Restarting ${selectedNonSystem.length} container${selectedNonSystem.length !== 1 ? 's' : ''}`,
+			m.containers_batch_op_restarting({ count: selectedNonSystem.length, plural: selectedNonSystem.length !== 1 ? 's' : '' }),
 			'restart',
 			selectedNonSystem
 		);
@@ -434,7 +434,7 @@
 
 	function bulkPause() {
 		startBatchOperation(
-			`Pausing ${selectedRunning.length} container${selectedRunning.length !== 1 ? 's' : ''}`,
+			m.containers_batch_op_pausing({ count: selectedRunning.length, plural: selectedRunning.length !== 1 ? 's' : '' }),
 			'pause',
 			selectedRunning
 		);
@@ -442,7 +442,7 @@
 
 	function bulkUnpause() {
 		startBatchOperation(
-			`Unpausing ${selectedPaused.length} container${selectedPaused.length !== 1 ? 's' : ''}`,
+			m.containers_batch_op_unpausing({ count: selectedPaused.length, plural: selectedPaused.length !== 1 ? 's' : '' }),
 			'unpause',
 			selectedPaused
 		);
@@ -450,7 +450,7 @@
 
 	function bulkRemove() {
 		startBatchOperation(
-			`Removing ${selectedNonSystem.length} container${selectedNonSystem.length !== 1 ? 's' : ''}`,
+			m.containers_batch_op_removing({ count: selectedNonSystem.length, plural: selectedNonSystem.length !== 1 ? 's' : '' }),
 			'remove',
 			selectedNonSystem,
 			{ force: true }
@@ -486,7 +486,7 @@
 			class: '!w-[28rem] !max-w-[28rem]',
 			duration: Infinity,
 			action: {
-				label: 'OK',
+				label: m.containers_toast_ok(),
 				onClick: () => {}
 			}
 		});
@@ -535,11 +535,11 @@
 				containerStore.setPendingUpdates([], new Map());
 				if (failed.length > 0) {
 					updateCheckStatus = 'none';
-					showFailedChecksToast(failedUpdateChecks, 'All containers are up to date');
+					showFailedChecksToast(failedUpdateChecks, m.containers_toast_all_up_to_date());
 					pendingTimeouts.push(setTimeout(() => { updateCheckStatus = 'idle'; }, 3000));
 				} else {
 					updateCheckStatus = 'none';
-					toast.success('All containers are up to date');
+					toast.success(m.containers_toast_all_up_to_date());
 					pendingTimeouts.push(setTimeout(() => { updateCheckStatus = 'idle'; }, 3000));
 				}
 				return;
@@ -552,9 +552,9 @@
 			);
 			updateCheckStatus = 'found';
 			if (failed.length > 0) {
-				showFailedChecksToast(failedUpdateChecks, `${containersWithUpdates.length} update(s) available`);
+				showFailedChecksToast(failedUpdateChecks, m.containers_toast_updates_available({ count: containersWithUpdates.length }));
 			} else {
-				toast.info(`${containersWithUpdates.length} update(s) available`);
+				toast.info(m.containers_toast_updates_available({ count: containersWithUpdates.length }));
 			}
 		} catch (error) {
 			updateCheckStatus = 'error';
@@ -601,7 +601,7 @@
 				containerStore.setPendingUpdates([], new Map());
 			}
 		} catch {
-			toast.error('Failed to clear update indicators');
+			toast.error(m.containers_toast_failed_clear_updates());
 		}
 	}
 
@@ -637,13 +637,13 @@
 
 	function handleBatchUpdateComplete(results: { success: string[]; failed: string[]; blocked: string[] }) {
 		if (results.success.length > 0) {
-			toast.success(`Updated ${results.success.length} container(s)`);
+			toast.success(m.containers_toast_updated_count({ count: results.success.length }));
 		}
 		if (results.failed.length > 0) {
-			toast.error(`Failed to update ${results.failed.length} container(s)`);
+			toast.error(m.containers_toast_failed_update_count({ count: results.failed.length }));
 		}
 		if (results.blocked.length > 0) {
-			toast.warning(`${results.blocked.length} update(s) blocked by vulnerability policy`);
+			toast.warning(m.containers_toast_blocked_update_count({ count: results.blocked.length }));
 		}
 		selectedContainers = new Set();
 
@@ -970,7 +970,7 @@
 			const response = await fetch(appendEnvParam(`/api/containers/${id}/start`, envId), { method: 'POST' });
 			if (!response.ok) {
 				const data = await response.json();
-				operationError = { id, message: data.error || 'Failed to start container' };
+				operationError = { id, message: data.error || m.containers_error_start() };
 				toast.error(`Failed to start ${name}`);
 				clearErrorAfterDelay(id);
 				return;
@@ -979,7 +979,7 @@
 			await containerStore.refreshContainers(envId);
 		} catch (error) {
 			console.error('Failed to start container:', error);
-			operationError = { id, message: 'Failed to start container' };
+			operationError = { id, message: m.containers_error_start() };
 			toast.error(`Failed to start ${name}`);
 			clearErrorAfterDelay(id);
 		}
@@ -994,7 +994,7 @@
 			const response = await fetch(appendEnvParam(`/api/containers/${id}/stop`, envId), { method: 'POST' });
 			if (!response.ok) {
 				const data = await response.json();
-				operationError = { id, message: data.error || 'Failed to stop container' };
+				operationError = { id, message: data.error || m.containers_error_stop() };
 				toast.error(`Failed to stop ${name}`);
 				clearErrorAfterDelay(id);
 				return;
@@ -1003,7 +1003,7 @@
 			await containerStore.refreshContainers(envId);
 		} catch (error) {
 			console.error('Failed to stop container:', error);
-			operationError = { id, message: 'Failed to stop container' };
+			operationError = { id, message: m.containers_error_stop() };
 			toast.error(`Failed to stop ${name}`);
 			clearErrorAfterDelay(id);
 		} finally {
@@ -1019,7 +1019,7 @@
 			const response = await fetch(appendEnvParam(`/api/containers/${id}/pause`, envId), { method: 'POST' });
 			if (!response.ok) {
 				const data = await response.json();
-				operationError = { id, message: data.error || 'Failed to pause container' };
+				operationError = { id, message: data.error || m.containers_error_pause() };
 				toast.error(`Failed to pause ${name}`);
 				clearErrorAfterDelay(id);
 				return;
@@ -1042,7 +1042,7 @@
 			const response = await fetch(appendEnvParam(`/api/containers/${id}/unpause`, envId), { method: 'POST' });
 			if (!response.ok) {
 				const data = await response.json();
-				operationError = { id, message: data.error || 'Failed to unpause container' };
+				operationError = { id, message: data.error || m.containers_error_unpause() };
 				toast.error(`Failed to unpause ${name}`);
 				clearErrorAfterDelay(id);
 				return;
@@ -1066,7 +1066,7 @@
 			const response = await fetch(appendEnvParam(`/api/containers/${id}/restart`, envId), { method: 'POST' });
 			if (!response.ok) {
 				const data = await response.json();
-				operationError = { id, message: data.error || 'Failed to restart container' };
+				operationError = { id, message: data.error || m.containers_error_restart() };
 				toast.error(`Failed to restart ${name}`);
 				clearErrorAfterDelay(id);
 				return;
@@ -1091,7 +1091,7 @@
 			const response = await fetch(appendEnvParam(`/api/containers/${id}?force=true`, envId), { method: 'DELETE' });
 			if (!response.ok) {
 				const data = await response.json();
-				operationError = { id, message: data.error || 'Failed to remove container' };
+				operationError = { id, message: data.error || m.containers_error_remove() };
 				toast.error(`Failed to remove ${name}`);
 				clearErrorAfterDelay(id);
 				return;
@@ -1290,7 +1290,7 @@
 		const ok = await copyToClipboard(text);
 		if (ok) {
 			copiedCommand = text;
-			toast.success('Copied to clipboard');
+			toast.success(m.containers_toast_copied());
 			setTimeout(() => { copiedCommand = null; }, 2000);
 		} else {
 			copyFailed = true;
@@ -1461,8 +1461,8 @@
 			<MultiSelectFilter
 				bind:value={statusFilter}
 				options={filterOptions}
-				placeholder="All statuses"
-				pluralLabel="filters"
+				placeholder={m.containers_filter_all_statuses()}
+				pluralLabel={m.containers_filter_filters()}
 				width="w-44"
 				defaultIcon={Box}
 			/>
@@ -1507,11 +1507,11 @@
 				{#if updatableContainersCount > 0}
 				<ConfirmPopover
 					open={confirmUpdateAll}
-					action="Update"
+					action={m.containers_batch_update_selected_action()}
 					itemType="all {updatableContainersCount} containers"
-					confirmText="Update all"
+					confirmText={m.containers_update_all_confirm()}
 					variant="default"
-					title="Update all containers with available updates"
+					title={m.containers_update_all_title()}
 					position="left"
 					onConfirm={updateAllContainers}
 					onOpenChange={(open) => confirmUpdateAll = open}
@@ -1524,12 +1524,12 @@
 							class="border-amber-500/40 text-amber-600 hover:bg-amber-500/10 hover:border-amber-500"
 						>
 							<CircleArrowUp class="w-3.5 h-3.5" />
-							Update all ({updatableContainersCount})
+							{m.containers_update_all_btn({ count: updatableContainersCount })}
 							<button
 								type="button"
 								onclick={(e) => { e.stopPropagation(); dismissPendingUpdates(); }}
 								class="-mr-1 text-[12px] leading-none rounded-full hover:bg-destructive/20 hover:text-destructive transition-colors opacity-40 hover:opacity-100"
-								title="Dismiss all update indicators"
+								title={m.containers_dismiss_updates()}
 							>×</button>
 						</Button>
 					{/snippet}
@@ -1539,7 +1539,7 @@
 				<ConfirmPopover
 					open={confirmPrune}
 					action={m.containers_prune()}
-					itemType="stopped containers"
+					itemType={m.containers_prune_item()}
 					title={m.containers_prune()}
 					position="left"
 					onConfirm={pruneContainers}
@@ -1557,7 +1557,7 @@
 							{:else}
 								<Icon iconNode={broom} class="w-3.5 h-3.5" />
 							{/if}
-							Prune
+							{m.containers_prune_btn()}
 						</Button>
 					{/snippet}
 				</ConfirmPopover>
@@ -1568,7 +1568,7 @@
 					variant="outline"
 					onclick={toggleLayoutMode}
 					class="h-8 w-8 p-0"
-					title={layoutMode === 'horizontal' ? 'Switch to vertical layout (logs/terminal on side)' : 'Switch to horizontal layout (logs/terminal below)'}
+					title={layoutMode === 'horizontal' ? m.containers_layout_vertical() : m.containers_layout_horizontal()}
 				>
 					{#if layoutMode === 'horizontal'}
 						<LayoutPanelLeft class="w-4 h-4" />
@@ -1584,21 +1584,21 @@
 	<div class="h-4 shrink-0">
 		{#if selectedContainers.size > 0}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground h-full">
-			<span>{selectedInFilter.length} selected</span>
+			<span>{m.containers_selected_count({ count: selectedInFilter.length })}</span>
 			<button
 				type="button"
 				class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all"
 				onclick={selectNone}
 				disabled={bulkActionInProgress}
 			>
-				Clear
+				{m.containers_clear_selection()}
 			</button>
 			{#if selectedStopped.length > 0 && $canAccess('containers', 'start')}
 				<ConfirmPopover
 					open={confirmBulkStart}
-					action="Start"
-					itemType="{selectedStopped.length} stopped container{selectedStopped.length !== 1 ? 's' : ''}"
-					title="Start {selectedStopped.length}"
+					action={m.containers_batch_start_action()}
+					itemType={m.containers_batch_start_item({ count: selectedStopped.length, plural: selectedStopped.length !== 1 ? 's' : '' })}
+					title={m.containers_batch_start_title({ count: selectedStopped.length })}
 					variant="secondary"
 					unstyled
 					onConfirm={bulkStart}
@@ -1607,7 +1607,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-green-600 hover:border-green-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Play class="w-3 h-3" />
-							Start
+							{m.containers_batch_start_action()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1615,9 +1615,9 @@
 			{#if selectedRunning.length > 0 && $canAccess('containers', 'stop')}
 				<ConfirmPopover
 					open={confirmBulkStop}
-					action="Stop"
-					itemType="{selectedRunning.length} running container{selectedRunning.length !== 1 ? 's' : ''}"
-					title="Stop {selectedRunning.length}"
+					action={m.containers_batch_stop_action()}
+					itemType={m.containers_batch_stop_item({ count: selectedRunning.length, plural: selectedRunning.length !== 1 ? 's' : '' })}
+					title={m.containers_batch_stop_title({ count: selectedRunning.length })}
 					unstyled
 					onConfirm={bulkStop}
 					onOpenChange={(open) => confirmBulkStop = open}
@@ -1625,15 +1625,15 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-red-600 hover:border-red-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Square class="w-3 h-3" />
-							Stop
+							{m.containers_batch_stop_action()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
 				<ConfirmPopover
 					open={confirmBulkPause}
-					action="Pause"
-					itemType="{selectedRunning.length} running container{selectedRunning.length !== 1 ? 's' : ''}"
-					title="Pause {selectedRunning.length}"
+					action={m.containers_batch_pause_action()}
+					itemType={m.containers_batch_stop_item({ count: selectedRunning.length, plural: selectedRunning.length !== 1 ? 's' : '' })}
+					title={m.containers_batch_pause_title({ count: selectedRunning.length })}
 					variant="secondary"
 					unstyled
 					onConfirm={bulkPause}
@@ -1642,7 +1642,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-yellow-600 hover:border-yellow-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Pause class="w-3 h-3" />
-							Pause
+							{m.containers_batch_pause_action()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1650,9 +1650,9 @@
 			{#if selectedPaused.length > 0 && $canAccess('containers', 'start')}
 				<ConfirmPopover
 					open={confirmBulkUnpause}
-					action="Unpause"
-					itemType="{selectedPaused.length} paused container{selectedPaused.length !== 1 ? 's' : ''}"
-					title="Unpause {selectedPaused.length}"
+					action={m.containers_batch_unpause_action()}
+					itemType={m.containers_batch_unpause_item({ count: selectedPaused.length, plural: selectedPaused.length !== 1 ? 's' : '' })}
+					title={m.containers_batch_unpause_title({ count: selectedPaused.length })}
 					variant="secondary"
 					unstyled
 					onConfirm={bulkUnpause}
@@ -1661,7 +1661,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-blue-600 hover:border-blue-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Play class="w-3 h-3" />
-							Unpause
+							{m.containers_batch_unpause_action()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1669,9 +1669,9 @@
 			{#if selectedNonSystem.length > 0 && $canAccess('containers', 'restart')}
 			<ConfirmPopover
 				open={confirmBulkRestart}
-				action="Restart"
-				itemType="{selectedNonSystem.length} container{selectedNonSystem.length !== 1 ? 's' : ''}"
-				title="Restart {selectedNonSystem.length}"
+				action={m.containers_batch_restart_action()}
+				itemType={m.containers_batch_restart_item({ count: selectedNonSystem.length, plural: selectedNonSystem.length !== 1 ? 's' : '' })}
+				title={m.containers_batch_restart_title({ count: selectedNonSystem.length })}
 				variant="secondary"
 				unstyled
 				onConfirm={bulkRestart}
@@ -1680,7 +1680,7 @@
 				{#snippet children({ open })}
 					<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 						<RotateCw class="w-3 h-3" />
-						Restart
+						{m.containers_batch_restart_action()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1688,9 +1688,9 @@
 			{#if selectedNonSystem.length > 0 && $canAccess('containers', 'remove')}
 			<ConfirmPopover
 				open={confirmBulkRemove}
-				action="Remove"
-				itemType="{selectedNonSystem.length} container{selectedNonSystem.length !== 1 ? 's' : ''}"
-				title="Remove {selectedNonSystem.length}"
+				action={m.containers_batch_remove_action()}
+				itemType={m.containers_batch_restart_item({ count: selectedNonSystem.length, plural: selectedNonSystem.length !== 1 ? 's' : '' })}
+				title={m.containers_batch_remove_title({ count: selectedNonSystem.length })}
 				unstyled
 				onConfirm={bulkRemove}
 				onOpenChange={(open) => confirmBulkRemove = open}
@@ -1698,7 +1698,7 @@
 				{#snippet children({ open })}
 					<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-destructive hover:border-destructive/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 						<Trash2 class="w-3 h-3" />
-						Remove
+						{m.containers_batch_remove_action()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1706,11 +1706,11 @@
 			{#if selectedHaveUpdates}
 			<ConfirmPopover
 				open={confirmUpdateSelected}
-				action="Update"
-				itemType="{selectedWithUpdatesCount} selected container(s)"
-				confirmText="Update"
+				action={m.containers_batch_update_selected_action()}
+				itemType={m.containers_batch_update_selected_item({ count: selectedWithUpdatesCount })}
+				confirmText={m.containers_batch_update_selected_confirm()}
 				variant="default"
-				title="Update selected containers to latest image"
+				title={m.containers_batch_update_selected_title()}
 				onConfirm={updateSelectedContainers}
 				onOpenChange={(open) => confirmUpdateSelected = open}
 				unstyled
@@ -1720,7 +1720,7 @@
 						class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-amber-500/40 text-amber-600 hover:border-amber-500 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}"
 					>
 						<CircleArrowUp class="w-3 h-3" />
-						Update {selectedWithUpdatesCount}
+						{m.containers_batch_update_selected_btn({ count: selectedWithUpdatesCount })}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1737,8 +1737,8 @@
 	{:else if !loading && containers.length === 0}
 		<EmptyState
 			icon={Box}
-			title="No containers found"
-			description="Create a new container to get started"
+			title={m.containers_empty_title()}
+			description={m.containers_empty_description()}
 		/>
 	{:else}
 		<!-- Main content area - changes based on layout mode -->
@@ -1847,7 +1847,7 @@
 					{:else if column.id === 'image'}
 						<div class="flex items-center gap-1.5 {$appSettings.highlightUpdates && containersWithUpdatesSet.has(container.id) ? 'update-border' : ''}">
 							{#if containersWithUpdatesSet.has(container.id)}
-								<span title="Update available">
+								<span title={m.containers_tooltip_update_available()}>
 									<CircleArrowUp class="w-3 h-3 text-amber-500 {$appSettings.highlightUpdates ? 'glow-amber' : ''} shrink-0" />
 								</span>
 								{#if $appSettings.showImageChangelogLinks}
@@ -1858,7 +1858,7 @@
 											target="_blank"
 											rel="noopener noreferrer"
 											onclick={(e) => e.stopPropagation()}
-											title="View changelog"
+											title={m.containers_view_changelog()}
 											class="shrink-0 text-amber-500 hover:text-amber-400 transition-colors"
 										>
 											<NotepadText class="w-3 h-3" />
@@ -1986,7 +1986,7 @@
 										rel="noopener noreferrer"
 										onclick={(e) => e.stopPropagation()}
 										class="inline-flex items-center gap-0.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-1 py-0.5 rounded transition-colors shrink-0"
-										title="Open {parsedUrl.url} in new tab"
+										title={m.containers_open_in_new_tab({ url: parsedUrl.url })}
 									>
 										<Globe class="w-2.5 h-2.5" />
 										<span class="max-w-[120px] truncate">{parsedUrl.name || parsedUrl.url.replace(/^https?:\/\//, '')}</span>
@@ -2001,7 +2001,7 @@
 										rel="noopener noreferrer"
 										onclick={(e) => e.stopPropagation()}
 										class="inline-flex items-center gap-0.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-1 py-0.5 rounded transition-colors shrink-0"
-										title="Traefik router {t.router} → {t.url}"
+										title={m.containers_traefik_router({ router: t.router, url: t.url })}
 									>
 										<Globe class="w-2.5 h-2.5" />
 										<span class="max-w-[120px] truncate">{t.url.replace(/^https?:\/\//, '')}</span>
@@ -2016,7 +2016,7 @@
 										rel="noopener noreferrer"
 										onclick={(e) => e.stopPropagation()}
 										class="inline-flex items-center gap-0.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-1 py-0.5 rounded transition-colors shrink-0"
-										title="Pangolin resource {p.resource} → {p.url}"
+										title={m.containers_pangolin_resource({ resource: p.resource, url: p.url })}
 									>
 										<Globe class="w-2.5 h-2.5" />
 										<span class="max-w-[120px] truncate">{p.displayName ?? p.url.replace(/^https?:\/\//, '')}</span>
@@ -2034,7 +2034,7 @@
 											rel="noopener noreferrer"
 											onclick={(e) => e.stopPropagation()}
 											class="inline-flex items-center gap-0.5 text-xs {portUrl ? 'bg-primary/10 hover:bg-primary/20 text-primary' : 'bg-muted hover:bg-blue-500/20 hover:text-blue-500'} px-1 py-0.5 rounded transition-colors shrink-0"
-											title="Open {url} in new tab"
+											title={m.containers_open_in_new_tab({ url })}
 										>
 											<code>{portParsed?.name ?? port.display}</code>
 											<ExternalLink class="w-2.5 h-2.5 {portUrl ? 'opacity-60' : 'text-muted-foreground'}" />
@@ -2099,10 +2099,10 @@
 							{#if containersWithUpdatesSet.has(container.id) && !container.systemContainer}
 								<ConfirmPopover
 									open={confirmUpdateId === container.id}
-									action="Update"
+									action={m.containers_batch_update_selected_action()}
 									itemType="container"
 									itemName={container.name}
-									title="Update available - click to update"
+									title={m.containers_action_update_single_title()}
 									onConfirm={() => updateSingleContainer(container.id, container.name)}
 									onOpenChange={(open) => confirmUpdateId = open ? container.id : null}
 								>
@@ -2116,7 +2116,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); currentLogsContainerId = container.id; }}
-									title="Show logs"
+									title={m.containers_action_show_logs()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<FileText class="w-4 h-4 text-blue-400" style="filter: drop-shadow(0 0 4px rgba(96,165,250,0.9)) drop-shadow(0 0 8px rgba(96,165,250,0.6));" strokeWidth={2.5} />
@@ -2125,7 +2125,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); showLogs(container); }}
-									title="Open logs"
+									title={m.containers_action_open_logs()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<FileText class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -2137,7 +2137,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); currentTerminalContainerId = container.id; }}
-									title="Show terminal"
+									title={m.containers_action_show_terminal()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Terminal class="w-4 h-4 text-green-400" style="filter: drop-shadow(0 0 4px rgba(74,222,128,0.9)) drop-shadow(0 0 8px rgba(74,222,128,0.6));" strokeWidth={2.5} />
@@ -2163,22 +2163,22 @@
 										{#if detectingShellsFor === container.id}
 											<div class="p-4 text-center">
 												<Loader2 class="w-5 h-5 mx-auto mb-2 text-muted-foreground animate-spin" />
-												<p class="text-xs text-muted-foreground">Detecting shells...</p>
+												<p class="text-xs text-muted-foreground">{m.containers_shell_detecting()}</p>
 											</div>
 										{:else if !anyShellAvailableFor(container.id)}
 											<div class="p-4 text-center">
 												<AlertCircle class="w-5 h-5 mx-auto mb-2 text-amber-500" />
-												<p class="text-xs font-medium text-amber-500">No shell available</p>
-												<p class="text-xs text-muted-foreground mt-1">This container has no shell installed.</p>
+												<p class="text-xs font-medium text-amber-500">{m.containers_shell_none_title()}</p>
+												<p class="text-xs text-muted-foreground mt-1">{m.containers_shell_none_desc()}</p>
 											</div>
 										{:else}
 											<div class="p-3 space-y-3">
 												<div class="space-y-1.5">
-													<Label class="text-xs">Shell</Label>
+													<Label class="text-xs">{m.containers_shell_label()}</Label>
 													<Select.Root type="single" bind:value={terminalShell}>
 														<Select.Trigger class="w-full h-8 text-xs">
 															<Shell class="w-3 h-3 mr-1.5 text-muted-foreground" />
-															<span>{shellDetectionCache[container.id]?.allShells.find(o => o.path === terminalShell)?.label || 'Select'}</span>
+															<span>{shellDetectionCache[container.id]?.allShells.find(o => o.path === terminalShell)?.label || m.containers_shell_select()}</span>
 														</Select.Trigger>
 														<Select.Content>
 															{#if shellDetectionCache[container.id]}
@@ -2188,7 +2188,7 @@
 																		<span class={option.available ? 'text-foreground' : 'text-muted-foreground/60'}>
 																			{option.label}
 																			{#if !option.available}
-																				<span class="text-xs ml-1">(unavailable)</span>
+																				<span class="text-xs ml-1">{m.containers_shell_unavailable()}</span>
 																			{/if}
 																		</span>
 																	</Select.Item>
@@ -2198,11 +2198,11 @@
 													</Select.Root>
 												</div>
 												<div class="space-y-1.5">
-													<Label class="text-xs">User</Label>
+													<Label class="text-xs">{m.containers_user_label()}</Label>
 													<Select.Root type="single" bind:value={terminalUser}>
 														<Select.Trigger class="w-full h-8 text-xs">
 															<User class="w-3 h-3 mr-1.5 text-muted-foreground" />
-															<span>{userOptions.find(o => o.value === terminalUser)?.label || terminalUser || 'Select'}</span>
+															<span>{userOptions.find(o => o.value === terminalUser)?.label || terminalUser || m.containers_shell_select()}</span>
 														</Select.Trigger>
 														<Select.Content>
 															{#each userOptions as option}
@@ -2223,7 +2223,7 @@
 																			type="button"
 																			class="p-1 mr-1 opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
 																			onclick={(e) => { e.stopPropagation(); e.preventDefault(); removeCustomUser(cu); terminalCustomUsers = getCustomUsers(); if (terminalUser === cu) { terminalUser = 'root'; } }}
-																			title="Remove user"
+																			title={m.containers_user_remove()}
 																		>
 																			<Trash2 class="w-3 h-3" />
 																		</button>
@@ -2234,7 +2234,7 @@
 															<div class="px-2 py-1">
 																<Input
 																	class="h-7 text-xs"
-																	placeholder="Add user... (Enter)"
+																	placeholder={m.containers_user_add_placeholder()}
 																	bind:value={terminalCustomUser}
 																	onkeydown={(e) => { e.stopPropagation(); if (e.key === 'Enter' && terminalCustomUser.trim()) { const u = terminalCustomUser.trim(); terminalUser = u; saveUserForContainer(container.id, u); terminalCustomUsers = getCustomUsers(); terminalCustomUser = ''; } }}
 																	onclick={(e) => e.stopPropagation()}
@@ -2245,7 +2245,7 @@
 												</div>
 												<Button size="sm" class="w-full h-7 text-xs" onclick={() => startTerminal(container)}>
 													<Terminal class="w-3 h-3" />
-													Connect
+													{m.containers_terminal_connect()}
 												</Button>
 											</div>
 										{/if}
@@ -2257,7 +2257,7 @@
 							<button
 								type="button"
 								onclick={() => browseFiles(container)}
-								title="Browse files"
+								title={m.containers_action_browse_files()}
 								class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<FolderOpen class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -2266,7 +2266,7 @@
 							<button
 								type="button"
 								onclick={() => inspectContainer(container)}
-								title="View details"
+								title={m.containers_action_view_details()}
 								class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<Eye class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -2275,7 +2275,7 @@
 							<button
 								type="button"
 								onclick={() => editContainer(container.id)}
-								title="Edit"
+								title={m.containers_action_edit()}
 								class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<Pencil class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -2287,7 +2287,7 @@
 								<button
 									type="button"
 									onclick={() => unpauseContainer(container.id)}
-									title="Unpause"
+									title={m.containers_action_unpause()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Play class="w-3 h-3 text-muted-foreground hover:text-green-500" />
@@ -2298,7 +2298,7 @@
 								<button
 									type="button"
 									onclick={() => startContainer(container.id)}
-									title="Start"
+									title={m.containers_action_start()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Play class="w-3 h-3 text-muted-foreground hover:text-green-500" />
@@ -2308,10 +2308,10 @@
 							{#if $canAccess('containers', 'restart')}
 							<ConfirmPopover
 								open={confirmRestartId === container.id}
-								action="Restart"
+								action={m.containers_batch_restart_action()}
 								itemType="container"
 								itemName={container.name}
-								title="Restart"
+								title={m.containers_action_restart()}
 								variant="secondary"
 								onConfirm={() => restartContainer(container.id)}
 								onOpenChange={(open) => confirmRestartId = open ? container.id : null}
@@ -2326,7 +2326,7 @@
 								<button
 									type="button"
 									onclick={() => pauseContainer(container.id)}
-									title="Pause"
+									title={m.containers_action_pause()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Pause class="w-3 h-3 text-muted-foreground hover:text-yellow-500" />
@@ -2335,10 +2335,10 @@
 								{#if $canAccess('containers', 'stop')}
 								<ConfirmPopover
 									open={confirmStopId === container.id}
-									action="Stop"
+									action={m.containers_batch_stop_action()}
 									itemType="container"
 									itemName={container.name}
-									title="Stop"
+									title={m.containers_action_stop()}
 									onConfirm={() => stopContainer(container.id)}
 									onOpenChange={(open) => confirmStopId = open ? container.id : null}
 								>
@@ -2355,7 +2355,7 @@
 								action="Delete"
 								itemType="container"
 								itemName={container.name}
-								title="Remove"
+								title={m.containers_action_remove()}
 								onConfirm={() => removeContainer(container.id)}
 								onOpenChange={(open) => confirmDeleteId = open ? container.id : null}
 							>

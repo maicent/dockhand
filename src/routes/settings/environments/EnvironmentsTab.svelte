@@ -427,7 +427,7 @@
 						<Table.Head class="w-[120px]">{m.settings_env_col_status()}</Table.Head>
 						<Table.Head class="w-[100px]">Docker</Table.Head>
 						<Table.Head class="w-[100px]">Hawser</Table.Head>
-						<Table.Head class="w-[180px] text-right">{m.settings_env_col_actions()}</Table.Head>
+						<Table.Head class="w-[180px] text-right">{m.common_actions()}</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>

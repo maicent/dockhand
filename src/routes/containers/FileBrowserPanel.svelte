@@ -39,6 +39,7 @@
 	} from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { formatDateTime, appSettings } from '$lib/stores/settings';
+	import * as m from '$lib/paraglide/messages';
 
 	interface FileEntry {
 		name: string;
@@ -866,7 +867,7 @@
 				size="icon"
 				class="h-7 w-7"
 				onclick={() => { createType = 'file'; createName = ''; showCreateModal = true; }}
-				title="New file"
+				title={m.container_files_new_file()}
 			>
 				<FilePlus class="w-3.5 h-3.5" />
 			</Button>
@@ -875,7 +876,7 @@
 				size="icon"
 				class="h-7 w-7"
 				onclick={() => { createType = 'directory'; createName = ''; showCreateModal = true; }}
-				title="New directory"
+				title={m.container_files_new_directory()}
 			>
 				<FolderPlus class="w-3.5 h-3.5" />
 			</Button>
@@ -892,7 +893,7 @@
 				class="h-7 w-7"
 				onclick={() => fileInput.click()}
 				disabled={uploading || loading}
-				title="Upload files"
+				title={m.container_files_upload_files()}
 			>
 				{#if uploading}
 					<Loader2 class="w-3.5 h-3.5 animate-spin" />
@@ -906,7 +907,7 @@
 			size="icon"
 			class="h-7 w-7"
 			onclick={toggleHiddenFiles}
-			title={showHiddenFiles ? 'Hide hidden files' : 'Show hidden files'}
+			title={showHiddenFiles ? m.container_files_hide_hidden() : m.container_files_show_hidden()}
 		>
 			{#if showHiddenFiles}
 				<Eye class="w-3.5 h-3.5" />
@@ -920,7 +921,7 @@
 			class="h-7 w-7"
 			onclick={() => loadDirectory(currentPath)}
 			disabled={loading}
-			title="Refresh"
+			title={m.container_files_refresh()}
 		>
 			<RefreshCw class="w-3.5 h-3.5 {loading ? 'animate-spin' : ''}" />
 		</Button>
@@ -931,23 +932,23 @@
 		{#if loading}
 			<div class="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
 				<Loader2 class="w-5 h-5 animate-spin mr-2 text-muted-foreground" />
-				<span class="text-sm text-muted-foreground">Loading...</span>
+				<span class="text-sm text-muted-foreground">{m.container_files_loading()}</span>
 			</div>
 		{/if}
 		{#if error}
 			<div class="flex items-center justify-center p-4 h-full">
 				<div class="max-w-md bg-destructive/5 border border-destructive/20 rounded-lg p-4 text-center">
 					<AlertCircle class="w-6 h-6 text-destructive mx-auto" />
-					<p class="text-sm font-medium text-destructive mt-2">Unable to browse files</p>
+					<p class="text-sm font-medium text-destructive mt-2">{m.container_files_unable_browse()}</p>
 					<p class="text-xs text-muted-foreground mt-2 break-words font-mono bg-muted/50 rounded px-2 py-1.5">{error}</p>
 					<Button variant="outline" size="sm" class="mt-3" onclick={() => loadDirectory(currentPath)}>
-						Retry
+						{m.container_files_retry()}
 					</Button>
 				</div>
 			</div>
 		{:else if !loading && displayEntries().length === 0}
 			<div class="flex items-center justify-center h-32 text-muted-foreground">
-				<span class="text-sm">{showHiddenFiles ? 'Directory is empty' : 'No visible files (hidden files are hidden)'}</span>
+				<span class="text-sm">{showHiddenFiles ? m.container_files_empty() : m.container_files_no_visible()}</span>
 			</div>
 		{:else if displayEntries().length > 0}
 			<Table.Root class="text-xs">
@@ -966,7 +967,7 @@
 							</button>
 						</Table.Head>
 						<Table.Head class="w-[18%] py-1.5 text-xs font-medium">
-							<span class="text-muted-foreground">Permissions</span>
+							<span class="text-muted-foreground">{m.container_files_permissions()}</span>
 						</Table.Head>
 						<Table.Head class="w-[14%] py-1.5 text-xs font-medium">
 							<button type="button" class="flex items-center gap-1 hover:text-foreground" onclick={() => toggleSort('modified')}>
@@ -974,7 +975,7 @@
 								<svelte:component this={getSortIcon('modified')} class="w-3 h-3 opacity-50" />
 							</button>
 						</Table.Head>
-						<Table.Head class="w-[25%] py-1.5 text-xs font-medium text-right">Actions</Table.Head>
+						<Table.Head class="w-[25%] py-1.5 text-xs font-medium text-right">{m.common_actions()}</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -1009,7 +1010,7 @@
 									{#if entry.readonly && entry.type === 'file'}
 										<span
 											class="inline-flex items-center gap-0.5 ml-1.5 px-1 py-0.5 text-2xs bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded"
-											title="Read-only file (no write permission)"
+											title={m.container_files_readonly_tooltip()}
 										>
 											<Lock class="w-2.5 h-2.5" />
 											RO
@@ -1036,7 +1037,7 @@
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openFileForView(entry); }}
 											disabled={loadingFile}
-											title="View file"
+											title={m.container_files_view_file()}
 										>
 											<Eye class="w-3 h-3" />
 										</Button>
@@ -1065,7 +1066,7 @@
 											size="icon"
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openRenameModal(entry); }}
-											title="Rename"
+											title={m.container_files_rename()}
 										>
 											<TextCursorInput class="w-3 h-3" />
 										</Button>
@@ -1074,7 +1075,7 @@
 											size="icon"
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openChmodModal(entry); }}
-											title="Change permissions"
+											title={m.container_files_change_permissions()}
 										>
 											<Shield class="w-3 h-3" />
 										</Button>
@@ -1102,7 +1103,7 @@
 										size="icon"
 										class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 										onclick={(e: MouseEvent) => { e.stopPropagation(); downloadFile(entry); }}
-										title="Download"
+										title={m.container_files_download()}
 									>
 										<Download class="w-3 h-3" />
 									</Button>
@@ -1125,7 +1126,7 @@
 					<span class="text-muted-foreground">{editingFile.path}</span>
 				</div>
 				<div class="flex items-center gap-1">
-					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={toggleEditorTheme} title={editorTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
+					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={toggleEditorTheme} title={editorTheme === 'light' ? m.container_files_switch_dark() : m.container_files_switch_light()}>
 						{#if editorTheme === 'light'}
 							<Moon class="w-3.5 h-3.5" />
 						{:else}
@@ -1140,7 +1141,7 @@
 						{/if}
 						Save
 					</Button>
-					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeEditor} title="Close editor">
+					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeEditor} title={m.container_files_close_editor()}>
 						<X class="w-3.5 h-3.5" />
 					</Button>
 				</div>
@@ -1164,17 +1165,17 @@
 					<Eye class="w-3.5 h-3.5 text-muted-foreground" />
 					<span class="font-medium">{viewingFile.name}</span>
 					<span class="text-muted-foreground">{viewingFile.path}</span>
-					<span class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">read-only</span>
+					<span class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{m.container_files_readonly_badge()}</span>
 				</div>
 				<div class="flex items-center gap-1">
-					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={toggleEditorTheme} title={editorTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
+					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={toggleEditorTheme} title={editorTheme === 'light' ? m.container_files_switch_dark() : m.container_files_switch_light()}>
 						{#if editorTheme === 'light'}
 							<Moon class="w-3.5 h-3.5" />
 						{:else}
 							<Sun class="w-3.5 h-3.5" />
 						{/if}
 					</Button>
-					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeViewer} title="Close viewer">
+					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeViewer} title={m.container_files_close_viewer()}>
 						<X class="w-3.5 h-3.5" />
 					</Button>
 				</div>
@@ -1195,24 +1196,24 @@
 <Dialog.Root bind:open={showCreateModal}>
 	<Dialog.Content class="max-w-sm">
 		<Dialog.Header>
-			<Dialog.Title>Create {createType === 'file' ? 'File' : 'Directory'}</Dialog.Title>
+			<Dialog.Title>{createType === 'file' ? m.container_files_create_file() : m.container_files_create_directory()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
-				<Label for="create-name">Name</Label>
+				<Label for="create-name">{m.container_files_label_name()}</Label>
 				<Input
 					id="create-name"
 					bind:value={createName}
-					placeholder={createType === 'file' ? 'filename.txt' : 'directory-name'}
+					placeholder={createType === 'file' ? m.container_files_placeholder_filename() : m.container_files_placeholder_directory()}
 					onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') handleCreate(); }}
 				/>
 			</div>
 			<p class="text-xs text-muted-foreground">
-				Will be created in: {currentPath}
+				{m.container_files_created_in({ path: currentPath })}
 			</p>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showCreateModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showCreateModal = false}>{m.container_files_cancel()}</Button>
 			<Button onclick={handleCreate} disabled={creating || !createName.trim()}>
 				{#if creating}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
@@ -1227,11 +1228,11 @@
 <Dialog.Root bind:open={showRenameModal}>
 	<Dialog.Content class="max-w-sm">
 		<Dialog.Header>
-			<Dialog.Title>Rename</Dialog.Title>
+			<Dialog.Title>{m.container_files_rename_title()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
-				<Label for="rename-name">New name</Label>
+				<Label for="rename-name">{m.container_files_label_new_name()}</Label>
 				<Input
 					id="rename-name"
 					bind:value={renameName}
@@ -1240,7 +1241,7 @@
 			</div>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showRenameModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showRenameModal = false}>{m.container_files_cancel()}</Button>
 			<Button onclick={handleRename} disabled={renaming || !renameName.trim()}>
 				{#if renaming}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
@@ -1255,12 +1256,12 @@
 <Dialog.Root bind:open={showChmodModal}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Change permissions</Dialog.Title>
+			<Dialog.Title>{m.container_files_change_permissions_title()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			{#if chmodEntry}
 				<p class="text-sm text-muted-foreground">{chmodEntry.name}</p>
-				<p class="text-xs text-muted-foreground">Current: {chmodEntry.permissions}</p>
+				<p class="text-xs text-muted-foreground">{m.container_files_current_permissions({ permissions: chmodEntry.permissions })}</p>
 			{/if}
 
 			<!-- Permission checkboxes -->
@@ -1269,26 +1270,26 @@
 					<thead>
 						<tr class="text-muted-foreground text-xs">
 							<th class="text-left font-normal pb-2"></th>
-							<th class="text-center font-normal pb-2 w-16">Read</th>
-							<th class="text-center font-normal pb-2 w-16">Write</th>
-							<th class="text-center font-normal pb-2 w-16">Execute</th>
+							<th class="text-center font-normal pb-2 w-16">{m.container_files_perm_read()}</th>
+							<th class="text-center font-normal pb-2 w-16">{m.container_files_perm_write()}</th>
+							<th class="text-center font-normal pb-2 w-16">{m.container_files_perm_execute()}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td class="py-1.5 text-muted-foreground">Owner</td>
+							<td class="py-1.5 text-muted-foreground">{m.container_files_perm_owner()}</td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOwnerR} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOwnerW} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOwnerX} onchange={checkboxesToOctal} class="rounded" /></td>
 						</tr>
 						<tr>
-							<td class="py-1.5 text-muted-foreground">Group</td>
+							<td class="py-1.5 text-muted-foreground">{m.container_files_perm_group()}</td>
 							<td class="text-center"><input type="checkbox" bind:checked={permGroupR} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permGroupW} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permGroupX} onchange={checkboxesToOctal} class="rounded" /></td>
 						</tr>
 						<tr>
-							<td class="py-1.5 text-muted-foreground">Others</td>
+							<td class="py-1.5 text-muted-foreground">{m.container_files_perm_others()}</td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOtherR} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOtherW} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOtherX} onchange={checkboxesToOctal} class="rounded" /></td>
@@ -1300,22 +1301,22 @@
 			<!-- Preview -->
 			<div class="flex items-center gap-4 text-sm bg-muted/50 rounded-lg p-3">
 				<div>
-					<span class="text-muted-foreground text-xs">Octal:</span>
+					<span class="text-muted-foreground text-xs">{m.container_files_octal()}</span>
 					<span class="font-mono font-medium ml-1">{chmodMode}</span>
 				</div>
 				<div>
-					<span class="text-muted-foreground text-xs">Symbolic:</span>
+					<span class="text-muted-foreground text-xs">{m.container_files_symbolic()}</span>
 					<span class="font-mono font-medium ml-1">{checkboxesToSymbolic()}</span>
 				</div>
 			</div>
 
 			<!-- Manual octal input -->
 			<div class="space-y-2">
-				<Label for="chmod-mode">Or enter octal mode directly</Label>
+				<Label for="chmod-mode">{m.container_files_octal_mode_direct()}</Label>
 				<Input
 					id="chmod-mode"
 					bind:value={chmodMode}
-					placeholder="755"
+					placeholder={m.container_files_placeholder_octal()}
 					maxlength={4}
 					oninput={() => octalToCheckboxes(chmodMode)}
 					onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') handleChmod(); }}
@@ -1330,7 +1331,7 @@
 			{/if}
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showChmodModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showChmodModal = false}>{m.container_files_cancel()}</Button>
 			<Button onclick={handleChmod} disabled={changingPerms || !chmodMode.trim()}>
 				{#if changingPerms}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
