@@ -723,8 +723,8 @@
 	"container_edit_title": "编辑容器",
 	"container_edit_rename_tooltip": "重命名容器",
 	"container_edit_loading": "正在加载容器数据...",
-	"container_edit_compose_rename_warning": "此容器属于 {name} compose 编排。重命名可能导致编排管理出现问题。",
-	"container_edit_compose_config_warning": "此容器属于 {name} compose 编排。重新部署编排时改动可能被覆盖。",
+	"container_edit_compose_rename_warning": "此容器属于 {name} compose 堆栈。重命名可能导致堆栈管理出现问题。",
+	"container_edit_compose_config_warning": "此容器属于 {name} compose 堆栈。重新部署堆栈时改动可能被覆盖。",
 	"container_edit_updating": "更新中...",
 	"container_edit_update_button": "更新容器",
 	"container_edit_renaming": "正在重命名容器...",
@@ -795,7 +795,7 @@
 	"container_inspect_save": "保存",
 	"container_inspect_cancel": "取消",
 	"container_inspect_rename": "重命名容器",
-	"container_inspect_open_stack": "打开编排 \"{composeStack}\"",
+	"container_inspect_open_stack": "打开堆栈 \"{composeStack}\"",
 	"container_inspect_open_url": "打开 {url}",
 	"container_inspect_live_updates": "正在接收实时更新",
 	"container_inspect_connection_lost": "连接已断开",
@@ -1099,6 +1099,6 @@
 	"containers_col_ip": "IP",
 	"containers_col_ports": "端口",
 	"containers_col_auto_update": "自动更新",
-	"containers_col_stack": "编排",
+	"containers_col_stack": "堆栈",
 	"common_actions": "操作"
 }
