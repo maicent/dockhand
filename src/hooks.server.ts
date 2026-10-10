@@ -23,6 +23,7 @@ import { startRssTracker, stopRssTracker, rssBeforeOp, rssAfterOp } from '$lib/s
 import { getClientIp } from '$lib/server/client-ip';
 import { isPublicPath } from '$lib/server/public-paths-core';
 import { BACKUPS_ENABLED, API_DOCS_ENABLED } from '$lib/server/features';
+import { paraglideMiddleware } from '$lib/paraglide/server.js';
 // Side-effect import: installs globalThis.__authenticateWsUpgrade and
 // globalThis.__canAccessEnvForUser used by the raw WS upgrade handlers in
 // server.js / vite.config.ts to authenticate /api/containers/*/exec.
@@ -275,7 +276,7 @@ function isStaticAsset(pathname: string): boolean {
 		pathname.endsWith('.js');
 }
 
-export const handle: Handle = async ({ event, resolve }) => {
+const appHandle: Handle = async ({ event, resolve }) => {
 	// Skip auth for static assets
 	if (isStaticAsset(event.url.pathname)) {
 		return resolve(event);
@@ -395,6 +396,25 @@ export const handle: Handle = async ({ event, resolve }) => {
 	} finally {
 		rssAfterOp('http', httpBefore);
 	}
+};
+
+// Resolve the display locale (cookie-based, see project.inlang) and expose it
+// to any server-side message rendering. No URL rewriting — dockhand URLs stay
+// locale-free, the app renders client-side (ssr = false).
+export const handle: Handle = async ({ event, resolve }) => {
+	return paraglideMiddleware(event.request, ({ request, locale }) =>
+		appHandle({
+			event: { ...event, request },
+			resolve: (e, opts) =>
+				resolve(e, {
+					...opts,
+					transformPageChunk: ({ html }) => {
+						const transformed = opts?.transformPageChunk?.({ html }) ?? html;
+						return transformed.replace('%lang%', locale);
+					}
+				})
+		})
+	);
 };
 
 export const handleError: HandleServerError = ({ error, event }) => {

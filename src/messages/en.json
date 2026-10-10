@@ -1,0 +1,5 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"settings_language": "Language",
+	"settings_language_description": "Choose the display language of the Dockhand interface."
+}

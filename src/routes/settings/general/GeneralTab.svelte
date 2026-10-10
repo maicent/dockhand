@@ -15,6 +15,7 @@
 	import { canAccess, authStore } from '$lib/stores/auth';
 	import { toast } from 'svelte-sonner';
 	import ThemeSelector from '$lib/components/ThemeSelector.svelte';
+	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
 	import NavigationSelector from '$lib/components/NavigationSelector.svelte';
 	import AnimateIconsToggle from '$lib/components/AnimateIconsToggle.svelte';
 	import IndentGuidesToggle from '$lib/components/IndentGuidesToggle.svelte';
@@ -690,6 +691,7 @@ services:
 						<!-- Right column: Theme settings (always shown, with hint when auth enabled) -->
 						<div class="space-y-4">
 							<ThemeSelector />
+							<LanguageSelector />
 							<!-- With auth on the toggles edit the GLOBAL defaults, so they wait for
 							     those to load; binding globalValue=undefined first would show the
 							     admin's own profile value. With auth off the store IS the global

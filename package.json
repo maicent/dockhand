@@ -73,6 +73,7 @@
 		"ws": "8.21.0"
 	},
 	"devDependencies": {
+		"@inlang/paraglide-js": "^2.27.0",
 		"@internationalized/date": "^3.10.1",
 		"@layerstack/tailwind": "^1.0.1",
 		"@lucide/svelte": "^0.562.0",
