@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import cytoscape from 'cytoscape';
 	import yaml from 'js-yaml';
@@ -40,11 +42,11 @@
 	let showLayoutMenu = $state(false);
 
 	const layoutOptions: { value: LayoutType; label: string; icon: string }[] = [
-		{ value: 'breadthfirst', label: 'Tree', icon: 'tree' },
-		{ value: 'grid', label: 'Grid', icon: 'grid' },
-		{ value: 'circle', label: 'Circle', icon: 'circle' },
-		{ value: 'concentric', label: 'Radial', icon: 'radial' },
-		{ value: 'cose', label: 'Force', icon: 'force' }
+		{ value: 'breadthfirst', label: m.tree(), icon: 'tree' },
+		{ value: 'grid', label: m.grid(), icon: 'grid' },
+		{ value: 'circle', label: m.circle(), icon: 'circle' },
+		{ value: 'concentric', label: m.radial(), icon: 'radial' },
+		{ value: 'cose', label: m.force(), icon: 'force' }
 	];
 
 	// Connection mode state (for service dependencies)
@@ -252,7 +254,7 @@
 						source: `service-${dep}`,
 						target: `service-${name}`,
 						type: 'dependency',
-						label: 'depends on',
+						label: m.depends_on_da4c(),
 						isError: !depExists,
 						missingTarget: !depExists ? dep : undefined
 					}
@@ -269,7 +271,7 @@
 							source: `service-${linkName}`,
 							target: `service-${name}`,
 							type: 'link',
-							label: 'links'
+							label: m.links()
 						}
 					});
 				});
@@ -338,7 +340,7 @@
 								elements.push({
 									data: {
 										id: 'network-default',
-										label: 'default',
+										label: m.default_label(),
 										type: 'network',
 										driver: 'bridge',
 										external: false
@@ -2114,7 +2116,7 @@
 					onclick={() => showAddMenu = !showAddMenu}
 				>
 					<Plus class="w-3 h-3" />
-					Add
+					{m.add()}
 					<ChevronDown class="w-2.5 h-2.5" />
 				</Button>
 
@@ -2125,35 +2127,35 @@
 							onclick={() => openAddDialog('service')}
 						>
 							<Box class="w-3.5 h-3.5 text-blue-500" />
-							Service
+							{m.service()}
 						</button>
 						<button
 							class="w-full px-2.5 py-1.5 text-left text-xs text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center gap-2 transition-colors"
 							onclick={() => openAddDialog('network')}
 						>
 							<Network class="w-3.5 h-3.5 text-violet-500" />
-							Network
+							{m.network()}
 						</button>
 						<button
 							class="w-full px-2.5 py-1.5 text-left text-xs text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center gap-2 transition-colors"
 							onclick={() => openAddDialog('volume')}
 						>
 							<HardDrive class="w-3.5 h-3.5 text-emerald-500" />
-							Volume
+							{m.volume_3b18()}
 						</button>
 						<button
 							class="w-full px-2.5 py-1.5 text-left text-xs text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center gap-2 transition-colors"
 							onclick={() => openAddDialog('config')}
 						>
 							<FileText class="w-3.5 h-3.5 text-amber-500" />
-							Config
+							{m.config()}
 						</button>
 						<button
 							class="w-full px-2.5 py-1.5 text-left text-xs text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center gap-2 transition-colors"
 							onclick={() => openAddDialog('secret')}
 						>
 							<Lock class="w-3.5 h-3.5 text-red-500" />
-							Secret
+							{m.secret()}
 						</button>
 					</div>
 				{/if}
@@ -2187,15 +2189,15 @@
 					<Lightbulb class="w-3 h-3" />
 					{#if connectionMode}
 						{#if connectionSource}
-							Click target service
+							{m.click_target_service()}
 						{:else}
-							Click source service
+							{m.click_source_service()}
 						{/if}
 					{:else if mountMode}
 						{#if mountSource}
-							Click target service
+							{m.click_target_service()}
 						{:else}
-							Click volume/network/config/secret
+							{m.click_volume_network_config_secret()}
 						{/if}
 					{/if}
 				</div>
@@ -2210,7 +2212,7 @@
 				<button
 					onclick={() => showLayoutMenu = !showLayoutMenu}
 					class="h-6 px-2 flex items-center gap-1 rounded text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-					title="Change layout"
+					title={m.change_layout()}
 				>
 					{#if currentLayout === 'breadthfirst'}
 						<GitBranch class="w-3 h-3" />
@@ -2236,35 +2238,35 @@
 							onclick={() => applyLayout('breadthfirst')}
 						>
 							<GitBranch class="w-3.5 h-3.5" />
-							Tree
+							{m.tree()}
 						</button>
 						<button
 							class="w-full px-3 py-1.5 text-left text-xs flex items-center gap-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 {currentLayout === 'grid' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-zinc-700 dark:text-zinc-200'}"
 							onclick={() => applyLayout('grid')}
 						>
 							<LayoutGrid class="w-3.5 h-3.5" />
-							Grid
+							{m.grid()}
 						</button>
 						<button
 							class="w-full px-3 py-1.5 text-left text-xs flex items-center gap-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 {currentLayout === 'circle' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-zinc-700 dark:text-zinc-200'}"
 							onclick={() => applyLayout('circle')}
 						>
 							<Circle class="w-3.5 h-3.5" />
-							Circle
+							{m.circle()}
 						</button>
 						<button
 							class="w-full px-3 py-1.5 text-left text-xs flex items-center gap-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 {currentLayout === 'concentric' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-zinc-700 dark:text-zinc-200'}"
 							onclick={() => applyLayout('concentric')}
 						>
 							<Target class="w-3.5 h-3.5" />
-							Radial
+							{m.radial()}
 						</button>
 						<button
 							class="w-full px-3 py-1.5 text-left text-xs flex items-center gap-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 {currentLayout === 'cose' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-zinc-700 dark:text-zinc-200'}"
 							onclick={() => applyLayout('cose')}
 						>
 							<Sparkles class="w-3.5 h-3.5" />
-							Force
+							{m.force()}
 						</button>
 					</div>
 				{/if}
@@ -2305,7 +2307,7 @@
 			{#if parseError}
 				<div class="absolute top-2 left-2 right-2 z-10">
 					<div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2 shadow-sm">
-						<p class="text-xs text-red-600 dark:text-red-400 font-medium">YAML Parse Error</p>
+						<p class="text-xs text-red-600 dark:text-red-400 font-medium">{m.yaml_parse_error()}</p>
 						<p class="text-xs text-red-500 dark:text-red-300 mt-0.5 font-mono">{parseError}</p>
 					</div>
 				</div>
@@ -2315,23 +2317,23 @@
 				<div class="flex items-center gap-2 text-xs bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded px-2 py-1 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 whitespace-nowrap">
 					<div class="flex items-center gap-1 flex-shrink-0">
 						<div class="w-2 h-2 rounded-sm bg-blue-500 flex-shrink-0"></div>
-						<span class="text-zinc-600 dark:text-zinc-300">Service</span>
+						<span class="text-zinc-600 dark:text-zinc-300">{m.service()}</span>
 					</div>
 					<div class="flex items-center gap-1 flex-shrink-0">
 						<div class="w-2 h-2 rounded-sm bg-violet-500 flex-shrink-0"></div>
-						<span class="text-zinc-600 dark:text-zinc-300">Network</span>
+						<span class="text-zinc-600 dark:text-zinc-300">{m.network()}</span>
 					</div>
 					<div class="flex items-center gap-1 flex-shrink-0">
 						<div class="w-2 h-2 rounded-sm bg-emerald-500 flex-shrink-0"></div>
-						<span class="text-zinc-600 dark:text-zinc-300">Volume</span>
+						<span class="text-zinc-600 dark:text-zinc-300">{m.volume_3b18()}</span>
 					</div>
 					<div class="flex items-center gap-1 flex-shrink-0">
 						<div class="w-2 h-2 rounded-sm bg-amber-500 flex-shrink-0"></div>
-						<span class="text-zinc-600 dark:text-zinc-300">Config</span>
+						<span class="text-zinc-600 dark:text-zinc-300">{m.config()}</span>
 					</div>
 					<div class="flex items-center gap-1 flex-shrink-0">
 						<div class="w-2 h-2 rounded-sm bg-red-500 flex-shrink-0"></div>
-						<span class="text-zinc-600 dark:text-zinc-300">Secret</span>
+						<span class="text-zinc-600 dark:text-zinc-300">{m.secret()}</span>
 					</div>
 				</div>
 			</div>
@@ -2371,7 +2373,7 @@
 											selectedNode = null;
 											selectedEdge = null;
 										}}
-										title="Save and close"
+										title={m.save_and_close()}
 									>
 										<Save class="w-3.5 h-3.5" />
 									</Button>
@@ -2381,7 +2383,7 @@
 									size="sm"
 									class="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
 									onclick={deleteSelectedNode}
-									title="Delete"
+									title={m.delete()}
 								>
 									<Trash2 class="w-3.5 h-3.5" />
 								</Button>
@@ -2390,7 +2392,7 @@
 									size="sm"
 									class="h-6 w-6 p-0 text-zinc-500 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-700"
 									onclick={() => { selectedNode = null; selectedEdge = null; }}
-									title="Close"
+									title={m.close()}
 								>
 									<X class="w-3.5 h-3.5" />
 								</Button>
@@ -2415,7 +2417,7 @@
 									size="sm"
 									class="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
 									onclick={deleteSelectedEdge}
-									title="Remove connection"
+									title={m.remove_connection()}
 								>
 									<Trash2 class="w-3.5 h-3.5" />
 								</Button>
@@ -2424,7 +2426,7 @@
 									size="sm"
 									class="h-6 w-6 p-0 text-zinc-500 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-700"
 									onclick={() => { selectedNode = null; selectedEdge = null; }}
-									title="Close"
+									title={m.close()}
 								>
 									<X class="w-3.5 h-3.5" />
 								</Button>
@@ -2440,39 +2442,39 @@
 								<!-- Image -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Image</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.image()}</span>
 									</div>
 									<Input
 										bind:value={editServiceImage}
 										oninput={markServiceDirty}
-										placeholder="nginx:alpine"
+										placeholder={m.nginx_alpine()}
 										class="h-8 text-xs"
 									/>
 								</div>
 
 								<!-- Command -->
 								<div class="space-y-1.5">
-									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Command</span>
+									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.command()}</span>
 									<Input
 										bind:value={editServiceCommand}
 										oninput={markServiceDirty}
-										placeholder="/bin/sh -c '...'"
+										placeholder={m.bin_sh_c()}
 										class="h-8 text-xs"
 									/>
 								</div>
 
 								<!-- Restart policy -->
 								<div class="space-y-1.5">
-									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Restart policy</span>
+									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.restart_policy_5de8()}</span>
 									<Select.Root type="single" bind:value={editServiceRestart} onValueChange={() => { serviceEditDirty = true; }}>
 										<Select.Trigger class="h-8 text-xs">
 											<span>{editServiceRestart === 'no' ? 'No' : editServiceRestart === 'always' ? 'Always' : editServiceRestart === 'on-failure' ? 'On failure' : 'Unless stopped'}</span>
 										</Select.Trigger>
 										<Select.Content>
-											<Select.Item value="no" label="No" />
-											<Select.Item value="always" label="Always" />
-											<Select.Item value="on-failure" label="On failure" />
-											<Select.Item value="unless-stopped" label="Unless stopped" />
+											<Select.Item value="no" label={m.no()} />
+											<Select.Item value="always" label={m.always()} />
+											<Select.Item value="on-failure" label={m.on_failure()} />
+											<Select.Item value="unless-stopped" label={m.unless_stopped()} />
 										</Select.Content>
 									</Select.Root>
 								</div>
@@ -2480,7 +2482,7 @@
 								<!-- Port mappings -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Port mappings</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.port_mappings()}</span>
 										<button onclick={addServicePort} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2489,11 +2491,11 @@
 										{#each editServicePorts as port, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Host</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.host()}</span>
 													<Input bind:value={port.host} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Container</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.container_e644()}</span>
 													<Input bind:value={port.container} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button
@@ -2511,7 +2513,7 @@
 								<!-- Volumes -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Volumes</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.volumes()}</span>
 										<button onclick={addServiceVolume} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2520,11 +2522,11 @@
 										{#each editServiceVolumes as vol, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Host</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.host()}</span>
 													<Input bind:value={vol.host} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Container</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.container_e644()}</span>
 													<Input bind:value={vol.container} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button
@@ -2542,7 +2544,7 @@
 								<!-- Environment variables -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Environment</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.environment()}</span>
 										<button onclick={addServiceEnvVar} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2551,11 +2553,11 @@
 										{#each editServiceEnvVars as env, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Key</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.key()}</span>
 													<Input bind:value={env.key} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Value</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.value()}</span>
 													<Input bind:value={env.value} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button
@@ -2573,7 +2575,7 @@
 								<!-- Labels -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Labels</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.labels()}</span>
 										<button onclick={addServiceLabel} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2582,11 +2584,11 @@
 										{#each editServiceLabels as label, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Key</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.key()}</span>
 													<Input bind:value={label.key} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Value</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.value()}</span>
 													<Input bind:value={label.value} oninput={markServiceDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button
@@ -2604,7 +2606,7 @@
 								<!-- Dependencies -->
 								{#if selectedNode.dependsOn?.length > 0}
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Depends on</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.depends_on()}</span>
 										<div class="space-y-1">
 											{#each selectedNode.dependsOn as dep}
 												<div class="flex items-center justify-between text-zinc-700 text-xs bg-zinc-100 px-2 py-1.5 rounded">
@@ -2612,7 +2614,7 @@
 													<button
 														class="text-zinc-400 hover:text-red-500"
 														onclick={() => removeDependency(dep, selectedNode.label)}
-														title="Remove dependency"
+														title={m.remove_dependency()}
 													>
 														<X class="w-3 h-3" />
 													</button>
@@ -2626,7 +2628,7 @@
 							<div class="space-y-3 text-sm">
 								<!-- Driver -->
 								<div class="space-y-1.5">
-									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Driver</span>
+									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.driver()}</span>
 									<Select.Root type="single" bind:value={editNetworkDriver} onValueChange={() => { networkEditDirty = true; }}>
 										<Select.Trigger class="h-8 text-xs">
 											<span class="flex items-center gap-1.5">
@@ -2647,51 +2649,51 @@
 											</span>
 										</Select.Trigger>
 										<Select.Content>
-											<Select.Item value="bridge" label="Bridge">
+											<Select.Item value="bridge" label={m.bridge()}>
 												{#snippet children()}
 													<div class="flex items-center gap-2">
 														<Share2 class="w-3.5 h-3.5 text-emerald-500" />
-														<span>Bridge</span>
+														<span>{m.bridge()}</span>
 													</div>
 												{/snippet}
 											</Select.Item>
-											<Select.Item value="host" label="Host">
+											<Select.Item value="host" label={m.host()}>
 												{#snippet children()}
 													<div class="flex items-center gap-2">
 														<Server class="w-3.5 h-3.5 text-sky-500" />
-														<span>Host</span>
+														<span>{m.host()}</span>
 													</div>
 												{/snippet}
 											</Select.Item>
-											<Select.Item value="overlay" label="Overlay">
+											<Select.Item value="overlay" label={m.overlay()}>
 												{#snippet children()}
 													<div class="flex items-center gap-2">
 														<Globe class="w-3.5 h-3.5 text-violet-500" />
-														<span>Overlay</span>
+														<span>{m.overlay()}</span>
 													</div>
 												{/snippet}
 											</Select.Item>
-											<Select.Item value="macvlan" label="Macvlan">
+											<Select.Item value="macvlan" label={m.macvlan()}>
 												{#snippet children()}
 													<div class="flex items-center gap-2">
 														<MonitorSmartphone class="w-3.5 h-3.5 text-amber-500" />
-														<span>Macvlan</span>
+														<span>{m.macvlan()}</span>
 													</div>
 												{/snippet}
 											</Select.Item>
-											<Select.Item value="ipvlan" label="IPvlan">
+											<Select.Item value="ipvlan" label={m.ipvlan()}>
 												{#snippet children()}
 													<div class="flex items-center gap-2">
 														<Cpu class="w-3.5 h-3.5 text-orange-500" />
-														<span>IPvlan</span>
+														<span>{m.ipvlan()}</span>
 													</div>
 												{/snippet}
 											</Select.Item>
-											<Select.Item value="none" label="None">
+											<Select.Item value="none" label={m.none()}>
 												{#snippet children()}
 													<div class="flex items-center gap-2">
 														<CircleOff class="w-3.5 h-3.5 text-muted-foreground" />
-														<span>None</span>
+														<span>{m.none()}</span>
 													</div>
 												{/snippet}
 											</Select.Item>
@@ -2701,14 +2703,14 @@
 
 								<!-- IPAM Config -->
 								<div class="space-y-1.5">
-									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">IPAM configuration</span>
+									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.ipam_configuration()}</span>
 									<div class="space-y-4 pt-2">
 										<div class="relative">
-											<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Subnet</span>
+											<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.subnet_3678()}</span>
 											<Input bind:value={editNetworkSubnet} oninput={markNetworkDirty} placeholder="172.20.0.0/16" class="h-9 pt-3 text-xs" />
 										</div>
 										<div class="relative">
-											<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Gateway</span>
+											<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.gateway()}</span>
 											<Input bind:value={editNetworkGateway} oninput={markNetworkDirty} placeholder="172.20.0.1" class="h-9 pt-3 text-xs" />
 										</div>
 									</div>
@@ -2718,22 +2720,22 @@
 								<div class="space-y-2">
 									<label class="flex items-center gap-2 cursor-pointer">
 										<input type="checkbox" bind:checked={editNetworkExternal} onchange={markNetworkDirty} class="rounded border-zinc-300" />
-										<span class="text-xs text-zinc-600">External network</span>
+										<span class="text-xs text-zinc-600">{m.external_network()}</span>
 									</label>
 									<label class="flex items-center gap-2 cursor-pointer">
 										<input type="checkbox" bind:checked={editNetworkInternal} onchange={markNetworkDirty} class="rounded border-zinc-300" />
-										<span class="text-xs text-zinc-600">Internal network</span>
+										<span class="text-xs text-zinc-600">{m.internal_network()}</span>
 									</label>
 									<label class="flex items-center gap-2 cursor-pointer">
 										<input type="checkbox" bind:checked={editNetworkAttachable} onchange={markNetworkDirty} class="rounded border-zinc-300" />
-										<span class="text-xs text-zinc-600">Attachable</span>
+										<span class="text-xs text-zinc-600">{m.attachable()}</span>
 									</label>
 								</div>
 
 								<!-- Labels -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Labels</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.labels()}</span>
 										<button onclick={addNetworkLabel} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2742,11 +2744,11 @@
 										{#each editNetworkLabels as label, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Key</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.key()}</span>
 													<Input bind:value={label.key} oninput={markNetworkDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Value</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.value()}</span>
 													<Input bind:value={label.value} oninput={markNetworkDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button onclick={() => removeNetworkLabel(index)} disabled={editNetworkLabels.length === 1} class="p-1 text-zinc-400 hover:text-red-500 disabled:opacity-30">
@@ -2760,7 +2762,7 @@
 								<!-- Driver options -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Driver options</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.driver_options()}</span>
 										<button onclick={addNetworkOption} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2769,11 +2771,11 @@
 										{#each editNetworkOptions as opt, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Key</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.key()}</span>
 													<Input bind:value={opt.key} oninput={markNetworkDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Value</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.value()}</span>
 													<Input bind:value={opt.value} oninput={markNetworkDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button onclick={() => removeNetworkOption(index)} disabled={editNetworkOptions.length === 1} class="p-1 text-zinc-400 hover:text-red-500 disabled:opacity-30">
@@ -2789,20 +2791,20 @@
 							<div class="space-y-3 text-sm">
 								<!-- Driver -->
 								<div class="space-y-1.5">
-									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Driver</span>
-									<Input bind:value={editVolumeDriver} oninput={markVolumeDirty} placeholder="local" class="h-8 text-xs" />
+									<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.driver()}</span>
+									<Input bind:value={editVolumeDriver} oninput={markVolumeDirty} placeholder={m.local_939b()} class="h-8 text-xs" />
 								</div>
 
 								<!-- External -->
 								<label class="flex items-center gap-2 cursor-pointer">
 									<input type="checkbox" bind:checked={editVolumeExternal} onchange={markVolumeDirty} class="rounded border-zinc-300" />
-									<span class="text-xs text-zinc-600">External volume</span>
+									<span class="text-xs text-zinc-600">{m.external_volume()}</span>
 								</label>
 
 								<!-- Labels -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Labels</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.labels()}</span>
 										<button onclick={addVolumeLabel} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2811,11 +2813,11 @@
 										{#each editVolumeLabels as label, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Key</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.key()}</span>
 													<Input bind:value={label.key} oninput={markVolumeDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Value</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.value()}</span>
 													<Input bind:value={label.value} oninput={markVolumeDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button onclick={() => removeVolumeLabel(index)} disabled={editVolumeLabels.length === 1} class="p-1 text-zinc-400 hover:text-red-500 disabled:opacity-30">
@@ -2829,7 +2831,7 @@
 								<!-- Driver options -->
 								<div class="space-y-1.5">
 									<div class="flex items-center justify-between">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Driver options</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.driver_options()}</span>
 										<button onclick={addVolumeOption} class="text-xs text-blue-500 hover:text-blue-600">
 											<Plus class="w-3.5 h-3.5" />
 										</button>
@@ -2838,11 +2840,11 @@
 										{#each editVolumeOptions as opt, index}
 											<div class="flex gap-1 items-center">
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Key</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.key()}</span>
 													<Input bind:value={opt.key} oninput={markVolumeDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<div class="flex-1 relative">
-													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">Value</span>
+													<span class="absolute -top-2 left-2 text-[9px] text-zinc-400 bg-white dark:bg-zinc-800 px-1 z-10">{m.value()}</span>
 													<Input bind:value={opt.value} oninput={markVolumeDirty} class="h-9 pt-3 text-xs" />
 												</div>
 												<button onclick={() => removeVolumeOption(index)} disabled={editVolumeOptions.length === 1} class="p-1 text-zinc-400 hover:text-red-500 disabled:opacity-30">
@@ -2859,40 +2861,40 @@
 								<!-- External checkbox -->
 								<label class="flex items-center gap-2 cursor-pointer">
 									<input type="checkbox" bind:checked={editConfigExternal} onchange={markConfigDirty} class="rounded border-zinc-300" />
-									<span class="text-xs text-zinc-600">External config</span>
+									<span class="text-xs text-zinc-600">{m.external_config()}</span>
 								</label>
 
 								{#if editConfigExternal}
 									<!-- External name -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">External name (optional)</span>
-										<Input bind:value={editConfigName} oninput={markConfigDirty} placeholder="my-external-config" class="h-8 text-xs" />
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.external_name_optional()}</span>
+										<Input bind:value={editConfigName} oninput={markConfigDirty} placeholder={m.my_external_config()} class="h-8 text-xs" />
 									</div>
 								{:else}
 									<!-- Source type selector hint -->
-									<p class="text-2xs text-zinc-400">Specify one of: file, content, or environment</p>
+									<p class="text-2xs text-zinc-400">{m.specify_one_of_file_content_or_environment()}</p>
 
 									<!-- File path -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">File path</span>
-										<Input bind:value={editConfigFile} oninput={markConfigDirty} placeholder="./config/app.conf" class="h-8 text-xs" />
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.file_path()}</span>
+										<Input bind:value={editConfigFile} oninput={markConfigDirty} placeholder={m.config_app_conf()} class="h-8 text-xs" />
 									</div>
 
 									<!-- Content -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Content (inline)</span>
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.content_inline()}</span>
 										<textarea
 											bind:value={editConfigContent}
 											oninput={markConfigDirty}
-											placeholder="key=value&#10;another=setting"
+											placeholder={m.key_value_another_setting()}
 											class="w-full h-20 text-xs rounded-md border border-zinc-200 px-2 py-1.5 resize-none focus:outline-none focus:ring-1 focus:ring-zinc-400"
 										></textarea>
 									</div>
 
 									<!-- Environment variable -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Environment variable</span>
-										<Input bind:value={editConfigEnvironment} oninput={markConfigDirty} placeholder="MY_CONFIG_VAR" class="h-8 text-xs" />
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.environment_variable()}</span>
+										<Input bind:value={editConfigEnvironment} oninput={markConfigDirty} placeholder={m.my_config_var()} class="h-8 text-xs" />
 									</div>
 								{/if}
 							</div>
@@ -2902,29 +2904,29 @@
 								<!-- External checkbox -->
 								<label class="flex items-center gap-2 cursor-pointer">
 									<input type="checkbox" bind:checked={editSecretExternal} onchange={markSecretDirty} class="rounded border-zinc-300" />
-									<span class="text-xs text-zinc-600">External secret</span>
+									<span class="text-xs text-zinc-600">{m.external_secret()}</span>
 								</label>
 
 								{#if editSecretExternal}
 									<!-- External name -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">External name (optional)</span>
-										<Input bind:value={editSecretName} oninput={markSecretDirty} placeholder="my-external-secret" class="h-8 text-xs" />
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.external_name_optional()}</span>
+										<Input bind:value={editSecretName} oninput={markSecretDirty} placeholder={m.my_external_secret()} class="h-8 text-xs" />
 									</div>
 								{:else}
 									<!-- Source type selector hint -->
-									<p class="text-2xs text-zinc-400">Specify one of: file or environment</p>
+									<p class="text-2xs text-zinc-400">{m.specify_one_of_file_or_environment()}</p>
 
 									<!-- File path -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">File path</span>
-										<Input bind:value={editSecretFile} oninput={markSecretDirty} placeholder="./secrets/password.txt" class="h-8 text-xs" />
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.file_path()}</span>
+										<Input bind:value={editSecretFile} oninput={markSecretDirty} placeholder={m.secrets_password_txt()} class="h-8 text-xs" />
 									</div>
 
 									<!-- Environment variable -->
 									<div class="space-y-1.5">
-										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">Environment variable</span>
-										<Input bind:value={editSecretEnvironment} oninput={markSecretDirty} placeholder="MY_SECRET_VAR" class="h-8 text-xs" />
+										<span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">{m.environment_variable()}</span>
+										<Input bind:value={editSecretEnvironment} oninput={markSecretDirty} placeholder={m.my_secret_var()} class="h-8 text-xs" />
 									</div>
 								{/if}
 							</div>
@@ -2932,23 +2934,23 @@
 					{:else if selectedEdge}
 						{#if selectedEdge.type === 'dependency'}
 							<p class="text-xs text-zinc-500 dark:text-zinc-400">
-								This service depends on {selectedEdge.source.replace('service-', '')} and will start after it.
+								{m.this_service_depends_on_arg1_and_will_start_afte({ arg1: orEmpty(selectedEdge.source.replace('service-', '')) })}
 							</p>
 						{:else if selectedEdge.type === 'volume-mount'}
 							<p class="text-xs text-zinc-500 dark:text-zinc-400">
-								Volume mounted to this service.
+								{m.volume_mounted_to_this_service()}
 							</p>
 						{:else if selectedEdge.type === 'network-connection'}
 							<p class="text-xs text-zinc-500 dark:text-zinc-400">
-								Service connected to this network.
+								{m.service_connected_to_this_network()}
 							</p>
 						{:else if selectedEdge.type === 'config-mount'}
 							<p class="text-xs text-zinc-500 dark:text-zinc-400">
-								Config mounted to this service.
+								{m.config_mounted_to_this_service()}
 							</p>
 						{:else if selectedEdge.type === 'secret-mount'}
 							<p class="text-xs text-zinc-500 dark:text-zinc-400">
-								Secret mounted to this service.
+								{m.secret_mounted_to_this_service()}
 							</p>
 						{/if}
 					{/if}
@@ -2966,13 +2968,13 @@
 			<Dialog.Title class="flex items-center gap-2">
 				{@const DialogIcon = getNodeIcon(addElementType)}
 				<DialogIcon class="w-5 h-5" />
-				Add {getElementTypeLabel(addElementType)}
+				{m.add_arg1({ arg1: orEmpty(getElementTypeLabel(addElementType)) })}
 			</Dialog.Title>
 		</Dialog.Header>
 
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
-				<Label for="element-name">Name</Label>
+				<Label for="element-name">{m.name()}</Label>
 				<Input
 					id="element-name"
 					bind:value={newElementName}
@@ -2982,16 +2984,16 @@
 
 			{#if addElementType === 'service'}
 				<div class="space-y-2">
-					<Label for="service-image">Image</Label>
+					<Label for="service-image">{m.image()}</Label>
 					<Input
 						id="service-image"
 						bind:value={newServiceImage}
-						placeholder="nginx:alpine"
+						placeholder={m.nginx_alpine()}
 					/>
 				</div>
 
 				<div class="space-y-2">
-					<Label for="service-ports">Ports (comma-separated)</Label>
+					<Label for="service-ports">{m.ports_comma_separated()}</Label>
 					<Input
 						id="service-ports"
 						bind:value={newServicePorts}
@@ -3002,10 +3004,10 @@
 		</div>
 
 		<div class="flex justify-end gap-2">
-			<Button variant="outline" size="sm" onclick={() => showAddDialog = false}>Cancel</Button>
+			<Button variant="outline" size="sm" onclick={() => showAddDialog = false}>{m.cancel()}</Button>
 			<Button variant="secondary" size="sm" onclick={addElement} disabled={!newElementName.trim()}>
 				<Plus class="w-3.5 h-3.5 mr-1.5" />
-				Add {getElementTypeLabel(addElementType)}
+				{m.add_arg1({ arg1: orEmpty(getElementTypeLabel(addElementType)) })}
 			</Button>
 		</div>
 	</Dialog.Content>
@@ -3016,6 +3018,6 @@
 	<button
 		class="fixed inset-0 z-40"
 		onclick={() => showAddMenu = false}
-		aria-label="Close menu"
+		aria-label={m.close_menu()}
 	></button>
 {/if}

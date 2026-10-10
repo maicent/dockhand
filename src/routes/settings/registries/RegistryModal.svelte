@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -154,28 +156,28 @@
 <Dialog.Root bind:open onOpenChange={(o) => { if (o) { formError = ''; focusFirstInput(); } }}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>{isEditing ? 'Edit' : 'Add'} registry</Dialog.Title>
+			<Dialog.Title>{m.arg1_registry({ arg1: orEmpty(isEditing ? 'Edit' : 'Add') })}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4">
 			{#if formError}
 				<div class="text-sm text-red-600 dark:text-red-400">{formError}</div>
 			{/if}
 			<div class="space-y-2">
-				<Label for="reg-name">Name</Label>
-				<Input id="reg-name" bind:value={formName} placeholder="My Private Registry" />
+				<Label for="reg-name">{m.name()}</Label>
+				<Input id="reg-name" bind:value={formName} placeholder={m.my_private_registry()} />
 			</div>
 			<div class="space-y-2">
-				<Label for="reg-url">URL</Label>
-				<Input id="reg-url" bind:value={formUrl} placeholder="https://registry.example.com" />
+				<Label for="reg-url">{m.url()}</Label>
+				<Input id="reg-url" bind:value={formUrl} placeholder={m.https_registry_example_com()} />
 			</div>
 			<div class="space-y-4 pt-2 border-t">
-				<p class="text-xs text-muted-foreground">Credentials {isEditing ? '(leave password blank to keep existing)' : '(optional)'}</p>
+				<p class="text-xs text-muted-foreground">{m.credentials_arg1({ arg1: orEmpty(isEditing ? '(leave password blank to keep existing)' : '(optional)') })}</p>
 				<div class="space-y-2">
-					<Label for="reg-username">Username</Label>
-					<Input id="reg-username" bind:value={formUsername} placeholder="username" />
+					<Label for="reg-username">{m.username()}</Label>
+					<Input id="reg-username" bind:value={formUsername} placeholder={m.username_249b()} />
 				</div>
 				<div class="space-y-2">
-					<Label for="reg-password">Password / Token</Label>
+					<Label for="reg-password">{m.password_token_7cec()}</Label>
 					<Input id="reg-password" type="password" bind:value={formPassword} placeholder={isEditing ? 'leave blank to keep existing' : 'password or access token'} />
 				</div>
 			</div>
@@ -197,10 +199,10 @@
 				{:else}
 					<Wifi class="w-4 h-4" />
 				{/if}
-				Test
+				{m.test()}
 			</Button>
 			<div class="flex-1"></div>
-			<Button variant="outline" onclick={handleClose}>Cancel</Button>
+			<Button variant="outline" onclick={handleClose}>{m.cancel()}</Button>
 			<Button onclick={save} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />

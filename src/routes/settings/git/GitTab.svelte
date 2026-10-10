@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { page } from '$app/stores';
 	import { FolderGit2, Key } from 'lucide-svelte';
 	import GitCredentialsTab from './GitCredentialsTab.svelte';
@@ -17,14 +18,14 @@
 			class="px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 {gitSubTab === 'repositories' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
 		>
 			<FolderGit2 class="w-4 h-4" />
-			Repositories
+			{m.repositories()}
 		</a>
 		<a
 			href="/settings?tab=git&subtab=credentials"
 			class="px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 {gitSubTab === 'credentials' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
 		>
 			<Key class="w-4 h-4" />
-			Credentials
+			{m.credentials()}
 		</a>
 	</div>
 

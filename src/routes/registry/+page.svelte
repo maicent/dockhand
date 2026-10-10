@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Registry - Dockhand</title>
+	<title>{m.registry_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -588,11 +590,11 @@
 
 <div class="h-full flex flex-col gap-3 overflow-hidden">
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={Download} title="Registry" showConnection={false} />
+		<PageHeader icon={Download} title={m.registry()} showConnection={false} />
 		{#if $canAccess('registries', 'edit')}
 		<a href="/settings?tab=registries" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
 			<Settings2 class="w-4 h-4" />
-			Manage registries
+			{m.manage_registries()}
 		</a>
 		{/if}
 	</div>
@@ -609,7 +611,7 @@
 				{/if}
 				<span class="truncate">{selected ? selected.name : 'Select registry'}</span>
 				{#if selected?.hasCredentials}
-					<Badge variant="outline" class="ml-1.5 text-xs shrink-0">auth</Badge>
+					<Badge variant="outline" class="ml-1.5 text-xs shrink-0">{m.auth()}</Badge>
 				{/if}
 			</Select.Trigger>
 			<Select.Content>
@@ -622,7 +624,7 @@
 						{/if}
 						{registry.name}
 						{#if registry.hasCredentials}
-							<Badge variant="outline" class="ml-2 text-xs">auth</Badge>
+							<Badge variant="outline" class="ml-2 text-xs">{m.auth()}</Badge>
 						{/if}
 					</Select.Item>
 				{/each}
@@ -644,7 +646,7 @@
 			{:else}
 				<Search class="w-4 h-4" />
 			{/if}
-			Search
+			{m.search_bce0()}
 		</Button>
 		{#if supportsBrowsing()}
 			<Button variant="outline" onclick={() => browse()} disabled={loading || browsing}>
@@ -653,7 +655,7 @@
 				{:else}
 					<List class="w-4 h-4" />
 				{/if}
-				Browse
+				{m.browse()}
 			</Button>
 		{/if}
 	</div>
@@ -670,7 +672,7 @@
 			</p>
 			{#if !browseMode && supportsBrowsing()}
 				<p class="text-muted-foreground mt-2">
-					Tip: Large registries don't support search. Try <button class="text-primary underline" onclick={() => browse()}>Browse</button> and use the filter to find images.
+					{m.tip_large_registries_dont_support_search_try()} <button class="text-primary underline" onclick={() => browse()}>{m.browse()}</button> {m.and_use_the_filter_to_find_images()}
 				</p>
 			{/if}
 		</div>
@@ -678,7 +680,7 @@
 		<!-- Browse mode filter -->
 		{#if browseMode}
 			<div class="shrink-0 flex items-center gap-2 text-sm">
-				<SearchInput bind:value={browseFilter} placeholder="Filter results..." class="h-8 text-xs" containerClass="flex-1 max-w-xs" />
+				<SearchInput bind:value={browseFilter} placeholder={m.filter_results()} class="h-8 text-xs" containerClass="flex-1 max-w-xs" />
 				<span class="text-muted-foreground text-xs">
 					{filteredResults.length === results.length
 						? `${results.length} images`
@@ -693,11 +695,11 @@
 			<table class="w-full text-sm">
 				<thead class="bg-muted sticky top-0 z-10">
 					<tr class="border-b">
-						<th class="text-left py-1.5 px-2 font-medium">Name</th>
+						<th class="text-left py-1.5 px-2 font-medium">{m.name()}</th>
 						{#if !browseMode}
-							<th class="text-left py-1.5 px-2 font-medium">Description</th>
-							<th class="text-center py-1.5 px-2 font-medium w-16">Stars</th>
-							<th class="text-center py-1.5 px-2 font-medium w-20">Type</th>
+							<th class="text-left py-1.5 px-2 font-medium">{m.description()}</th>
+							<th class="text-center py-1.5 px-2 font-medium w-16">{m.stars()}</th>
+							<th class="text-center py-1.5 px-2 font-medium w-20">{m.type()}</th>
 						{/if}
 					</tr>
 				</thead>
@@ -734,9 +736,9 @@
 								</td>
 								<td class="py-1.5 px-2 text-center">
 									{#if result.is_official}
-										<span class={getTypeClasses('official')}>Official</span>
+										<span class={getTypeClasses('official')}>{m.official()}</span>
 									{:else if result.is_automated}
-										<span class={getTypeClasses('automated')}>Auto</span>
+										<span class={getTypeClasses('automated')}>{m.auto()}</span>
 									{:else}
 										<span class="text-muted-foreground text-xs">-</span>
 									{/if}
@@ -750,7 +752,7 @@
 									{#if expandState?.loading}
 										<div class="flex items-center gap-2 text-xs text-muted-foreground py-2">
 											<Loader2 class="w-3.5 h-3.5 animate-spin" />
-											<span>Loading tags...</span>
+											<span>{m.loading_tags()}</span>
 										</div>
 									{:else if expandState?.error}
 										<div class="text-xs text-red-500 py-2">
@@ -761,10 +763,10 @@
 											<table class="text-xs">
 												<thead class="text-muted-foreground sticky top-0 bg-background z-10">
 													<tr>
-														<th class="text-left py-1 px-2 pr-4 font-medium">Tag</th>
-														<th class="text-left py-1 px-2 pr-4 font-medium">Size</th>
-														<th class="text-left py-1 px-2 pr-4 font-medium">Modified</th>
-														<th class="text-left py-1 px-2 font-medium">Actions</th>
+														<th class="text-left py-1 px-2 pr-4 font-medium">{m.tag()}</th>
+														<th class="text-left py-1 px-2 pr-4 font-medium">{m.size()}</th>
+														<th class="text-left py-1 px-2 pr-4 font-medium">{m.modified()}</th>
+														<th class="text-left py-1 px-2 font-medium">{m.actions()}</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -794,7 +796,7 @@
 																	</button>
 																	<button
 																		onclick={() => openRunModal(result.name, tag.name)}
-																		title="Run container with this tag"
+																		title={m.run_container_with_this_tag()}
 																		class="p-1 rounded hover:bg-muted transition-colors"
 																	>
 																		<Play class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -802,7 +804,7 @@
 																	{#if pushableRegistries.length > 0}
 																		<button
 																			onclick={() => openCopyModal(result.name, tag.name)}
-																			title="Copy to another registry"
+																			title={m.copy_to_another_registry()}
 																			class="p-1 rounded hover:bg-muted transition-colors"
 																		>
 																			<Copy class="w-3 h-3 text-muted-foreground hover:text-foreground" />
@@ -811,7 +813,7 @@
 																	{#if supportsBrowsing()}
 																		{@const deleteKey = `${result.name}:${tag.name}`}
 																		<ConfirmPopover
-																			title="Delete tag"
+																			title={m.delete_tag()}
 																			description="Are you sure you want to delete {result.name}:{tag.name}? This cannot be undone."
 																			confirmText="Delete"
 																			open={confirmDeleteKey === deleteKey}
@@ -819,7 +821,7 @@
 																			onOpenChange={(open) => confirmDeleteKey = open ? deleteKey : null}
 																		>
 																			<button
-																				title="Delete this tag"
+																				title={m.delete_this_tag()}
 																				class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
 																				disabled={deleting}
 																			>
@@ -837,19 +839,19 @@
 											{#if expandState.loadingMore}
 												<div class="flex items-center justify-center py-2 text-xs text-muted-foreground">
 													<Loader2 class="w-3 h-3 animate-spin mr-2" />
-													Loading more...
+													{m.loading_more()}
 												</div>
 											{/if}
 										</div>
 										<!-- Tags count -->
 										{#if expandState.total > 0}
 											<div class="text-xs text-muted-foreground pt-1">
-												{expandState.tags.length} of {expandState.total} tags loaded
+												{m.length_of_total_tags_loaded({ length: orEmpty(expandState.tags.length), total: orEmpty(expandState.total) })}
 											</div>
 										{/if}
 									{:else}
 										<div class="text-xs text-muted-foreground py-2">
-											No tags found
+											{m.no_tags_found()}
 										</div>
 									{/if}
 								</td>
@@ -870,9 +872,9 @@
 				>
 					{#if loadingMore}
 						<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-						Loading...
+						{m.loading()}
 					{:else}
-						Load more images
+						{m.load_more_images()}
 					{/if}
 				</Button>
 			</div>
@@ -882,9 +884,9 @@
 			<Download class="w-12 h-12 mx-auto mb-4 opacity-50" />
 			<p class="text-sm">
 				{#if supportsBrowsing()}
-					Search or browse {selectedRegistry?.name || 'a registry'} to find images
+					{m.search_or_browse_arg1_to_find_images({ arg1: orEmpty(selectedRegistry?.name || 'a registry') })}
 				{:else}
-					Search {selectedRegistry?.name || 'a registry'} to find and pull images
+					{m.search_arg1_to_find_and_pull_images({ arg1: orEmpty(selectedRegistry?.name || 'a registry') })}
 				{/if}
 			</p>
 		</div>

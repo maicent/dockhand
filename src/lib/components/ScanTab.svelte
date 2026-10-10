@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { tick } from 'svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -224,30 +226,30 @@
 			<div class="flex items-center gap-2">
 				{#if status === 'idle'}
 					<Shield class="w-4 h-4 text-muted-foreground" />
-					<span class="text-sm text-muted-foreground">Ready to scan</span>
+					<span class="text-sm text-muted-foreground">{m.ready_to_scan()}</span>
 				{:else if status === 'scanning'}
 					<Shield class="w-4 h-4 animate-spin text-blue-600" />
-					<span class="text-sm">Scanning for vulnerabilities...</span>
+					<span class="text-sm">{m.scanning_for_vulnerabilities()}</span>
 				{:else if status === 'complete'}
 					{#if hasCriticalOrHigh}
 						<ShieldX class="w-4 h-4 text-red-500" />
-						<span class="text-sm text-red-500">Vulnerabilities found</span>
+						<span class="text-sm text-red-500">{m.vulnerabilities_found()}</span>
 					{:else if totalVulnerabilities > 0}
 						<ShieldAlert class="w-4 h-4 text-yellow-500" />
-						<span class="text-sm text-yellow-500">Some vulnerabilities found</span>
+						<span class="text-sm text-yellow-500">{m.some_vulnerabilities_found()}</span>
 					{:else}
 						<ShieldCheck class="w-4 h-4 text-green-600" />
-						<span class="text-sm text-green-600">No vulnerabilities!</span>
+						<span class="text-sm text-green-600">{m.no_vulnerabilities_dccb()}</span>
 					{/if}
 				{:else if status === 'error'}
 					<ShieldX class="w-4 h-4 text-red-600" />
-					<span class="text-sm text-red-600">Scan failed</span>
+					<span class="text-sm text-red-600">{m.scan_failed()}</span>
 				{/if}
 			</div>
 			<div class="flex items-center gap-3">
 				{#if status === 'complete' && results.length > 0}
 					<Badge variant={hasCriticalOrHigh ? 'destructive' : totalVulnerabilities > 0 ? 'secondary' : 'outline'} class="text-xs">
-						{totalVulnerabilities} vulnerabilities
+						{m.totalvulnerabilities_vulnerabilities({ totalVulnerabilities: orEmpty(totalVulnerabilities) })}
 					</Badge>
 				{/if}
 				<span class="text-xs text-muted-foreground min-w-12">
@@ -276,10 +278,10 @@
 	{#if status === 'idle'}
 		<div class="flex-1 flex flex-col items-center justify-center gap-4 text-muted-foreground">
 			<Shield class="w-12 h-12 opacity-50" />
-			<p class="text-sm">Scan <code class="bg-muted px-1.5 py-0.5 rounded">{imageName}</code> for vulnerabilities</p>
+			<p class="text-sm">{m.scan()} <code class="bg-muted px-1.5 py-0.5 rounded">{imageName}</code> {m.for_vulnerabilities()}</p>
 			<Button onclick={startScan}>
 				<Shield class="w-4 h-4" />
-				Start scan
+				{m.start_scan()}
 			</Button>
 		</div>
 	{/if}
@@ -294,7 +296,7 @@
 					onclick={() => activeTab = 'output'}
 				>
 					<Terminal class="w-3 h-3 inline mr-1" />
-					Output
+					{m.output()}
 				</button>
 				<button
 					class="px-3 py-1.5 text-xs font-medium border-b-2 transition-colors cursor-pointer {activeTab === 'results' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
@@ -307,7 +309,7 @@
 					{:else}
 						<ShieldCheck class="w-3 h-3 inline mr-1 text-green-500" />
 					{/if}
-					Scan results
+					{m.scan_results()}
 					<Badge variant={hasCriticalOrHigh ? 'destructive' : 'secondary'} class="ml-1 text-2xs py-0">
 						{totalVulnerabilities}
 					</Badge>
@@ -322,9 +324,9 @@
 				<div class="flex items-center justify-between text-xs text-muted-foreground mb-2 shrink-0">
 					<div class="flex items-center gap-2">
 						<Terminal class="w-3.5 h-3.5" />
-						<span>Output ({outputLines.length} lines)</span>
+						<span>{m.output_length_lines({ length: orEmpty(outputLines.length) })}</span>
 					</div>
-					<button type="button" onclick={toggleLogTheme} class="p-1 rounded hover:bg-muted transition-colors cursor-pointer" title="Toggle log theme">
+					<button type="button" onclick={toggleLogTheme} class="p-1 rounded hover:bg-muted transition-colors cursor-pointer" title={m.toggle_log_theme()}>
 						{#if logDarkMode}
 							<Sun class="w-3.5 h-3.5" />
 						{:else}
@@ -339,19 +341,19 @@
 					{#each outputLines as line}
 						<div class="whitespace-pre-wrap break-all leading-relaxed flex items-start gap-1.5">
 							{#if line.startsWith('[grype]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-violet-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">grype</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-violet-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.grype_cf91()}</span>
 								<span>{line.slice(8)}</span>
 							{:else if line.startsWith('[trivy]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-teal-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">trivy</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-teal-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.trivy_6e35()}</span>
 								<span>{line.slice(8)}</span>
 							{:else if line.startsWith('[dockhand]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-slate-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">dockhand</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-slate-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.dockhand_14cd()}</span>
 								<span>{line.slice(11)}</span>
 							{:else if line.startsWith('[scan]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-violet-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">scan</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-violet-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.scan_ffa9()}</span>
 								<span>{line.slice(7)}</span>
 							{:else if line.startsWith('[error]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-red-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">error</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-red-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.error_11f9()}</span>
 								<span class="text-red-400">{line.slice(8)}</span>
 							{:else}
 								<span>{line}</span>

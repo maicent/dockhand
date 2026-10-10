@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import * as Select from '$lib/components/ui/select';
@@ -57,10 +59,10 @@
 <!-- Scheduled Update Check Section -->
 <div class="space-y-4">
 	<div class="text-sm font-medium">
-		Scheduled update check
+		{m.scheduled_update_check()}
 	</div>
 	<p class="text-xs text-muted-foreground">
-		Periodically check all containers in this environment for available image updates.
+		{m.periodically_check_all_containers_in_this_enviro()}
 	</p>
 
 	{#if updateCheckLoading}
@@ -71,8 +73,8 @@
 		<div class="flex items-start gap-2">
 			<CircleFadingArrowUp class="w-4 h-4 text-green-500 glow-green mt-0.5 shrink-0" />
 			<div class="flex-1">
-				<Label>Enable scheduled update check</Label>
-				<p class="text-xs text-muted-foreground">Automatically check for container updates on a schedule</p>
+				<Label>{m.enable_scheduled_update_check()}</Label>
+				<p class="text-xs text-muted-foreground">{m.automatically_check_for_container_updates_on_a_s()}</p>
 			</div>
 			<TogglePill bind:checked={updateCheckEnabled} />
 		</div>
@@ -81,7 +83,7 @@
 			<div class="flex items-start gap-2">
 				<div class="w-4 shrink-0"></div>
 				<div class="flex-1 space-y-2">
-					<Label>Schedule</Label>
+					<Label>{m.schedule()}</Label>
 					<CronEditor value={updateCheckCron} onchange={(cron) => updateCheckCron = cron} />
 				</div>
 			</div>
@@ -89,10 +91,9 @@
 			<div class="flex items-start gap-2">
 				<CircleArrowUp class="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
 				<div class="flex-1">
-					<Label>Automatically update containers</Label>
+					<Label>{m.automatically_update_containers()}</Label>
 					<p class="text-xs text-muted-foreground">
-						When enabled, containers will be updated automatically when new images are found.
-						When disabled, only sends notifications about available updates.
+						{m.when_enabled_containers_will_be_updated_automati()}
 					</p>
 				</div>
 				<TogglePill bind:checked={updateCheckAutoUpdate} />
@@ -102,9 +103,9 @@
 				<div class="flex items-start gap-2">
 					<div class="w-4 shrink-0"></div>
 					<div class="flex-1">
-						<Label>Block updates with vulnerabilities</Label>
+						<Label>{m.block_updates_with_vulnerabilities()}</Label>
 						<p class="text-xs text-muted-foreground">
-							Block auto-updates if the new image has vulnerabilities exceeding this criteria
+							{m.block_auto_updates_if_the_new_image_has_vulnerab()}
 						</p>
 					</div>
 					<VulnerabilityCriteriaSelector
@@ -118,12 +119,12 @@
 				<Info class="w-3 h-3 mt-0.5 shrink-0" />
 				{#if updateCheckAutoUpdate}
 					{#if scannerEnabled && updateCheckVulnerabilityCriteria !== 'never'}
-						<span>New images are pulled to a temporary tag, scanned, then deployed if they pass the vulnerability check. Blocked images are deleted automatically.</span>
+						<span>{m.new_images_are_pulled_to_a_temporary_tag_scanned()}</span>
 					{:else}
-						<span>Containers will be updated automatically when new images are available.</span>
+						<span>{m.containers_will_be_updated_automatically_when_ne()}</span>
 					{/if}
 				{:else}
-					<span>You'll receive notifications when updates are available. Containers won't be modified.</span>
+					<span>{m.youll_receive_notifications_when_updates_are_ava()}</span>
 				{/if}
 			</div>
 		{/if}
@@ -133,7 +134,7 @@
 <!-- Minimum image age -->
 <div class="space-y-3 pt-4 border-t">
 	<div class="text-sm font-medium flex items-center gap-2">
-		Minimum image age
+		{m.minimum_image_age()}
 		<Tooltip.Provider delayDuration={100}>
 			<Tooltip.Root>
 				<Tooltip.Trigger>
@@ -141,41 +142,41 @@
 				</Tooltip.Trigger>
 				<Tooltip.Portal>
 					<Tooltip.Content side="right" sideOffset={8} class="!w-96 space-y-2">
-						<p>The age comes from the image's creation time in the registry, which records the build rather than the publication. When the registry gives no usable time, Dockhand counts from when it first saw that digest.</p>
-						<p>Manual pulls warn and proceed; stack deployments, including scheduled Git ones, are exempt.</p>
-						<p>A newer image restarts the wait on itself, so a project publishing faster than this age never updates automatically.</p>
+						<p>{m.the_age_comes_from_the_images_creation_time_in_t()}</p>
+						<p>{m.manual_pulls_warn_and_proceed_stack_deployments()}</p>
+						<p>{m.a_newer_image_restarts_the_wait_on_itself_so_a_p()}</p>
 					</Tooltip.Content>
 				</Tooltip.Portal>
 			</Tooltip.Root>
 		</Tooltip.Provider>
 	</div>
-	<p class="text-xs text-muted-foreground">Hold automatic container updates until a new image has been out for a while.</p>
+	<p class="text-xs text-muted-foreground">{m.hold_automatic_container_updates_until_a_new_ima()}</p>
 	<div class="flex items-center justify-between gap-3">
 		<div>
-			<Label>Override global cooldown</Label>
-			<p class="text-xs text-muted-foreground">When off, this environment uses the global setting.</p>
+			<Label>{m.override_global_cooldown()}</Label>
+			<p class="text-xs text-muted-foreground">{m.when_off_this_environment_uses_the_global_settin()}</p>
 		</div>
 		<TogglePill bind:checked={minimumReleaseAgeOverride} disabled={minimumReleaseAgeOverridden} />
 	</div>
 	{#if minimumReleaseAgeOverride}
 		<div class="flex items-center gap-3">
-			<Label for="env-minimum-release-age" class="shrink-0">Hours</Label>
+			<Label for="env-minimum-release-age" class="shrink-0">{m.hours()}</Label>
 			<Input id="env-minimum-release-age" type="number" min="0" max="720" step="1" class="w-28" bind:value={minimumReleaseAgeHours} disabled={minimumReleaseAgeOverridden} />
-			<span class="text-xs text-muted-foreground">0 disables the cooldown</span>
+			<span class="text-xs text-muted-foreground">{m.t_0_disables_the_cooldown()}</span>
 		</div>
 	{/if}
 	{#if minimumReleaseAgeOverridden}
-		<p class="text-xs text-muted-foreground">Set by MINIMUM_RELEASE_AGE_HOURS on the Dockhand server.</p>
+		<p class="text-xs text-muted-foreground">{m.set_by_minimum_release_age_hours_on_the_dockhand()}</p>
 	{/if}
 </div>
 
 <!-- Image Pruning Section -->
 <div class="space-y-4 pt-4 border-t">
 	<div class="text-sm font-medium">
-		Automatic image pruning
+		{m.automatic_image_pruning()}
 	</div>
 	<p class="text-xs text-muted-foreground">
-		Automatically remove unused Docker images on a schedule to free up disk space.
+		{m.automatically_remove_unused_docker_images_on_a_s()}
 	</p>
 
 	{#if imagePruneLoading}
@@ -186,8 +187,8 @@
 		<div class="flex items-start gap-2">
 			<Trash2 class="w-4 h-4 text-amber-500 glow-amber mt-0.5 shrink-0" />
 			<div class="flex-1">
-				<Label>Enable automatic image pruning</Label>
-				<p class="text-xs text-muted-foreground">Automatically remove unused images on a schedule</p>
+				<Label>{m.enable_automatic_image_pruning()}</Label>
+				<p class="text-xs text-muted-foreground">{m.automatically_remove_unused_images_on_a_schedule()}</p>
 			</div>
 			<TogglePill bind:checked={imagePruneEnabled} />
 		</div>
@@ -196,7 +197,7 @@
 			<div class="flex items-start gap-2">
 				<div class="w-4 shrink-0"></div>
 				<div class="flex-1 space-y-2">
-					<Label>Schedule</Label>
+					<Label>{m.schedule()}</Label>
 					<CronEditor value={imagePruneCron} onchange={(cron) => imagePruneCron = cron} />
 				</div>
 			</div>
@@ -204,21 +205,21 @@
 			<div class="flex items-start gap-2">
 				<div class="w-4 shrink-0"></div>
 				<div class="flex-1 space-y-2">
-					<Label>Prune mode</Label>
+					<Label>{m.prune_mode()}</Label>
 					<Select.Root type="single" bind:value={imagePruneMode}>
 						<Select.Trigger class="w-full">
 							{imagePruneMode === 'dangling' ? 'Dangling images only' : 'All unused images'}
 						</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="dangling">Dangling images only</Select.Item>
-							<Select.Item value="all">All unused images</Select.Item>
+							<Select.Item value="dangling">{m.dangling_images_only()}</Select.Item>
+							<Select.Item value="all">{m.all_unused_images()}</Select.Item>
 						</Select.Content>
 					</Select.Root>
 					<p class="text-xs text-muted-foreground">
 						{#if imagePruneMode === 'dangling'}
-							Only removes untagged image layers (safest option)
+							{m.only_removes_untagged_image_layers_safest_option()}
 						{:else}
-							Removes all images not used by any container (more aggressive)
+							{m.removes_all_images_not_used_by_any_container_mor()}
 						{/if}
 					</p>
 				</div>
@@ -229,9 +230,9 @@
 					<div class="w-4 shrink-0"></div>
 					<div class="flex-1">
 						<p class="text-xs text-muted-foreground">
-							Last pruned: {formatDateTime(imagePruneLastPruned)}
+							{m.last_pruned_arg1({ arg1: orEmpty(formatDateTime(imagePruneLastPruned)) })}
 							{#if imagePruneLastResult}
-								- {imagePruneLastResult.imagesRemoved} images removed, {formatBytes(imagePruneLastResult.spaceReclaimed)} reclaimed
+								{m.imagesremoved_images_removed_arg2_reclaimed({ imagesRemoved: orEmpty(imagePruneLastResult.imagesRemoved), arg2: orEmpty(formatBytes(imagePruneLastResult.spaceReclaimed)) })}
 							{/if}
 						</p>
 					</div>
@@ -240,7 +241,7 @@
 
 			<div class="text-xs text-muted-foreground bg-muted/50 rounded-md p-2 flex items-start gap-2">
 				<Info class="w-3 h-3 mt-0.5 shrink-0" />
-				<span>Images in use by running or stopped containers will never be removed.</span>
+				<span>{m.images_in_use_by_running_or_stopped_containers_w()}</span>
 			</div>
 		{/if}
 	{/if}
@@ -248,12 +249,12 @@
 
 <!-- Timezone selector -->
 <div class="space-y-2">
-	<Label>Timezone</Label>
+	<Label>{m.timezone()}</Label>
 	<TimezoneSelector
 		bind:value={timezone}
 		id="edit-env-timezone"
 	/>
 	<p class="text-xs text-muted-foreground">
-		Used for scheduling auto-updates, git syncs, and image pruning
+		{m.used_for_scheduling_auto_updates_git_syncs_and_i()}
 	</p>
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import {
 		Activity,
 		Play,
@@ -110,7 +111,7 @@
 	>
 		<div class="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
 			<Activity class="w-3 h-3" />
-			<span class="font-medium">Recent events</span>
+			<span class="font-medium">{m.recent_events()}</span>
 		</div>
 		<!-- Grid layout with fixed columns: timestamp, action icon, container name -->
 		<div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-xs">

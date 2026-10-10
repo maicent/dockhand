@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -248,22 +250,22 @@
 
 <div class="space-y-4">
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={Globe} title="Environments">
-			<Badge variant="secondary" class="text-xs">{environments.length} total</Badge>
+		<PageHeader icon={Globe} title={m.environments()}>
+			<Badge variant="secondary" class="text-xs">{m.length_total({ length: orEmpty(environments.length) })}</Badge>
 		</PageHeader>
 		<div class="flex gap-2">
 			<Button size="sm" onclick={openAddModal}>
 				<Plus class="w-4 h-4" />
-				Add environment
+				{m.add_environment()}
 			</Button>
-			<Button size="sm" variant="outline" onclick={fetchEnvironments}>Refresh</Button>
+			<Button size="sm" variant="outline" onclick={fetchEnvironments}>{m.refresh()}</Button>
 		</div>
 	</div>
 
 	{#if loading && environments.length === 0}
-		<p class="text-muted-foreground text-sm">Loading environments...</p>
+		<p class="text-muted-foreground text-sm">{m.loading_environments()}</p>
 	{:else if environments.length === 0}
-		<p class="text-muted-foreground text-sm">No environments found</p>
+		<p class="text-muted-foreground text-sm">{m.no_environments_found()}</p>
 	{:else}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each environments as env (env.id)}
@@ -282,7 +284,7 @@
 							{#if env.connectionType === 'socket' || !env.connectionType}
 								<span>{env.socketPath || '/var/run/docker.sock'}</span>
 							{:else if env.connectionType === 'hawser-edge'}
-								<span>Edge connection (outbound)</span>
+								<span>{m.edge_connection_outbound()}</span>
 							{:else}
 								<span>{env.protocol || 'http'}://{env.host}:{env.port || 2375}</span>
 							{/if}
@@ -293,24 +295,24 @@
 								{#if testResult === 'testing'}
 									<div class="flex items-center gap-2 text-muted-foreground">
 										<RefreshCw class="w-4 h-4 animate-spin" />
-										<span>Testing connection...</span>
+										<span>{m.testing_connection()}</span>
 									</div>
 								{:else if testResult.success}
 									<div class="flex items-center gap-2 text-green-600 dark:text-green-400">
 										<Wifi class="w-4 h-4" />
-										<span>Connected</span>
+										<span>{m.connected()}</span>
 									</div>
 									{#if testResult.info}
 										<div class="mt-2 text-xs text-muted-foreground space-y-0.5">
-											<div>Host: {testResult.info.name}</div>
-											<div>Docker: {testResult.info.serverVersion}</div>
-											<div>Containers: {testResult.info.containers} | Images: {testResult.info.images}</div>
+											<div>{m.host_name({ name: orEmpty(testResult.info.name) })}</div>
+											<div>{m.docker_serverversion({ serverVersion: orEmpty(testResult.info.serverVersion) })}</div>
+											<div>{m.containers_containers_images_images({ containers: orEmpty(testResult.info.containers), images: orEmpty(testResult.info.images) })}</div>
 										</div>
 									{/if}
 								{:else}
 									<div class="flex items-center gap-2 text-red-600 dark:text-red-400">
 										<WifiOff class="w-4 h-4" />
-										<span>Failed</span>
+										<span>{m.failed()}</span>
 									</div>
 									{#if testResult.error}
 										<div class="mt-1 text-xs text-muted-foreground">{testResult.error}</div>
@@ -331,7 +333,7 @@
 								{:else}
 									<Wifi class="w-3 h-3" />
 								{/if}
-								Test
+								{m.test()}
 							</Button>
 							<Button
 								variant="outline"
@@ -359,7 +361,7 @@
 <Dialog.Root bind:open={showAddModal}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Add environment</Dialog.Title>
+			<Dialog.Title>{m.add_environment()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4">
 			{#if formError}
@@ -368,12 +370,12 @@
 
 			<!-- Quick URL parser -->
 			<div class="space-y-2 pb-3 border-b">
-				<Label for="quick-url">Quick URL (optional)</Label>
+				<Label for="quick-url">{m.quick_url_optional()}</Label>
 				<div class="flex gap-2">
 					<Input
 						id="quick-url"
 						bind:value={quickUrl}
-						placeholder="http://192.168.1.4:2375 or https://docker.example.com:2376"
+						placeholder={m.http_192_168_1_4_2375_or_https_docker_example_co()}
 						class="flex-1"
 					/>
 					<Button
@@ -382,29 +384,29 @@
 						onclick={() => parseDockerUrl(quickUrl)}
 						disabled={!quickUrl.trim()}
 					>
-						Parse
+						{m.parse()}
 					</Button>
 				</div>
 				<p class="text-xs text-muted-foreground">
-					Paste a full Docker URL to auto-fill the fields below
+					{m.paste_a_full_docker_url_to_auto_fill_the_fields()}
 				</p>
 			</div>
 
 			<div class="space-y-2">
-				<Label for="name">Name</Label>
-				<Input id="name" bind:value={formName} placeholder="Production server" />
+				<Label for="name">{m.name()}</Label>
+				<Input id="name" bind:value={formName} placeholder={m.production_server()} />
 			</div>
 			<div class="space-y-2">
-				<Label for="host">Host</Label>
-				<Input id="host" bind:value={formHost} placeholder="192.168.1.100 or docker.example.com" />
+				<Label for="host">{m.host()}</Label>
+				<Input id="host" bind:value={formHost} placeholder={m.t_192_168_1_100_or_docker_example_com()} />
 			</div>
 			<div class="grid grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<Label for="port">Port</Label>
+					<Label for="port">{m.port()}</Label>
 					<Input id="port" type="number" bind:value={formPort} />
 				</div>
 				<div class="space-y-2">
-					<Label for="protocol">Protocol</Label>
+					<Label for="protocol">{m.protocol()}</Label>
 					<Select.Root type="single" bind:value={formProtocol}>
 						<Select.Trigger class="w-full h-9">
 							{#if formProtocol === 'https'}
@@ -415,13 +417,13 @@
 							<span>{formProtocol === 'https' ? 'HTTPS (TLS)' : 'HTTP'}</span>
 						</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="http" label="HTTP">
+							<Select.Item value="http" label={m.http()}>
 								<Unlock class="w-4 h-4 mr-2 text-muted-foreground" />
-								HTTP
+								{m.http()}
 							</Select.Item>
-							<Select.Item value="https" label="HTTPS (TLS)">
+							<Select.Item value="https" label={m.https_tls()}>
 								<Lock class="w-4 h-4 mr-2 text-muted-foreground" />
-								HTTPS (TLS)
+								{m.https_tls()}
 							</Select.Item>
 						</Select.Content>
 					</Select.Root>
@@ -429,31 +431,31 @@
 			</div>
 			{#if formProtocol === 'https'}
 				<div class="space-y-4 pt-2 border-t">
-					<p class="text-xs text-muted-foreground">TLS certificates (optional)</p>
+					<p class="text-xs text-muted-foreground">{m.tls_certificates_optional()}</p>
 					<div class="space-y-2">
-						<Label for="tls_ca">CA certificate</Label>
+						<Label for="tls_ca">{m.ca_certificate()}</Label>
 						<textarea
 							id="tls_ca"
 							bind:value={formTlsCa}
-							placeholder="-----BEGIN CERTIFICATE-----"
+							placeholder={m.begin_certificate()}
 							class="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						></textarea>
 					</div>
 					<div class="space-y-2">
-						<Label for="tls_cert">Client certificate</Label>
+						<Label for="tls_cert">{m.client_certificate()}</Label>
 						<textarea
 							id="tls_cert"
 							bind:value={formTlsCert}
-							placeholder="-----BEGIN CERTIFICATE-----"
+							placeholder={m.begin_certificate()}
 							class="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						></textarea>
 					</div>
 					<div class="space-y-2">
-						<Label for="tls_key">Client key</Label>
+						<Label for="tls_key">{m.client_key()}</Label>
 						<textarea
 							id="tls_key"
 							bind:value={formTlsKey}
-							placeholder="-----BEGIN RSA PRIVATE KEY-----"
+							placeholder={m.begin_rsa_private_key()}
 							class="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						></textarea>
 					</div>
@@ -461,14 +463,14 @@
 			{/if}
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showAddModal = false)}>Cancel</Button>
+			<Button variant="outline" onclick={() => (showAddModal = false)}>{m.cancel()}</Button>
 			<Button onclick={createEnvironment} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
 				{:else}
 					<Plus class="w-4 h-4" />
 				{/if}
-				Add
+				{m.add()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
@@ -478,7 +480,7 @@
 <Dialog.Root bind:open={showEditModal}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Edit environment</Dialog.Title>
+			<Dialog.Title>{m.edit_environment()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4">
 			{#if formError}
@@ -487,12 +489,12 @@
 
 			<!-- Quick URL parser -->
 			<div class="space-y-2 pb-3 border-b">
-				<Label for="edit-quick-url">Quick URL (optional)</Label>
+				<Label for="edit-quick-url">{m.quick_url_optional()}</Label>
 				<div class="flex gap-2">
 					<Input
 						id="edit-quick-url"
 						bind:value={quickUrl}
-						placeholder="http://192.168.1.4:2375 or https://docker.example.com:2376"
+						placeholder={m.http_192_168_1_4_2375_or_https_docker_example_co()}
 						class="flex-1"
 					/>
 					<Button
@@ -501,29 +503,29 @@
 						onclick={() => parseDockerUrl(quickUrl)}
 						disabled={!quickUrl.trim()}
 					>
-						Parse
+						{m.parse()}
 					</Button>
 				</div>
 				<p class="text-xs text-muted-foreground">
-					Paste a full Docker URL to auto-fill the fields below
+					{m.paste_a_full_docker_url_to_auto_fill_the_fields()}
 				</p>
 			</div>
 
 			<div class="space-y-2">
-				<Label for="edit-name">Name</Label>
-				<Input id="edit-name" bind:value={formName} placeholder="Production server" />
+				<Label for="edit-name">{m.name()}</Label>
+				<Input id="edit-name" bind:value={formName} placeholder={m.production_server()} />
 			</div>
 			<div class="space-y-2">
-				<Label for="edit-host">Host</Label>
+				<Label for="edit-host">{m.host()}</Label>
 				<Input id="edit-host" bind:value={formHost} placeholder="192.168.1.100" />
 			</div>
 			<div class="grid grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<Label for="edit-port">Port</Label>
+					<Label for="edit-port">{m.port()}</Label>
 					<Input id="edit-port" type="number" bind:value={formPort} />
 				</div>
 				<div class="space-y-2">
-					<Label for="edit-protocol">Protocol</Label>
+					<Label for="edit-protocol">{m.protocol()}</Label>
 					<Select.Root type="single" bind:value={formProtocol}>
 						<Select.Trigger class="w-full h-9">
 							{#if formProtocol === 'https'}
@@ -534,13 +536,13 @@
 							<span>{formProtocol === 'https' ? 'HTTPS (TLS)' : 'HTTP'}</span>
 						</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="http" label="HTTP">
+							<Select.Item value="http" label={m.http()}>
 								<Unlock class="w-4 h-4 mr-2 text-muted-foreground" />
-								HTTP
+								{m.http()}
 							</Select.Item>
-							<Select.Item value="https" label="HTTPS (TLS)">
+							<Select.Item value="https" label={m.https_tls()}>
 								<Lock class="w-4 h-4 mr-2 text-muted-foreground" />
-								HTTPS (TLS)
+								{m.https_tls()}
 							</Select.Item>
 						</Select.Content>
 					</Select.Root>
@@ -548,31 +550,31 @@
 			</div>
 			{#if formProtocol === 'https'}
 				<div class="space-y-4 pt-2 border-t">
-					<p class="text-xs text-muted-foreground">TLS certificates (optional)</p>
+					<p class="text-xs text-muted-foreground">{m.tls_certificates_optional()}</p>
 					<div class="space-y-2">
-						<Label for="edit-tls_ca">CA certificate</Label>
+						<Label for="edit-tls_ca">{m.ca_certificate()}</Label>
 						<textarea
 							id="edit-tls_ca"
 							bind:value={formTlsCa}
-							placeholder="-----BEGIN CERTIFICATE-----"
+							placeholder={m.begin_certificate()}
 							class="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						></textarea>
 					</div>
 					<div class="space-y-2">
-						<Label for="edit-tls_cert">Client certificate</Label>
+						<Label for="edit-tls_cert">{m.client_certificate()}</Label>
 						<textarea
 							id="edit-tls_cert"
 							bind:value={formTlsCert}
-							placeholder="-----BEGIN CERTIFICATE-----"
+							placeholder={m.begin_certificate()}
 							class="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						></textarea>
 					</div>
 					<div class="space-y-2">
-						<Label for="edit-tls_key">Client key</Label>
+						<Label for="edit-tls_key">{m.client_key()}</Label>
 						<textarea
 							id="edit-tls_key"
 							bind:value={formTlsKey}
-							placeholder="-----BEGIN RSA PRIVATE KEY-----"
+							placeholder={m.begin_rsa_private_key()}
 							class="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						></textarea>
 					</div>
@@ -580,14 +582,14 @@
 			{/if}
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => { showEditModal = false; editingEnv = null; }}>Cancel</Button>
+			<Button variant="outline" onclick={() => { showEditModal = false; editingEnv = null; }}>{m.cancel()}</Button>
 			<Button onclick={updateEnvironment} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
 				{:else}
 					<Check class="w-4 h-4" />
 				{/if}
-				Save
+				{m.save()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

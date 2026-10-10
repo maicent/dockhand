@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -121,7 +123,7 @@
 	}
 
 	async function batchApply() {
-		if (!batchDestId) { toast.error('Select a repository'); return; }
+		if (!batchDestId) { toast.error(m.select_a_repository()); return; }
 		batchSaving = true;
 		let created = 0;
 		let skippedBindOnly = 0;
@@ -176,14 +178,14 @@
 		<Loader2 class="w-5 h-5 animate-spin text-muted-foreground" />
 	</div>
 {:else if items.length === 0}
-	<p class="text-sm text-muted-foreground py-4 text-center">No containers or stacks found on this environment.</p>
+	<p class="text-sm text-muted-foreground py-4 text-center">{m.no_containers_or_stacks_found_on_this_environmen()}</p>
 {:else}
 	<!-- Batch setup -->
 	{#if unconfiguredCount > 0}
 		{#if !showBatch}
 			<div class="mb-2">
 				<Button variant="outline" size="sm" class="w-full" onclick={() => { showBatch = true; if (!batchDestId && usableDestinations.length > 0) batchDestId = usableDestinations[0].id; }}>
-					<Zap class="w-3.5 h-3.5 mr-1.5" />Schedule all ({unconfiguredLabel})
+					<Zap class="w-3.5 h-3.5 mr-1.5" />{m.schedule_all_unconfiguredlabel({ unconfiguredLabel: orEmpty(unconfiguredLabel) })}
 				</Button>
 			</div>
 		{:else}
@@ -197,7 +199,7 @@
 									{@const DIcon = getRepoTypeIcon(dest.repository)}
 									<span class="flex items-center gap-1.5 truncate"><DIcon class="w-3.5 h-3.5 text-primary/60 flex-shrink-0" />{dest.name}</span>
 								{/if}
-							{:else}Select repository{/if}
+							{:else}{m.select_repository()}{/if}
 						</Select.Trigger>
 						<Select.Content>
 							{#each usableDestinations as dest}
@@ -212,23 +214,23 @@
 				</div>
 				<div class="flex items-center gap-2 text-xs">
 					<TogglePill bind:checked={batchSkipBinds} onLabel="Yes" offLabel="No" />
-					<span class="whitespace-nowrap">Skip bind mounts</span>
+					<span class="whitespace-nowrap">{m.skip_bind_mounts()}</span>
 					<Tooltip.Root>
 						<Tooltip.Trigger>
 							<HelpCircle class="w-3.5 h-3.5 text-muted-foreground cursor-help" />
 						</Tooltip.Trigger>
 						<Tooltip.Content>
 							<div class="w-64">
-								<p class="text-xs">Prefer named volumes and skip host bind mounts (e.g. media libraries or ISOs). A stack that isn't running yet keeps all volumes until it comes up. Applied to each schedule as it's created - edit a schedule later to change it.</p>
+								<p class="text-xs">{m.prefer_named_volumes_and_skip_host_bind_mounts_e()}</p>
 							</div>
 						</Tooltip.Content>
 					</Tooltip.Root>
 				</div>
 				<div class="flex items-center justify-end gap-2">
-					<Button variant="ghost" size="sm" class="text-xs" onclick={() => showBatch = false}>Cancel</Button>
+					<Button variant="ghost" size="sm" class="text-xs" onclick={() => showBatch = false}>{m.cancel()}</Button>
 					<Button size="sm" disabled={!batchDestId || batchSaving} onclick={batchApply}>
 						{#if batchSaving}<Loader2 class="w-3.5 h-3.5 mr-1 animate-spin" />{/if}
-						Schedule {unconfiguredLabel}
+						{m.schedule_unconfiguredlabel({ unconfiguredLabel: orEmpty(unconfiguredLabel) })}
 					</Button>
 				</div>
 			</div>
@@ -265,15 +267,15 @@
 					<span class="flex min-w-0 flex-1 items-center gap-1.5">
 						<span class="truncate text-sm">{item.name}</span>
 						{#if item.git}
-							<span class="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-600 dark:text-purple-400" title="Git-deployed stack"><GitBranch class="h-2.5 w-2.5" />git</span>
+							<span class="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-600 dark:text-purple-400" title={m.git_deployed_stack()}><GitBranch class="h-2.5 w-2.5" />{m.git_46f1()}</span>
 						{/if}
 						{#if item.external}
-							<span class="inline-flex flex-shrink-0 items-center rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground" title="Untracked stack — can't be backed up until adopted">external</span>
+							<span class="inline-flex flex-shrink-0 items-center rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground" title={m.untracked_stack_cant_be_backed_up_until_adopted()}>{m.external()}</span>
 						{/if}
 					</span>
 
 					{#if item.external}
-						<span class="text-xs text-muted-foreground/60 flex-shrink-0" title="This stack is untracked — Dockhand doesn't know its compose file location, so it can't be backed up. Adopt it (Stacks → Adopt) first.">adopt first</span>
+						<span class="text-xs text-muted-foreground/60 flex-shrink-0" title={m.this_stack_is_untracked_dockhand_doesnt_know_its()}>{m.adopt_first()}</span>
 					{:else if hasBackup}
 						<ArrowRight class="w-3 h-3 text-muted-foreground/40 flex-shrink-0" />
 						{#if itemConfigs.length === 1}
@@ -288,11 +290,11 @@
 								{cfg.schedule ? formatCron(cfg.schedule) : 'manual'}
 							</span>
 						{:else}
-							<span class="text-xs text-muted-foreground flex-shrink-0">{itemConfigs.length} schedules</span>
+							<span class="text-xs text-muted-foreground flex-shrink-0">{m.length_schedules({ length: orEmpty(itemConfigs.length) })}</span>
 						{/if}
 					{:else}
 						<span class="text-xs text-muted-foreground/50 flex items-center gap-1 flex-shrink-0">
-							<Plus class="w-3 h-3" />configure
+							<Plus class="w-3 h-3" />{m.configure_09be()}
 						</span>
 					{/if}
 				</svelte:element>

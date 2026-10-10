@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Shield, X } from 'lucide-svelte';
@@ -39,14 +40,14 @@
 		<Dialog.Header class="shrink-0">
 			<Dialog.Title class="flex items-center gap-2">
 				<Shield class="w-5 h-5" />
-				Privacy policy
+				{m.privacy_policy()}
 			</Dialog.Title>
 		</Dialog.Header>
 
 		<div class="flex-1 min-h-0 overflow-hidden">
 			{#if loading}
 				<div class="flex items-center justify-center h-full">
-					<div class="text-sm text-muted-foreground">Loading...</div>
+					<div class="text-sm text-muted-foreground">{m.loading()}</div>
 				</div>
 			{:else if error}
 				<div class="flex items-center justify-center h-full">
@@ -59,7 +60,7 @@
 
 		<Dialog.Footer class="shrink-0">
 			<Button variant="outline" onclick={() => open = false}>
-				Close
+				{m.close()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

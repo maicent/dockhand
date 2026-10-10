@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Stacks - Dockhand</title>
+	<title>{m_i18n.stacks_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { matchesStackFilter } from '$lib/utils/grid-filters';
 	import { onMount, onDestroy } from 'svelte';
 	import { goto, afterNavigate } from '$app/navigation';
@@ -480,12 +482,12 @@
 
 	// Stack status types with icons and colors
 	const stackStatusTypes = [
-		{ value: 'running', label: 'Running', icon: Play, color: 'text-emerald-500' },
-		{ value: 'partial', label: 'Partial', icon: CircleDashed, color: 'text-amber-500' },
-		{ value: 'restarting', label: 'Restarting', icon: RotateCw, color: 'text-orange-500' },
-		{ value: 'stopped', label: 'Stopped', icon: Square, color: 'text-rose-500' },
-		{ value: 'created', label: 'Created', icon: CircleDashed, color: 'text-slate-500' },
-		{ value: 'not deployed', label: 'Not deployed', icon: Rocket, color: 'text-violet-500' }
+		{ value: 'running', label: m_i18n.running(), icon: Play, color: 'text-emerald-500' },
+		{ value: 'partial', label: m_i18n.partial(), icon: CircleDashed, color: 'text-amber-500' },
+		{ value: 'restarting', label: m_i18n.restarting(), icon: RotateCw, color: 'text-orange-500' },
+		{ value: 'stopped', label: m_i18n.stopped(), icon: Square, color: 'text-rose-500' },
+		{ value: 'created', label: m_i18n.created(), icon: CircleDashed, color: 'text-slate-500' },
+		{ value: 'not deployed', label: m_i18n.not_deployed(), icon: Rocket, color: 'text-violet-500' }
 	];
 
 	// Health rides the status filter as synthetic 'health:*' entries rather than a
@@ -493,9 +495,9 @@
 	// anything unhealthy" is asked precisely when the answer is no.
 	const filterOptions = [
 		...stackStatusTypes,
-		{ value: 'health:unhealthy', label: 'Unhealthy', icon: HeartOff, color: 'text-red-500', colorLabel: true },
-		{ value: 'health:starting', label: 'Starting up', icon: Heart, color: 'text-amber-500' },
-		{ value: 'health:healthy', label: 'Healthy', icon: HeartPulse, color: 'text-emerald-500' }
+		{ value: 'health:unhealthy', label: m_i18n.unhealthy(), icon: HeartOff, color: 'text-red-500', colorLabel: true },
+		{ value: 'health:starting', label: m_i18n.starting_up(), icon: Heart, color: 'text-amber-500' },
+		{ value: 'health:healthy', label: m_i18n.healthy(), icon: HeartPulse, color: 'text-emerald-500' }
 	];
 
 	function getStackStatusIcon(status: string) {
@@ -1025,7 +1027,7 @@
 				await fetchStacks();
 			}
 		} catch {
-			toast.error('Failed to clear update indicators');
+			toast.error(m_i18n.failed_to_clear_update_indicators());
 		}
 	}
 
@@ -1104,7 +1106,7 @@
 			stackEnvVarCounts = counts;
 		} catch (error) {
 			console.error('Failed to fetch stacks:', error);
-			toast.error('Failed to load stacks');
+			toast.error(m_i18n.failed_to_load_stacks());
 		} finally {
 			loading = false;
 			lastLoadedEnvId = envId;
@@ -1420,7 +1422,7 @@
 				clearErrorAfterDelay(containerId);
 				return;
 			}
-			toast.success('Container started');
+			toast.success(m_i18n.container_started());
 			await fetchStacks();
 		} catch (error) {
 			console.error('Failed to start container:', error);
@@ -1446,7 +1448,7 @@
 				clearErrorAfterDelay(containerId);
 				return;
 			}
-			toast.success('Container stopped');
+			toast.success(m_i18n.container_stopped());
 			await fetchStacks();
 		} catch (error) {
 			console.error('Failed to stop container:', error);
@@ -1472,7 +1474,7 @@
 				clearErrorAfterDelay(containerId);
 				return;
 			}
-			toast.success('Container restarted');
+			toast.success(m_i18n.container_restarted());
 			await fetchStacks();
 		} catch (error) {
 			console.error('Failed to restart container:', error);
@@ -1498,7 +1500,7 @@
 				clearErrorAfterDelay(containerId);
 				return;
 			}
-			toast.success('Container paused');
+			toast.success(m_i18n.container_paused());
 			await fetchStacks();
 		} catch (error) {
 			console.error('Failed to pause container:', error);
@@ -1525,7 +1527,7 @@
 				clearErrorAfterDelay(containerId);
 				return;
 			}
-			toast.success('Container unpaused');
+			toast.success(m_i18n.container_unpaused());
 			await fetchStacks();
 		} catch (error) {
 			console.error('Failed to unpause container:', error);
@@ -1551,7 +1553,7 @@
 				clearErrorAfterDelay(containerId);
 				return;
 			}
-			toast.success('Container removed');
+			toast.success(m_i18n.container_removed());
 			await fetchStacks();
 		} catch (error) {
 			console.error('Failed to remove container:', error);
@@ -1707,7 +1709,7 @@
 
 <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={Layers} title="Compose stacks" count={stacks.length}>
+		<PageHeader icon={Layers} title={m_i18n.compose_stacks()} count={stacks.length}>
 			{#if stacks.length > 0}
 				<button
 					type="button"
@@ -1717,20 +1719,20 @@
 				>
 					{#if allExpanded}
 						<ChevronsDownUp class="w-3 h-3" />
-						Collapse
+						{m_i18n.collapse()}
 					{:else}
 						<ChevronsUpDown class="w-3 h-3" />
-						Expand
+						{m_i18n.expand()}
 					{/if}
 				</button>
 			{/if}
 		</PageHeader>
 		<div class="flex flex-wrap items-center gap-2">
-			<SearchInput bind:value={searchInput} placeholder="Search stacks..." class="h-8 w-48 text-sm" />
+			<SearchInput bind:value={searchInput} placeholder={m_i18n.search_stacks()} class="h-8 w-48 text-sm" />
 			<MultiSelectFilter
 				bind:value={statusFilter}
 				options={filterOptions}
-				placeholder="All statuses"
+				placeholder={m_i18n.all_statuses()}
 				pluralLabel="statuses"
 				width="w-48"
 				defaultIcon={Layers}
@@ -1738,7 +1740,7 @@
 			<TagFilter tags={filterTags} bind:selected={tagFilter} bind:mode={tagFilterMode} bind:groupBy={groupByTag} bind:showTags={showTags} bind:showBands={showBands} bind:inlineEditing={inlineTagEditing} bind:settingsExpanded={tagSettingsExpanded} />
 			<Button size="sm" variant="outline" onclick={fetchStacks}>
 				<RefreshCw class="w-3.5 h-3.5" />
-				Refresh
+				{m_i18n.refresh()}
 			</Button>
 			<CheckUpdatesButton
 				{envId}
@@ -1775,15 +1777,15 @@
 			{#if $canAccess('stacks', 'create')}
 				<Button size="sm" variant="outline" onclick={() => openGitModal()}>
 					<GitBranch class="w-3.5 h-3.5" />
-					From Git
+					{m_i18n.from_git()}
 				</Button>
 				<Button size="sm" variant="secondary" onclick={() => showCreateModal = true}>
 					<Plus class="w-3.5 h-3.5" />
-					Create
+					{m_i18n.create()}
 				</Button>
 				<Button size="sm" variant="outline" onclick={() => showImportModal = true}>
 					<Import class="w-3.5 h-3.5" />
-					Adopt
+					{m_i18n.adopt()}
 				</Button>
 			{/if}
 		</div>
@@ -1793,13 +1795,13 @@
 	<div class="h-4 shrink-0">
 		{#if selectedStacks.size > 0}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground h-full">
-			<span>{selectedInFilter.length} selected</span>
+			<span>{m_i18n.length_selected({ length: orEmpty(selectedInFilter.length) })}</span>
 			<button
 				type="button"
 				class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all"
 				onclick={selectNone}
 			>
-				Clear
+				{m_i18n.clear()}
 			</button>
 			{#if selectedStopped.length > 0 && $canAccess('stacks', 'start')}
 				<ConfirmPopover
@@ -1816,7 +1818,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-green-600 hover:border-green-500/40 hover:shadow transition-all cursor-pointer">
 							<Play class="w-3 h-3" />
-							Start
+							{m_i18n.start()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1836,7 +1838,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-amber-600 hover:border-amber-500/40 hover:shadow transition-all cursor-pointer">
 							<RotateCcw class="w-3 h-3" />
-							Restart
+							{m_i18n.restart()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1855,7 +1857,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-red-600 hover:border-red-500/40 hover:shadow transition-all cursor-pointer">
 							<Square class="w-3 h-3" />
-							Stop
+							{m_i18n.stop()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1874,7 +1876,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-orange-600 hover:border-orange-500/40 hover:shadow transition-all cursor-pointer">
 							<ArrowBigDown class="w-3 h-3" />
-							Down
+							{m_i18n.down()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1893,7 +1895,7 @@
 				{#snippet children({ open })}
 					<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-destructive hover:border-destructive/40 hover:shadow transition-all cursor-pointer">
 						<Trash2 class="w-3 h-3" />
-						Remove
+						{m_i18n.remove()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1907,8 +1909,8 @@
 	{:else if !loading && stacks.length === 0}
 		<EmptyState
 			icon={Layers}
-			title="No compose stacks found"
-			description="Create a stack or deploy from Git to get started"
+			title={m_i18n.no_compose_stacks_found()}
+			description={m_i18n.create_a_stack_or_deploy_from_git_to_get_started()}
 		/>
 	{:else}
 		<!-- Main content area - changes layout based on mode -->
@@ -1995,7 +1997,7 @@
 								</span>
 							</Tooltip.Trigger>
 							<Tooltip.Content>
-								{stackEnvVarCounts[stack.name]} environment variable{stackEnvVarCounts[stack.name] !== 1 ? 's' : ''} configured
+								{m_i18n.arg1_environment_variable_arg2_configured({ arg1: orEmpty(stackEnvVarCounts[stack.name]), arg2: orEmpty(stackEnvVarCounts[stack.name] !== 1 ? 's' : '') })}
 							</Tooltip.Content>
 						</Tooltip.Root>
 					{/if}
@@ -2012,7 +2014,7 @@
 								{#snippet children()}
 									<button
 										type="button"
-										title="Image updates available — deploy from Git to apply"
+										title={m_i18n.image_updates_available_deploy_from_git_to_apply()}
 										onclick={(e) => e.stopPropagation()}
 										class="shrink-0 rounded hover:bg-muted transition-colors cursor-pointer inline-flex items-center gap-0.5"
 									>
@@ -2051,7 +2053,7 @@
 									{/if}
 								</Tooltip.Trigger>
 								<Tooltip.Content>
-									External stack - update possible for individual containers only.
+									{m_i18n.external_stack_update_possible_for_individual_co()}
 								</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
@@ -2063,7 +2065,7 @@
 								<span class="text-2xs font-medium leading-none">{stack.newerVersionCount}</span>
 							</Tooltip.Trigger>
 							<Tooltip.Content>
-								{stack.newerVersionCount} container{(stack.newerVersionCount ?? 0) > 1 ? 's have' : ' has'} a newer version tag.
+								{m_i18n.newerversioncount_container_arg2_a_newer_version({ newerVersionCount: orEmpty(stack.newerVersionCount), arg2: orEmpty((stack.newerVersionCount ?? 0) > 1 ? 's have' : ' has') })}
 							</Tooltip.Content>
 						</Tooltip.Root>
 					{/if}
@@ -2074,7 +2076,7 @@
 								<span class="text-2xs font-medium leading-none">{stack.coolingDownCount}</span>
 							</Tooltip.Trigger>
 							<Tooltip.Content>
-								{stack.coolingDownCount} container{(stack.coolingDownCount ?? 0) > 1 ? 's are' : ' is'} waiting out the minimum image age.
+								{m_i18n.coolingdowncount_container_arg2_waiting_out_the({ coolingDownCount: orEmpty(stack.coolingDownCount), arg2: orEmpty((stack.coolingDownCount ?? 0) > 1 ? 's are' : ' is') })}
 							</Tooltip.Content>
 						</Tooltip.Root>
 					{/if}
@@ -2101,10 +2103,10 @@
 									class="inline-flex items-center justify-center gap-1 text-xs px-1.5 py-0.5 rounded-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 shadow-sm min-w-[5.5rem]"
 								>
 									<FileCode class="w-3 h-3" />
-									Internal
+									{m_i18n.internal_fc92()}
 								</span>
 							</Tooltip.Trigger>
-							<Tooltip.Content>Managed by Dockhand</Tooltip.Content>
+							<Tooltip.Content>{m_i18n.managed_by_dockhand()}</Tooltip.Content>
 						</Tooltip.Root>
 					{:else}
 						<Tooltip.Root>
@@ -2113,11 +2115,11 @@
 									class="inline-flex items-center justify-center gap-1 text-xs px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 shadow-sm min-w-[5.5rem]"
 								>
 									<ExternalLink class="w-3 h-3" />
-									Untracked
+									{m_i18n.untracked()}
 								</span>
 							</Tooltip.Trigger>
 							<Tooltip.Content>
-								Compose file location unknown. Click the stack name or edit button to locate it.
+								{m_i18n.compose_file_location_unknown_click_the_stack_na()}
 							</Tooltip.Content>
 						</Tooltip.Root>
 					{/if}
@@ -2141,7 +2143,7 @@
 								</button>
 							</Tooltip.Trigger>
 							<Tooltip.Content class="max-w-md">
-								<p class="text-xs mb-1">Copy webhook URL</p>
+								<p class="text-xs mb-1">{m_i18n.copy_webhook_url()}</p>
 								<code class="text-2xs text-muted-foreground break-all">{webhookUrl}</code>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -2160,7 +2162,7 @@
 							</Tooltip.Content>
 						</Tooltip.Root>
 					{:else}
-						<span class="text-xs text-muted-foreground/50 italic">Not set</span>
+						<span class="text-xs text-muted-foreground/50 italic">{m_i18n.not_set()}</span>
 					{/if}
 				{:else if column.id === 'containers'}
 					<div class="flex items-center gap-1">
@@ -2172,7 +2174,7 @@
 										<span class="text-xs font-medium">{getContainerStateCounts(stack).running}</span>
 									</span>
 								</Tooltip.Trigger>
-								<Tooltip.Content>Running</Tooltip.Content>
+								<Tooltip.Content>{m_i18n.running()}</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
 						{#if getContainerStateCounts(stack).exited}
@@ -2183,7 +2185,7 @@
 										<span class="text-xs font-medium">{getContainerStateCounts(stack).exited}</span>
 									</span>
 								</Tooltip.Trigger>
-								<Tooltip.Content>Exited</Tooltip.Content>
+								<Tooltip.Content>{m_i18n.exited()}</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
 						{#if getContainerStateCounts(stack).paused}
@@ -2194,7 +2196,7 @@
 										<span class="text-xs font-medium">{getContainerStateCounts(stack).paused}</span>
 									</span>
 								</Tooltip.Trigger>
-								<Tooltip.Content>Paused</Tooltip.Content>
+								<Tooltip.Content>{m_i18n.paused()}</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
 						{#if getContainerStateCounts(stack).restarting}
@@ -2205,7 +2207,7 @@
 										<span class="text-xs font-medium">{getContainerStateCounts(stack).restarting}</span>
 									</span>
 								</Tooltip.Trigger>
-								<Tooltip.Content>Restarting</Tooltip.Content>
+								<Tooltip.Content>{m_i18n.restarting()}</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
 						{#if getContainerStateCounts(stack).created}
@@ -2216,7 +2218,7 @@
 										<span class="text-xs font-medium">{getContainerStateCounts(stack).created}</span>
 									</span>
 								</Tooltip.Trigger>
-								<Tooltip.Content>Created</Tooltip.Content>
+								<Tooltip.Content>{m_i18n.created()}</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
 						{#if getContainerStateCounts(stack).dead}
@@ -2227,7 +2229,7 @@
 										<span class="text-xs font-medium">{getContainerStateCounts(stack).dead}</span>
 									</span>
 								</Tooltip.Trigger>
-								<Tooltip.Content>Dead</Tooltip.Content>
+								<Tooltip.Content>{m_i18n.dead()}</Tooltip.Content>
 							</Tooltip.Root>
 						{/if}
 						{#if stack.containers.length === 0}
@@ -2274,7 +2276,7 @@
 					<div class="text-right whitespace-nowrap">
 						{#if stats}
 							<span class="text-xs font-mono text-muted-foreground" title="↓{formatBytes(stats.blockRead)} read / ↑{formatBytes(stats.blockWrite)} written">
-								<span class="text-2xs text-green-400">r</span>{formatBytesCompact(stats.blockRead, 0)} <span class="text-2xs text-yellow-400">w</span>{formatBytesCompact(stats.blockWrite, 0)}
+								<span class="text-2xs text-green-400">{m_i18n.r()}</span>{formatBytesCompact(stats.blockRead, 0)} <span class="text-2xs text-yellow-400">{m_i18n.w()}</span>{formatBytesCompact(stats.blockWrite, 0)}
 							</span>
 						{:else if stack.status === 'running' || stack.status === 'partial' || stack.status === 'restarting'}
 							<span class="text-xs text-muted-foreground/50">...</span>
@@ -2300,15 +2302,15 @@
 							{displayStatus}
 						</span>
 						{#if stackHealth === 'unhealthy'}
-							<span class="inline-flex shrink-0" title="One or more containers are unhealthy">
+							<span class="inline-flex shrink-0" title={m_i18n.one_or_more_containers_are_unhealthy()}>
 								<HeartOff class="w-3.5 h-3.5 text-red-500" />
 							</span>
 						{:else if stackHealth === 'starting'}
-							<span class="inline-flex shrink-0" title="A healthcheck has not settled yet">
+							<span class="inline-flex shrink-0" title={m_i18n.a_healthcheck_has_not_settled_yet()}>
 								<Heart class="w-3.5 h-3.5 text-amber-500" />
 							</span>
 						{:else if stackHealth === 'healthy'}
-							<span class="inline-flex shrink-0" title="All checked containers are healthy">
+							<span class="inline-flex shrink-0" title={m_i18n.all_checked_containers_are_healthy()}>
 								<HeartPulse class="w-3.5 h-3.5 text-emerald-500" />
 							</span>
 						{/if}
@@ -2332,7 +2334,7 @@
 								<button
 									type="button"
 									onclick={() => openGitModal(source.gitStack)}
-									title="Edit git stack"
+									title={m_i18n.edit_git_stack()}
 									class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Pencil class="grid-action-icon grid-action-edit text-muted-foreground hover:text-purple-500" />
@@ -2366,7 +2368,7 @@
 									<button
 										type="button"
 										onclick={(e) => { e.stopPropagation(); openGitModal(source.gitStack); }}
-										title="Edit git stack"
+										title={m_i18n.edit_git_stack()}
 										class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 									>
 										<Pencil class="grid-action-icon grid-action-edit text-muted-foreground hover:text-purple-500" />
@@ -2376,7 +2378,7 @@
 									<button
 										type="button"
 										onclick={(e) => { e.stopPropagation(); editStack(stack.name); }}
-										title="Edit"
+										title={m_i18n.edit()}
 										class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 									>
 										<Pencil class="grid-action-icon grid-action-edit text-muted-foreground hover:text-blue-500" />
@@ -2387,7 +2389,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); viewStackLogs(stack); }}
-									title="View logs"
+									title={m_i18n.view_logs()}
 									class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<ScrollText class="grid-action-icon grid-action-logs text-muted-foreground hover:text-blue-500" />
@@ -2415,7 +2417,7 @@
 									<button
 										type="button"
 										onclick={(e) => { e.stopPropagation(); startStack(stack.name); }}
-										title="Start"
+										title={m_i18n.start()}
 										class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 									>
 										<Play class="grid-action-icon grid-action-start text-muted-foreground hover:text-green-500" />
@@ -2428,7 +2430,7 @@
 											{#snippet child({ props })}
 												<button
 													type="button"
-													title="Restart"
+													title={m_i18n.restart()}
 													{...props}
 													onclick={(e) => { e.stopPropagation(); restartPopoverOpen[stack.name] = !restartPopoverOpen[stack.name]; }}
 													class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer inline-flex items-center"
@@ -2446,19 +2448,19 @@
 											<div class="flex flex-col gap-2 w-72">
 												<span class="flex items-center gap-1.5 text-xs text-muted-foreground">
 													<StackIcon icon={stackSources[stack.name]?.icon} stackName={stack.name} envId={$currentEnvironment?.id ?? null} class="w-4 h-4 shrink-0" />
-													<span class="truncate">Restart stack <strong class="font-semibold text-foreground">{stack.name}</strong></span>
+													<span class="truncate">{m_i18n.restart_stack()} <strong class="font-semibold text-foreground">{stack.name}</strong></span>
 												</span>
 												<button class="flex flex-col items-start gap-0.5 rounded px-2 py-1.5 text-left hover:bg-muted" onclick={() => { restartPopoverOpen[stack.name] = false; restartStack(stack.name, 'restart'); }}>
-													<span class="text-xs font-medium">Restart</span>
-													<span class="text-[11px] text-muted-foreground">Fast in-place restart. Ignores depends_on ordering.</span>
+													<span class="text-xs font-medium">{m_i18n.restart()}</span>
+													<span class="text-[11px] text-muted-foreground">{m_i18n.fast_in_place_restart_ignores_depends_on_orderin()}</span>
 												</button>
 												<button class="flex flex-col items-start gap-0.5 rounded px-2 py-1.5 text-left hover:bg-muted" onclick={() => { restartPopoverOpen[stack.name] = false; restartStack(stack.name, 'ordered'); }}>
-													<span class="text-xs font-medium">Restart in order</span>
-													<span class="text-[11px] text-muted-foreground">Stop then start in depends_on order. Same container IDs.</span>
+													<span class="text-xs font-medium">{m_i18n.restart_in_order()}</span>
+													<span class="text-[11px] text-muted-foreground">{m_i18n.stop_then_start_in_depends_on_order_same_contain()}</span>
 												</button>
 												<button class="flex flex-col items-start gap-0.5 rounded px-2 py-1.5 text-left hover:bg-muted" onclick={() => { restartPopoverOpen[stack.name] = false; restartStack(stack.name, 'recreate'); }}>
-													<span class="text-xs font-medium">Recreate (stop &amp; up)</span>
-													<span class="text-[11px] text-muted-foreground">Recreate containers in order. New IDs, re-pulls newer images.</span>
+													<span class="text-xs font-medium">{m_i18n.recreate_stop_up()}</span>
+													<span class="text-[11px] text-muted-foreground">{m_i18n.recreate_containers_in_order_new_ids_re_pulls_ne()}</span>
 												</button>
 											</div>
 										</Popover.Content>
@@ -2470,7 +2472,7 @@
 										action="Stop"
 										itemType="stack"
 										itemName={stack.name}
-										title="Stop"
+										title={m_i18n.stop()}
 										onConfirm={() => stopStack(stack.name)}
 										onOpenChange={(open) => confirmStopName = open ? stack.name : null}
 									>
@@ -2490,7 +2492,7 @@
 								action="Down"
 								itemType="stack"
 								itemName={stack.name}
-								title="Down (remove containers)"
+								title={m_i18n.down_remove_containers()}
 								onConfirm={() => downStack(stack.name)}
 								onOpenChange={(open) => confirmDownName = open ? stack.name : null}
 							>
@@ -2505,7 +2507,7 @@
 						{#if $canAccess('stacks', 'remove')}
 							<button
 								type="button"
-								title="Remove"
+								title={m_i18n.remove()}
 								onclick={(e) => { e.stopPropagation(); deleteStackName = stack.name; showDeleteModal = true; }}
 								class="p-0.5 rounded hover:bg-muted transition-colors cursor-pointer"
 							>
@@ -2550,7 +2552,7 @@
 														itemType="container"
 														itemName={container.name}
 														position="left"
-														title="Update available - click to update"
+														title={m_i18n.update_available_click_to_update()}
 														onConfirm={() => updateSingleContainer(container.id, container.name)}
 													>
 														{#snippet children({ open })}
@@ -2566,7 +2568,7 @@
 															target="_blank"
 															rel="noopener noreferrer"
 															onclick={(e) => e.stopPropagation()}
-															title="View changelog"
+															title={m_i18n.view_changelog()}
 															class="shrink-0 text-amber-500 hover:text-amber-400 transition-colors"
 														>
 															<NotepadText class="w-3 h-3" />
@@ -2583,10 +2585,10 @@
 													<div class="space-y-1.5">
 														<p class="font-medium text-sm flex items-center gap-1.5 whitespace-nowrap">
 															<AlertTriangle class="w-4 h-4 text-red-500 shrink-0" />
-															Update check failed
+															{m_i18n.update_check_failed()}
 														</p>
 														<p class="text-muted-foreground text-xs break-words">{failedUpdateCheckErrors.get(container.id) ?? 'Could not query registry'}</p>
-														<p class="text-muted-foreground text-xs">Update status unknown — often a Docker Hub rate limit. Try again later.</p>
+														<p class="text-muted-foreground text-xs">{m_i18n.update_status_unknown_often_a_docker_hub_rate_li()}</p>
 													</div>
 												</Tooltip.Content>
 											</Tooltip.Root>
@@ -2636,7 +2638,7 @@
 											<!-- CPU sparkline -->
 											<div class="space-y-0">
 												<div class="flex justify-between text-2xs">
-													<span class="text-muted-foreground">CPU</span>
+													<span class="text-muted-foreground">{m_i18n.cpu()}</span>
 													<span class="font-mono {stats?.cpuPercent && stats.cpuPercent > 80 ? 'text-red-500' : stats?.cpuPercent && stats.cpuPercent > 50 ? 'text-yellow-500' : 'text-muted-foreground'}">{stats?.cpuPercent?.toFixed(0) ?? '-'}%</span>
 												</div>
 												{#if history?.cpu && history.cpu.length >= 2}
@@ -2651,7 +2653,7 @@
 											<!-- Memory sparkline -->
 											<div class="space-y-0">
 												<div class="flex justify-between text-2xs">
-													<span class="text-muted-foreground">Mem</span>
+													<span class="text-muted-foreground">{m_i18n.mem()}</span>
 													<span class="font-mono text-muted-foreground">{stats ? formatBytesCompact(stats.memoryUsage) : '-'}</span>
 												</div>
 												{#if history?.mem && history.mem.length >= 2}
@@ -2666,7 +2668,7 @@
 											<!-- Network I/O sparkline -->
 											<div class="space-y-0">
 												<div class="flex justify-between text-2xs">
-													<span class="text-muted-foreground">Net</span>
+													<span class="text-muted-foreground">{m_i18n.net()}</span>
 													<span class="font-mono text-muted-foreground">{stats ? formatBytesCompact(stats.networkRx + stats.networkTx) : '-'}</span>
 												</div>
 												{#if history?.netRx && history.netRx.length >= 2}
@@ -2681,7 +2683,7 @@
 											<!-- Disk I/O sparkline -->
 											<div class="space-y-0">
 												<div class="flex justify-between text-2xs">
-													<span class="text-muted-foreground">Disk</span>
+													<span class="text-muted-foreground">{m_i18n.disk()}</span>
 													<span class="font-mono text-muted-foreground">{stats ? formatBytesCompact(stats.blockRead + stats.blockWrite) : '-'}</span>
 												</div>
 												{#if history?.diskR && history.diskR.length >= 2}
@@ -2817,7 +2819,7 @@
 										<div class="flex gap-1">
 											<button
 												type="button"
-												title="Open logs inline"
+												title={m_i18n.open_logs_inline()}
 												onclick={(e) => { e.stopPropagation(); showContainerLogs(container); }}
 												class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer {currentLogsContainerId === container.id ? 'bg-muted text-blue-500' : ''}"
 											>
@@ -2825,7 +2827,7 @@
 											</button>
 											<button
 												type="button"
-												title="Open logs in full view"
+												title={m_i18n.open_logs_in_full_view()}
 												onclick={(e) => { e.stopPropagation(); goto(appendEnvParam(`/logs?container=${container.id}`, envId)); }}
 												class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 											>
@@ -2834,7 +2836,7 @@
 											{#if container.state === 'running' && $canAccess('containers', 'exec')}
 												<button
 													type="button"
-													title="Open terminal"
+													title={m_i18n.open_terminal()}
 													onclick={(e) => { e.stopPropagation(); goto(appendEnvParam(`/terminal?container=${container.id}`, envId)); }}
 													class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 												>
@@ -2844,7 +2846,7 @@
 											{#if container.state === 'running' && $canAccess('containers', 'files')}
 												<button
 													type="button"
-													title="Browse files"
+													title={m_i18n.browse_files()}
 													onclick={(e) => { e.stopPropagation(); browseFiles(container.id, container.name); }}
 													class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 												>
@@ -2853,7 +2855,7 @@
 											{/if}
 											<button
 												type="button"
-												title="Inspect container"
+												title={m_i18n.inspect_container()}
 												onclick={(e) => { e.stopPropagation(); inspectContainer(container.id, container.name); }}
 												class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 											>
@@ -2877,7 +2879,7 @@
 													{#if $canAccess('containers', 'unpause')}
 														<button
 															type="button"
-															title="Unpause"
+															title={m_i18n.unpause()}
 															onclick={(e) => unpauseContainer(container.id, e)}
 															class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 														>
@@ -2888,7 +2890,7 @@
 													{#if $canAccess('containers', 'start')}
 														<button
 															type="button"
-															title="Start"
+															title={m_i18n.start()}
 															onclick={(e) => startContainer(container.id, e)}
 															class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 														>
@@ -2903,7 +2905,7 @@
 															action="Restart"
 															itemType="container"
 															itemName={container.service}
-															title="Restart"
+															title={m_i18n.restart()}
 															onConfirm={() => restartContainer(container.id)}
 															onOpenChange={(open) => confirmRestartContainerId = open ? container.id : null}
 														>
@@ -2918,7 +2920,7 @@
 															action="Pause"
 															itemType="container"
 															itemName={container.service}
-															title="Pause"
+															title={m_i18n.pause()}
 															onConfirm={() => pauseContainer(container.id)}
 															onOpenChange={(open) => confirmPauseContainerId = open ? container.id : null}
 														>
@@ -2933,7 +2935,7 @@
 															action="Stop"
 															itemType="container"
 															itemName={container.service}
-															title="Stop"
+															title={m_i18n.stop()}
 															onConfirm={() => stopContainer(container.id)}
 															onOpenChange={(open) => confirmStopContainerId = open ? container.id : null}
 														>
@@ -2950,7 +2952,7 @@
 													action="Remove"
 													itemType="container"
 													itemName={container.service}
-													title="Remove"
+													title={m_i18n.remove()}
 													onConfirm={() => removeContainer(container.id)}
 													onOpenChange={(open) => confirmRemoveContainerId = open ? container.id : null}
 												>
@@ -2969,7 +2971,7 @@
 					<div class="p-4 pl-12 shadow-inner bg-muted/30">
 						<div class="flex items-center justify-center gap-2 py-4 text-muted-foreground text-sm">
 							<Box class="w-4 h-4" />
-							<span>No containers</span>
+							<span>{m_i18n.no_containers()}</span>
 						</div>
 					</div>
 				{/if}

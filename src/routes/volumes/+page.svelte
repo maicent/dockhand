@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Volumes - Dockhand</title>
+	<title>{m.volumes_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
@@ -69,8 +71,8 @@
 
 	// Usage filter options (static)
 	const usageOptions = [
-		{ value: 'in-use', label: 'In use', icon: CircleDot, color: 'text-emerald-500' },
-		{ value: 'unused', label: 'Unused', icon: Circle, color: 'text-muted-foreground' }
+		{ value: 'in-use', label: m.in_use(), icon: CircleDot, color: 'text-emerald-500' },
+		{ value: 'unused', label: m.unused(), icon: Circle, color: 'text-muted-foreground' }
 	];
 
 	// Confirmation popover state
@@ -261,7 +263,7 @@
 			volumes = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch volumes:', error);
-			toast.error('Failed to load volumes');
+			toast.error(m.failed_to_load_volumes());
 		} finally {
 			loading = false;
 		}
@@ -355,15 +357,15 @@
 			});
 			if (response.ok) {
 				pruneStatus = 'success';
-				toast.success('Unused volumes pruned');
+				toast.success(m.unused_volumes_pruned());
 				await fetchVolumes();
 			} else {
 				pruneStatus = 'error';
-				toast.error('Failed to prune volumes');
+				toast.error(m.failed_to_prune_volumes());
 			}
 		} catch (error) {
 			pruneStatus = 'error';
-			toast.error('Failed to prune volumes');
+			toast.error(m.failed_to_prune_volumes());
 		}
 		pendingTimeouts.push(setTimeout(() => {
 			pruneStatus = 'idle';
@@ -422,13 +424,13 @@
 
 <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={HardDrive} title="Volumes" count={volumes.length} />
+		<PageHeader icon={HardDrive} title={m.volumes()} count={volumes.length} />
 		<div class="flex flex-wrap items-center gap-2">
-			<SearchInput bind:value={searchInput} placeholder="Search volumes..." class="h-8 w-48 text-sm" />
+			<SearchInput bind:value={searchInput} placeholder={m.search_volumes()} class="h-8 w-48 text-sm" />
 			<MultiSelectFilter
 				bind:value={driverFilter}
 				options={driverOptions}
-				placeholder="Driver"
+				placeholder={m.driver()}
 				pluralLabel="drivers"
 				width="w-28"
 				defaultIcon={Database}
@@ -436,7 +438,7 @@
 			<MultiSelectFilter
 				bind:value={usageFilter}
 				options={usageOptions}
-				placeholder="Usage"
+				placeholder={m.usage()}
 				pluralLabel="usages"
 				width="w-28"
 				defaultIcon={CircleDot}
@@ -446,7 +448,7 @@
 				open={confirmPrune}
 				action="Prune"
 				itemType="unused volumes"
-				title="Prune volumes"
+				title={m.prune_volumes()}
 				position="left"
 				onConfirm={pruneVolumes}
 				onOpenChange={(open) => confirmPrune = open}
@@ -463,16 +465,16 @@
 						{:else}
 							<Icon iconNode={broom} class="w-3.5 h-3.5" />
 						{/if}
-						Prune
+						{m.prune()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
 			{/if}
-			<Button size="sm" variant="outline" onclick={fetchVolumes}>Refresh</Button>
+			<Button size="sm" variant="outline" onclick={fetchVolumes}>{m.refresh()}</Button>
 			{#if $canAccess('volumes', 'create')}
 			<Button size="sm" variant="secondary" onclick={() => showCreateModal = true}>
 				<Plus class="w-3.5 h-3.5" />
-				Create
+				{m.create()}
 			</Button>
 			{/if}
 		</div>
@@ -482,13 +484,13 @@
 	<div class="h-4 shrink-0">
 		{#if selectedVolumes.size > 0}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground h-full">
-			<span>{selectedInFilter.length} selected</span>
+			<span>{m.length_selected({ length: orEmpty(selectedInFilter.length) })}</span>
 			<button
 				type="button"
 				class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all"
 				onclick={selectNone}
 			>
-				Clear
+				{m.clear()}
 			</button>
 			{#if $canAccess('volumes', 'remove')}
 			<ConfirmPopover
@@ -503,7 +505,7 @@
 				{#snippet children({ open })}
 					<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-destructive hover:border-destructive/40 hover:shadow transition-all cursor-pointer">
 						<Trash2 class="w-3 h-3" />
-						Delete
+						{m.delete()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -517,8 +519,8 @@
 	{:else if !loading && volumes.length === 0}
 		<EmptyState
 			icon={HardDrive}
-			title="No volumes found"
-			description="Create a volume to persist container data"
+			title={m.no_volumes_found()}
+			description={m.create_a_volume_to_persist_container_data()}
 		/>
 	{:else}
 		<DataGrid
@@ -589,7 +591,7 @@
 						<button
 							type="button"
 							onclick={() => inspectVolume(volume.name)}
-							title="View details"
+							title={m.view_details()}
 							class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 						>
 							<Eye class="grid-action-icon grid-action-info text-muted-foreground hover:text-foreground" />
@@ -597,7 +599,7 @@
 						<button
 							type="button"
 							onclick={() => browseVolume(volume.name)}
-							title="Browse files"
+							title={m.browse_files()}
 							class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 						>
 							<FolderOpen class="grid-action-icon grid-action-info text-muted-foreground hover:text-foreground" />
@@ -616,7 +618,7 @@
 						<button
 							type="button"
 							onclick={() => cloneVolume(volume.name)}
-							title="Clone volume"
+							title={m.clone_volume()}
 							class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 						>
 							<Stamp class="grid-action-icon grid-action-edit text-muted-foreground hover:text-foreground" />
@@ -629,7 +631,7 @@
 								action="Delete"
 								itemType="volume"
 								itemName={volume.name}
-								title="Remove"
+								title={m.remove()}
 								onConfirm={() => removeVolume(volume.name)}
 								onOpenChange={(open) => confirmDeleteName = open ? volume.name : null}
 							>

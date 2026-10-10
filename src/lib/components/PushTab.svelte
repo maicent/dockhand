@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { tick, onMount } from 'svelte';
 	import { CheckCircle2, XCircle, Loader2, AlertCircle, Terminal, Sun, Moon, Upload } from 'lucide-svelte';
 	import { appendEnvParam } from '$lib/stores/environment';
@@ -210,10 +212,10 @@
 						<span class="text-sm">{statusMessage}</span>
 					{:else if status === 'complete'}
 						<CheckCircle2 class="w-4 h-4 text-green-600" />
-						<span class="text-sm text-green-600">Push complete!</span>
+						<span class="text-sm text-green-600">{m.push_complete()}</span>
 					{:else if status === 'error'}
 						<XCircle class="w-4 h-4 text-red-600" />
-						<span class="text-sm text-red-600">Push failed</span>
+						<span class="text-sm text-red-600">{m.push_failed()}</span>
 					{/if}
 				</div>
 				{#if status === 'complete' && targetTag}
@@ -237,9 +239,9 @@
 				<div class="flex items-center justify-between text-xs text-muted-foreground mb-2 shrink-0">
 					<div class="flex items-center gap-2">
 						<Terminal class="w-3.5 h-3.5" />
-						<span>Output ({outputLines.length} lines)</span>
+						<span>{m.output_length_lines({ length: orEmpty(outputLines.length) })}</span>
 					</div>
-					<button type="button" onclick={toggleLogTheme} class="p-1 rounded hover:bg-muted transition-colors cursor-pointer" title="Toggle log theme">
+					<button type="button" onclick={toggleLogTheme} class="p-1 rounded hover:bg-muted transition-colors cursor-pointer" title={m.toggle_log_theme()}>
 						{#if logDarkMode}
 							<Sun class="w-3.5 h-3.5" />
 						{:else}
@@ -254,13 +256,13 @@
 					{#each outputLines as line}
 						<div class="whitespace-pre-wrap break-all leading-relaxed flex items-start gap-1.5">
 							{#if line.startsWith('[push]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-blue-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">push</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-blue-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.push_dc86()}</span>
 								<span>{line.slice(7)}</span>
 							{:else if line.startsWith('[layer')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-violet-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">layer</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-violet-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.layer()}</span>
 								<span>{line.slice(line.indexOf(']') + 2)}</span>
 							{:else if line.startsWith('[error]')}
-								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-red-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">error</span>
+								<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-red-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.error_11f9()}</span>
 								<span class="text-red-400">{line.slice(8)}</span>
 							{:else}
 								<span>{line}</span>
@@ -276,7 +278,7 @@
 	{#if status === 'idle'}
 		<div class="flex-1 flex flex-col items-center justify-center gap-4 text-muted-foreground">
 			<Upload class="w-12 h-12 opacity-50" />
-			<p class="text-sm">Ready to push to <code class="bg-muted px-1.5 py-0.5 rounded">{registryName}</code></p>
+			<p class="text-sm">{m.ready_to_push_to()} <code class="bg-muted px-1.5 py-0.5 rounded">{registryName}</code></p>
 		</div>
 	{/if}
 </div>

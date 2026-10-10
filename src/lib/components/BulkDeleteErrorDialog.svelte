@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { AlertTriangle } from 'lucide-svelte';
@@ -18,20 +20,19 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2 text-destructive">
 				<AlertTriangle class="h-5 w-5" />
-				Snapshots could not be deleted
+				{m.snapshots_could_not_be_deleted()}
 			</Dialog.Title>
 		</Dialog.Header>
 		{#if deleted > 0}
 			<p class="text-sm text-muted-foreground">
-				Deleted {deleted} snapshot{deleted === 1 ? '' : 's'}, but the rest failed. The backup
-				tool reported:
+				{m.deleted_deleted_snapshot_arg2_but_the_rest_faile({ deleted: orEmpty(deleted), arg2: orEmpty(deleted === 1 ? '' : 's') })}
 			</p>
 		{:else}
-			<p class="text-sm text-muted-foreground">The backup tool reported:</p>
+			<p class="text-sm text-muted-foreground">{m.the_backup_tool_reported()}</p>
 		{/if}
 		<pre class="max-h-[50vh] overflow-auto rounded-md bg-muted p-3 text-xs whitespace-pre-wrap break-words font-mono">{error}</pre>
 		<Dialog.Footer>
-			<Button onclick={() => (open = false)}>OK</Button>
+			<Button onclick={() => (open = false)}>{m.ok()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

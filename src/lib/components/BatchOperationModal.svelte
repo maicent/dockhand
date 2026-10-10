@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Progress } from '$lib/components/ui/progress';
@@ -215,11 +217,11 @@
 			<Dialog.Title>{title}</Dialog.Title>
 			<Dialog.Description>
 				{#if isRunning}
-					Processing {items.length} {entityType}...
+					{m.processing_length_entitytype({ length: orEmpty(items.length), entityType: orEmpty(entityType) })}
 				{:else if isComplete}
-					Completed: {successCount} succeeded{#if failCount > 0}, {failCount} failed{/if}{#if cancelledCount > 0}, {cancelledCount} cancelled{/if}{#if totalSize && successCount > 0} ({formatBytes(totalSize)}){/if}
+					{m.completed_successcount_succeeded({ successCount: orEmpty(successCount) })}{#if failCount > 0}{m.failcount_failed({ failCount: orEmpty(failCount) })}{/if}{#if cancelledCount > 0}{m.cancelledcount_cancelled({ cancelledCount: orEmpty(cancelledCount) })}{/if}{#if totalSize && successCount > 0} ({formatBytes(totalSize)}){/if}
 				{:else}
-					Preparing to {operation} {items.length} {entityType}...
+					{m.preparing_to_operation_length_entitytype({ operation: orEmpty(operation), length: orEmpty(items.length), entityType: orEmpty(entityType) })}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -260,15 +262,15 @@
 						<!-- Status text -->
 						<span class="text-xs text-muted-foreground flex-shrink-0">
 							{#if item.status === 'pending'}
-								pending
+								{m.pending()}
 							{:else if item.status === 'processing'}
 								{progressText[operation] ?? operation}...
 							{:else if item.status === 'success'}
-								done
+								{m.done_e5fd()}
 							{:else if item.status === 'error'}
-								<span class="text-red-500">failed</span>
+								<span class="text-red-500">{m.failed_5f5f()}</span>
 							{:else if item.status === 'cancelled'}
-								<span class="text-amber-500">cancelled</span>
+								<span class="text-amber-500">{m.cancelled()}</span>
 							{/if}
 						</span>
 					</div>
@@ -285,30 +287,30 @@
 		<!-- Footer: Summary + Button in one row -->
 		<div class="flex items-center justify-between pt-2">
 			<div class="flex items-center gap-3 text-sm">
-				<div class="flex items-center gap-1" title="Succeeded">
+				<div class="flex items-center gap-1" title={m.succeeded()}>
 					<Check class="w-4 h-4 text-green-500" />
 					<span class="tabular-nums">{successCount}</span>
 				</div>
-				<div class="flex items-center gap-1" title="Failed">
+				<div class="flex items-center gap-1" title={m.failed()}>
 					<X class="w-4 h-4 text-red-500" />
 					<span class="tabular-nums">{failCount}</span>
 				</div>
-				<div class="flex items-center gap-1" title="Cancelled">
+				<div class="flex items-center gap-1" title={m.cancelled_a1bf()}>
 					<Ban class="w-4 h-4 text-amber-500" />
 					<span class="tabular-nums">{cancelledCount}</span>
 				</div>
-				<div class="flex items-center gap-1 text-muted-foreground" title="Pending">
+				<div class="flex items-center gap-1 text-muted-foreground" title={m.pending_96f6()}>
 					<Circle class="w-4 h-4" />
 					<span class="tabular-nums">{items.length - successCount - failCount - cancelledCount}</span>
 				</div>
 			</div>
 			{#if isRunning}
 				<Button variant="outline" size="sm" onclick={handleCancel}>
-					Cancel
+					{m.cancel()}
 				</Button>
 			{:else}
 				<Button size="sm" onclick={handleOk}>
-					OK
+					{m.ok()}
 				</Button>
 			{/if}
 		</div>

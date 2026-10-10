@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -29,7 +31,7 @@
 				sources = await response.json();
 			}
 		} catch {
-			toast.error('Failed to load template sources');
+			toast.error(m.failed_to_load_template_sources());
 		} finally {
 			loading = false;
 		}
@@ -50,7 +52,7 @@
 		} catch {
 			source.enabled = !newEnabled;
 			sources = sources;
-			toast.error('Failed to update source');
+			toast.error(m.failed_to_update_source());
 		}
 	}
 
@@ -59,10 +61,10 @@
 			const response = await fetch(`/api/templates/sources?id=${source.id}`, { method: 'DELETE' });
 			if (!response.ok) throw new Error();
 			sources = sources.filter(s => s.id !== source.id);
-			toast.success('Source removed');
+			toast.success(m.source_removed());
 			onSourcesChanged();
 		} catch {
-			toast.error('Failed to remove source');
+			toast.error(m.failed_to_remove_source());
 		}
 	}
 
@@ -80,10 +82,10 @@
 			newName = '';
 			newUrl = '';
 			addingNew = false;
-			toast.success('Source added');
+			toast.success(m.source_added());
 			onSourcesChanged();
 		} catch {
-			toast.error('Failed to add source');
+			toast.error(m.failed_to_add_source());
 		}
 	}
 
@@ -120,7 +122,7 @@
 		if (failedCount > 0) {
 			toast.warning(`${failedCount} source(s) failed validation`);
 		} else {
-			toast.success('All sources are reachable');
+			toast.success(m.all_sources_are_reachable());
 		}
 	}
 
@@ -153,27 +155,27 @@
 <div class="space-y-4 max-w-3xl">
 	<div class="flex items-center justify-between">
 		<p class="text-sm text-muted-foreground">
-			Configure template catalog sources. Templates are fetched and cached for 1 hour.
+			{m.configure_template_catalog_sources_templates_are()}
 		</p>
 		<div class="flex items-center gap-2">
 			<Button size="sm" variant="outline" onclick={validateAllSources} disabled={validating}>
 				{#if validating}
 					<Loader2 class="w-3.5 h-3.5 mr-1.5 animate-spin" />
-					Validating...
+					{m.validating()}
 				{:else}
 					<ShieldCheck class="w-3.5 h-3.5 mr-1.5" />
-					Validate
+					{m.validate()}
 				{/if}
 			</Button>
 			{#if validationResults.size > 0 && [...validationResults.values()].some(v => !v.ok)}
 				<Button size="sm" variant="outline" onclick={disableInactive}>
 					<XCircle class="w-3.5 h-3.5 mr-1.5" />
-					Disable inactive
+					{m.disable_inactive()}
 				</Button>
 			{/if}
 			<Button size="sm" onclick={() => addingNew = !addingNew}>
 				<Plus class="w-3.5 h-3.5 mr-1.5" />
-				Add source
+				{m.add_source()}
 			</Button>
 		</div>
 	</div>
@@ -183,15 +185,15 @@
 			<Card.Content class="p-3">
 				<div class="flex items-end gap-3">
 					<div class="flex-1 space-y-1">
-						<label for="new-source-name" class="text-xs font-medium text-muted-foreground">Name</label>
-						<Input id="new-source-name" bind:value={newName} placeholder="My templates" class="h-8 text-sm" />
+						<label for="new-source-name" class="text-xs font-medium text-muted-foreground">{m.name()}</label>
+						<Input id="new-source-name" bind:value={newName} placeholder={m.my_templates()} class="h-8 text-sm" />
 					</div>
 					<div class="flex-[2] space-y-1">
-						<label for="new-source-url" class="text-xs font-medium text-muted-foreground">URL</label>
-						<Input id="new-source-url" bind:value={newUrl} placeholder="https://example.com/templates.json" class="h-8 text-sm" />
+						<label for="new-source-url" class="text-xs font-medium text-muted-foreground">{m.url()}</label>
+						<Input id="new-source-url" bind:value={newUrl} placeholder={m.https_example_com_templates_json()} class="h-8 text-sm" />
 					</div>
-					<Button size="sm" onclick={addSource} disabled={!newName.trim() || !newUrl.trim()}>Add</Button>
-					<Button size="sm" variant="ghost" onclick={() => addingNew = false}>Cancel</Button>
+					<Button size="sm" onclick={addSource} disabled={!newName.trim() || !newUrl.trim()}>{m.add()}</Button>
+					<Button size="sm" variant="ghost" onclick={() => addingNew = false}>{m.cancel()}</Button>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -200,7 +202,7 @@
 	{#if loading}
 		<div class="flex items-center justify-center py-8 text-muted-foreground">
 			<Loader2 class="w-5 h-5 animate-spin mr-2" />
-			Loading sources...
+			{m.loading_sources()}
 		</div>
 	{:else}
 		<div class="space-y-2">
@@ -224,7 +226,7 @@
 								<div class="flex items-center gap-2">
 									<span class="text-sm font-medium">{source.name}</span>
 									{#if validation?.ok && validation.count !== undefined}
-										<span class="text-xs text-muted-foreground">({validation.count} templates)</span>
+										<span class="text-xs text-muted-foreground">{m.count_templates({ count: orEmpty(validation.count) })}</span>
 									{/if}
 								</div>
 								<div class="text-xs text-muted-foreground truncate">{source.url}</div>

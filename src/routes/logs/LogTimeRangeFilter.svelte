@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
 	import { CalendarClock, X } from 'lucide-svelte';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Calendar } from '$lib/components/ui/calendar';
@@ -105,14 +106,14 @@
 					onclick={() => picking = 'from'}
 					class="flex-1 px-3 py-1.5 text-xs font-medium transition-colors {picking === 'from' ? 'text-foreground border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}"
 				>
-					From{#if sinceDate}<span class="ml-1 text-muted-foreground">({sinceDate.slice(5)})</span>{/if}
+					{m_i18n.from()}{#if sinceDate}<span class="ml-1 text-muted-foreground">({sinceDate.slice(5)})</span>{/if}
 				</button>
 				<button
 					type="button"
 					onclick={() => picking = 'to'}
 					class="flex-1 px-3 py-1.5 text-xs font-medium transition-colors {picking === 'to' ? 'text-foreground border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}"
 				>
-					To{#if untilDate}<span class="ml-1 text-muted-foreground">({untilDate.slice(5)})</span>{/if}
+					{m_i18n.to()}{#if untilDate}<span class="ml-1 text-muted-foreground">({untilDate.slice(5)})</span>{/if}
 				</button>
 			</div>
 
@@ -126,7 +127,7 @@
 				/>
 				<div class="px-3 pb-2">
 					<div class="flex items-center gap-2">
-						<span class="text-xs text-muted-foreground">Time:</span>
+						<span class="text-xs text-muted-foreground">{m_i18n.time()}</span>
 						<input type="time" bind:value={sinceTime} class="h-7 rounded border border-border px-2 text-xs bg-background text-foreground [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-ring" />
 					</div>
 				</div>
@@ -139,7 +140,7 @@
 				/>
 				<div class="px-3 pb-2">
 					<div class="flex items-center gap-2">
-						<span class="text-xs text-muted-foreground">Time:</span>
+						<span class="text-xs text-muted-foreground">{m_i18n.time()}</span>
 						<input type="time" bind:value={untilTime} class="h-7 rounded border border-border px-2 text-xs bg-background text-foreground [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-ring" />
 					</div>
 				</div>
@@ -147,8 +148,8 @@
 
 			<!-- Actions -->
 			<div class="flex items-center gap-2 px-3 pb-2">
-				<button onclick={apply} class="px-2 py-1 rounded text-xs bg-primary text-primary-foreground hover:bg-primary/90" disabled={!sinceDate && !untilDate}>Apply</button>
-				<button onclick={clear} class="px-2 py-1 rounded text-xs bg-muted text-muted-foreground hover:bg-muted/80">Clear</button>
+				<button onclick={apply} class="px-2 py-1 rounded text-xs bg-primary text-primary-foreground hover:bg-primary/90" disabled={!sinceDate && !untilDate}>{m_i18n.apply()}</button>
+				<button onclick={clear} class="px-2 py-1 rounded text-xs bg-muted text-muted-foreground hover:bg-muted/80">{m_i18n.clear()}</button>
 			</div>
 		</div>
 	</Popover.Content>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { X, GripHorizontal, RefreshCw, Copy, Download, WrapText, ArrowDownToLine, Search, ChevronUp, ChevronDown, Sun, Moon, Wifi, WifiOff, Pause, Play, Eraser, Filter, Clock, Tag, Hash } from 'lucide-svelte';
 	import LogTimeRangeFilter from './LogTimeRangeFilter.svelte';
@@ -77,7 +79,7 @@
 	const tailOptions = [
 		{ value: '100', label: '100' },
 		{ value: '500', label: '500' },
-		{ value: '1000', label: '1K' }
+		{ value: '1000', label: m.t_1k() }
 	];
 	const VALID_TAIL_VALUES = new Set(tailOptions.map(o => o.value));
 
@@ -739,14 +741,14 @@
 			<!-- Connection status indicator -->
 			{#if streamingEnabled}
 				{#if isConnected}
-					<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Connected - Live streaming">
+					<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.connected_live_streaming()}>
 						<Wifi class="w-3.5 h-3.5 text-green-500" />
-						<span class="text-xs text-green-500 font-medium">Live</span>
+						<span class="text-xs text-green-500 font-medium">{m.live()}</span>
 					</div>
 				{:else if loading}
-					<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Connecting...">
+					<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.connecting()}>
 						<RefreshCw class="w-3.5 h-3.5 animate-spin {darkMode ? 'text-amber-500' : 'text-amber-600'}" />
-						<span class="text-xs {darkMode ? 'text-amber-500' : 'text-amber-600'}">Connecting...</span>
+						<span class="text-xs {darkMode ? 'text-amber-500' : 'text-amber-600'}">{m.connecting()}</span>
 					</div>
 				{:else if connectionError}
 					<button
@@ -755,22 +757,22 @@
 						title={connectionError}
 					>
 						<WifiOff class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-						<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Disconnected</span>
+						<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.disconnected()}</span>
 					</button>
 				{:else}
 					<button
 						onclick={retryConnection}
 						class="flex items-center gap-1.5 transition-opacity duration-300 hover:opacity-80"
-						title="Click to reconnect"
+						title={m.click_to_reconnect()}
 					>
 						<WifiOff class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-						<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Offline</span>
+						<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.offline()}</span>
 					</button>
 				{/if}
 			{:else}
-				<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Streaming paused">
+				<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.streaming_paused()}>
 					<Pause class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-					<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Paused</span>
+					<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.paused()}</span>
 				</div>
 			{/if}
 			<span class="text-xs {darkMode ? 'text-zinc-400' : 'text-gray-500'}">|</span>
@@ -791,12 +793,12 @@
 			</button>
 			<!-- Tail lines selector -->
 			<Select.Root type="single" value={tailCount} onValueChange={(v) => { tailCount = v; saveSettings(); reloadLogs(); }}>
-				<Select.Trigger size="sm" class="!h-auto !py-0.5 w-[52px] text-xs px-1.5 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'} [&_svg]:size-3" title="Number of log lines to load">
+				<Select.Trigger size="sm" class="!h-auto !py-0.5 w-[52px] text-xs px-1.5 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'} [&_svg]:size-3" title={m.number_of_log_lines_to_load()}>
 					<span>{tailOptions.find(o => o.value === tailCount)?.label ?? tailCount}</span>
 				</Select.Trigger>
 				<Select.Content>
 					{#each tailOptions as opt}
-						<Select.Item value={opt.value} label={opt.label}>{opt.label} lines</Select.Item>
+						<Select.Item value={opt.value} label={opt.label}>{m.label_lines({ label: orEmpty(opt.label) })}</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -814,18 +816,18 @@
 			<button
 				onclick={toggleAutoScroll}
 				class="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-colors {autoScroll ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-300'}"
-				title="Toggle auto-scroll"
+				title={m.toggle_auto_scroll()}
 			>
 				<ArrowDownToLine class="w-3 h-3" />
 			</button>
 			<!-- Font size -->
 			<Select.Root type="single" value={String(fontSize)} onValueChange={(v) => updateFontSize(Number(v))}>
 				<Select.Trigger size="sm" class="!h-auto !py-0.5 w-14 text-xs px-1.5 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'} [&_svg]:size-3">
-					<span>{fontSize}px</span>
+					<span>{m.fontsize_px({ fontSize: orEmpty(fontSize) })}</span>
 				</Select.Trigger>
 				<Select.Content>
 					{#each fontSizeOptions as size}
-						<Select.Item value={String(size)} label="{size}px">{size}px</Select.Item>
+						<Select.Item value={String(size)} label="{size}px">{m.size_px({ size: orEmpty(size) })}</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -833,7 +835,7 @@
 			<button
 				onclick={toggleWordWrap}
 				class="p-1 rounded transition-colors {wordWrap ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50' : 'bg-amber-500/30 ring-1 ring-amber-600/50') : ''} {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Toggle word wrap"
+				title={m.toggle_word_wrap()}
 			>
 				<WrapText class="w-3 h-3 transition-colors {wordWrap ? (darkMode ? 'text-amber-400' : 'text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -880,7 +882,7 @@
 					<input
 						bind:this={logSearchInputRef}
 						type="text"
-						placeholder="Search..."
+						placeholder={m.search()}
 						bind:value={logSearchQuery}
 						onkeydown={handleLogSearchKeydown}
 						class="bg-transparent border-none outline-none text-xs w-20 {darkMode ? 'text-zinc-200 placeholder:text-zinc-500' : 'text-gray-800 placeholder:text-gray-400'}"
@@ -897,13 +899,13 @@
 					{:else if logSearchQuery}
 						<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">0/0</span>
 					{/if}
-					<button onclick={() => navigateMatch('prev')} class="p-0.5 rounded {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Previous">
+					<button onclick={() => navigateMatch('prev')} class="p-0.5 rounded {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.previous()}>
 						<ChevronUp class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 					</button>
-					<button onclick={() => navigateMatch('next')} class="p-0.5 rounded {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Next">
+					<button onclick={() => navigateMatch('next')} class="p-0.5 rounded {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.next()}>
 						<ChevronDown class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 					</button>
-					<button onclick={closeLogSearch} class="p-0.5 rounded {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Close">
+					<button onclick={closeLogSearch} class="p-0.5 rounded {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.close()}>
 						<X class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 					</button>
 				</div>
@@ -911,7 +913,7 @@
 				<button
 					onclick={toggleLogSearch}
 					class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-					title="Search logs"
+					title={m.search_logs()}
 				>
 					<Search class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 				</button>
@@ -920,7 +922,7 @@
 			<button
 				onclick={copyLogs}
 				class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Copy logs"
+				title={m.copy_logs()}
 			>
 				<Copy class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -928,7 +930,7 @@
 			<button
 				onclick={downloadLogs}
 				class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Download logs"
+				title={m.download_logs()}
 			>
 				<Download class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -936,7 +938,7 @@
 			<button
 				onclick={clearLogs}
 				class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Clear logs"
+				title={m.clear_logs()}
 			>
 				<Eraser class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -944,7 +946,7 @@
 			<button
 				onclick={fetchLogs}
 				class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Refresh logs"
+				title={m.refresh_logs()}
 			>
 				<RefreshCw class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -953,7 +955,7 @@
 				<button
 					onclick={handleClose}
 					class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-					title="Close logs"
+					title={m.close_logs()}
 				>
 					<X class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 				</button>
@@ -966,9 +968,9 @@
 		{#if logs.length > 0}
 			<pre class="logs-fade-in {wordWrap ? 'whitespace-pre-wrap' : 'whitespace-pre'} {showLineNumbers ? 'show-line-numbers' : ''} {darkMode ? 'text-zinc-50' : 'text-gray-900'}" style="font-size: {fontSize}px; font-family: {terminalFontFamily()};">{#each filteredLogs as e (e.id)}<div class="log-line">{#if showTimestamps && e.timestamp}<span class="log-ts">{renderTimestamp(e.timestamp)}</span>{' '}{/if}{#if showContainerName && containerName}<span class="log-cname">[{containerName}]</span>{' '}{/if}<span>{@html renderLineHtml(e, logSearchQuery.trim())}</span></div>{/each}</pre>
 		{:else if loading}
-			<p class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-500'}">Connecting to log stream...</p>
+			<p class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-500'}">{m.connecting_to_log_stream()}</p>
 		{:else}
-			<p class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-500'}">No logs available</p>
+			<p class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-500'}">{m.no_logs_available()}</p>
 		{/if}
 	</div>
 </div>

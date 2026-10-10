@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -73,7 +75,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to fetch OIDC configs:', error);
-			toast.error('Failed to fetch OIDC configurations');
+			toast.error(m.failed_to_fetch_oidc_configurations());
 		} finally {
 			oidcLoading = false;
 		}
@@ -100,13 +102,13 @@
 			const response = await fetch(`/api/auth/oidc/${configId}`, { method: 'DELETE' });
 			if (response.ok) {
 				await fetchOidcConfigs();
-				toast.success('OIDC provider deleted');
+				toast.success(m.oidc_provider_deleted());
 			} else {
-				toast.error('Failed to delete OIDC provider');
+				toast.error(m.failed_to_delete_oidc_provider());
 			}
 		} catch (error) {
 			console.error('Failed to delete OIDC config:', error);
-			toast.error('Failed to delete OIDC provider');
+			toast.error(m.failed_to_delete_oidc_provider());
 		} finally {
 			confirmDeleteOidcId = null;
 		}
@@ -120,13 +122,13 @@
 			const data = await response.json();
 			oidcTestResult = data;
 			if (data.success) {
-				toast.success('OIDC connection successful');
+				toast.success(m.oidc_connection_successful());
 			} else {
 				toast.error(`OIDC connection failed: ${data.error}`);
 			}
 		} catch (error) {
 			oidcTestResult = { success: false, error: 'Failed to test connection' };
-			toast.error('Failed to test OIDC connection');
+			toast.error(m.failed_to_test_oidc_connection());
 		} finally {
 			oidcTesting = null;
 		}
@@ -143,11 +145,11 @@
 				await fetchOidcConfigs();
 				toast.success(`OIDC provider ${config.enabled ? 'disabled' : 'enabled'}`);
 			} else {
-				toast.error('Failed to toggle OIDC provider');
+				toast.error(m.failed_to_toggle_oidc_provider());
 			}
 		} catch (error) {
 			console.error('Failed to toggle OIDC config:', error);
-			toast.error('Failed to toggle OIDC provider');
+			toast.error(m.failed_to_toggle_oidc_provider());
 		}
 	}
 
@@ -163,14 +165,14 @@
 				<div>
 					<Card.Title class="text-sm font-medium flex items-center gap-2">
 						<LogIn class="w-4 h-4" />
-						SSO providers
+						{m.sso_providers()}
 					</Card.Title>
-					<p class="text-xs text-muted-foreground mt-1">Enable SSO using OpenID Connect providers like Okta, Auth0, Azure AD, or Google Workspace.</p>
+					<p class="text-xs text-muted-foreground mt-1">{m.enable_sso_using_openid_connect_providers_like_o()}</p>
 				</div>
 				{#if $canAccess('settings', 'edit')}
 					<Button size="sm" onclick={() => openOidcModal(null)}>
 						<Plus class="w-4 h-4" />
-						Add provider
+						{m.add_provider()}
 					</Button>
 				{/if}
 			</div>
@@ -183,8 +185,8 @@
 			{:else if oidcConfigs.length === 0}
 				<EmptyState
 					icon={LogIn}
-					title="No SSO providers configured"
-					description="Add an OIDC provider to enable single sign-on"
+					title={m.no_sso_providers_configured()}
+					description={m.add_an_oidc_provider_to_enable_single_sign_on()}
 					class="py-8"
 				/>
 			{:else}
@@ -195,9 +197,9 @@
 								<div class="flex items-center gap-2">
 									<span class="font-medium text-sm">{config.name}</span>
 									{#if config.enabled}
-										<Badge variant="default" class="text-xs">Enabled</Badge>
+										<Badge variant="default" class="text-xs">{m.enabled()}</Badge>
 									{:else}
-										<Badge variant="outline" class="text-xs">Disabled</Badge>
+										<Badge variant="outline" class="text-xs">{m.disabled()}</Badge>
 									{/if}
 								</div>
 								<span class="text-xs text-muted-foreground truncate block">{config.issuerUrl}</span>
@@ -206,7 +208,7 @@
 								<Button
 									variant="ghost"
 									size="sm"
-									title="Test connection"
+									title={m.test_connection()}
 									onclick={() => testOidcConnection(config.id)}
 									disabled={oidcTesting === config.id}
 								>
@@ -232,7 +234,7 @@
 									<Button
 										variant="ghost"
 										size="sm"
-										title="Edit provider"
+										title={m.edit_provider()}
 										onclick={() => openOidcModal(config)}
 									>
 										<Pencil class="w-4 h-4" />
@@ -242,7 +244,7 @@
 										action="Delete"
 										itemType="OIDC provider"
 										itemName={config.name}
-										title="Delete"
+										title={m.delete()}
 										onConfirm={() => deleteOidcConfig(config.id)}
 										onOpenChange={(open) => confirmDeleteOidcId = open ? config.id : null}
 									>
@@ -262,15 +264,15 @@
 					{#if oidcTestResult.success}
 						<div class="flex items-center gap-2 text-green-600">
 							<Check class="w-4 h-4" />
-							<p class="text-sm font-medium">Connection successful</p>
+							<p class="text-sm font-medium">{m.connection_successful()}</p>
 						</div>
 						{#if oidcTestResult.issuer}
-							<p class="text-xs text-muted-foreground mt-1">Issuer: {oidcTestResult.issuer}</p>
+							<p class="text-xs text-muted-foreground mt-1">{m.issuer_issuer({ issuer: orEmpty(oidcTestResult.issuer) })}</p>
 						{/if}
 					{:else}
 						<div class="flex items-center gap-2 text-destructive">
 							<XCircle class="w-4 h-4" />
-							<p class="text-sm">Connection failed: {oidcTestResult.error}</p>
+							<p class="text-sm">{m.connection_failed_error({ error: orEmpty(oidcTestResult.error) })}</p>
 						</div>
 					{/if}
 				</div>

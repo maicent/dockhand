@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { TogglePill } from '$lib/components/ui/toggle-pill';
@@ -45,22 +46,22 @@
 
 <div class="flex items-start gap-3">
 	<div class="flex-1">
-		<Label>Collect container activity</Label>
-		<p class="text-xs text-muted-foreground">Track container events (start, stop, restart, etc.) from this environment in real-time</p>
+		<Label>{m.collect_container_activity()}</Label>
+		<p class="text-xs text-muted-foreground">{m.track_container_events_start_stop_restart_etc_fr()}</p>
 	</div>
 	<TogglePill bind:checked={collectActivity} />
 </div>
 <div class="flex items-start gap-3">
 	<div class="flex-1">
-		<Label>Collect system metrics</Label>
-		<p class="text-xs text-muted-foreground">Collect CPU and memory history for the dashboard tiles and charts. The live per-container stats on the containers page are always shown and are not affected by this.</p>
+		<Label>{m.collect_system_metrics()}</Label>
+		<p class="text-xs text-muted-foreground">{m.collect_cpu_and_memory_history_for_the_dashboard()}</p>
 	</div>
 	<TogglePill bind:checked={collectMetrics} />
 </div>
 <div class="flex items-start gap-3">
 	<div class="flex-1">
-		<Label>Highlight value changes</Label>
-		<p class="text-xs text-muted-foreground">Flash an amber glow on a container's stat cell when its value changes. The numbers keep updating either way - this only controls the highlight animation.</p>
+		<Label>{m.highlight_value_changes()}</Label>
+		<p class="text-xs text-muted-foreground">{m.flash_an_amber_glow_on_a_containers_stat_cell_wh()}</p>
 	</div>
 	<TogglePill bind:checked={highlightChanges} />
 </div>
@@ -68,8 +69,8 @@
 <div class="border-t pt-4 mt-2 space-y-3">
 	<div class="flex items-start gap-3">
 		<div class="flex-1">
-			<Label>Disk space warnings</Label>
-			<p class="text-xs text-muted-foreground">Send notifications when Docker disk usage exceeds the threshold</p>
+			<Label>{m.disk_space_warnings()}</Label>
+			<p class="text-xs text-muted-foreground">{m.send_notifications_when_docker_disk_usage_exceed()}</p>
 		</div>
 		<TogglePill bind:checked={diskWarningEnabled} />
 	</div>
@@ -85,10 +86,10 @@
 							{:else}
 								<Percent class="w-3.5 h-3.5" />
 							{/if}
-							<span>Percentage</span>
+							<span>{m.percentage()}</span>
 						{:else}
 							<HardDrive class="w-3.5 h-3.5" />
-							<span>Absolute (GB)</span>
+							<span>{m.absolute_gb()}</span>
 						{/if}
 					</div>
 				</Select.Trigger>
@@ -100,17 +101,17 @@
 						<div class="flex flex-col gap-0.5">
 							<div class="flex items-center gap-2">
 								<Percent class="w-3.5 h-3.5" />
-								Percentage
+								{m.percentage()}
 							</div>
 							{#if percentageDead}
-								<span class="text-xs text-muted-foreground">does not work on this host</span>
+								<span class="text-xs text-muted-foreground">{m.does_not_work_on_this_host()}</span>
 							{/if}
 						</div>
 					</Select.Item>
 					<Select.Item value="absolute">
 						<div class="flex items-center gap-2">
 							<HardDrive class="w-3.5 h-3.5" />
-							Absolute (GB)
+							{m.absolute_gb()}
 						</div>
 					</Select.Item>
 				</Select.Content>
@@ -132,7 +133,7 @@
 					bind:value={diskWarningThresholdGb}
 					class="w-24"
 				/>
-				<span class="text-sm text-muted-foreground">GB</span>
+				<span class="text-sm text-muted-foreground">{m.gb()}</span>
 			{/if}
 		</div>
 
@@ -149,7 +150,7 @@
 						class="mt-1 underline underline-offset-2 text-muted-foreground hover:text-foreground"
 						onclick={() => (diskWarningMode = 'absolute')}
 					>
-						Switch to Absolute (GB)
+						{m.switch_to_absolute_gb()}
 					</button>
 				</div>
 			</div>

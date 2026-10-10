@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { readJobResponse } from '$lib/utils/sse-fetch';
 	import { Button } from '$lib/components/ui/button';
@@ -501,7 +503,7 @@
 				throw new Error(data.error || 'Failed to save file');
 			}
 
-			toast.success('File saved');
+			toast.success(m.file_saved());
 			forceCloseEditor(); // saved → close without re-prompting the dirty guard
 		} catch (err: any) {
 			toast.error(err.message || 'Failed to save file');
@@ -528,7 +530,7 @@
 	// Create file or directory
 	async function handleCreate() {
 		if (!createName.trim()) {
-			toast.error('Name is required');
+			toast.error(m.name_is_required());
 			return;
 		}
 
@@ -601,7 +603,7 @@
 
 	async function handleRename() {
 		if (!renameEntry || !renameName.trim()) {
-			toast.error('Name is required');
+			toast.error(m.name_is_required());
 			return;
 		}
 
@@ -631,7 +633,7 @@
 				throw new Error(data.error || 'Failed to rename');
 			}
 
-			toast.success('Renamed successfully');
+			toast.success(m.renamed_successfully());
 			showRenameModal = false;
 			renameEntry = null;
 			loadDirectory(currentPath);
@@ -674,7 +676,7 @@
 
 	async function handleChmod() {
 		if (!chmodEntry || !chmodMode.trim()) {
-			toast.error('Mode is required');
+			toast.error(m.mode_is_required());
 			return;
 		}
 
@@ -697,7 +699,7 @@
 				throw new Error(data.error || 'Failed to change permissions');
 			}
 
-			toast.success('Permissions changed');
+			toast.success(m.permissions_changed());
 			showChmodModal = false;
 			chmodEntry = null;
 			loadDirectory(currentPath);
@@ -718,7 +720,7 @@
 
 	async function handleChown() {
 		if (!chownEntry || !chownOwner.trim()) {
-			toast.error('Owner is required');
+			toast.error(m.owner_is_required());
 			return;
 		}
 
@@ -741,7 +743,7 @@
 				throw new Error(data.error || 'Failed to change owner');
 			}
 
-			toast.success('Owner changed');
+			toast.success(m.owner_changed());
 			showChownModal = false;
 			chownEntry = null;
 			loadDirectory(currentPath);
@@ -997,7 +999,7 @@
 		if (!dropTargetReady || uploading) return;
 		const items = Array.from(e.dataTransfer?.items ?? []);
 		if (items.some((item) => item.webkitGetAsEntry()?.isDirectory)) {
-			toast.error('Folder upload is not supported');
+			toast.error(m.folder_upload_is_not_supported());
 			return;
 		}
 		uploadFiles(Array.from(e.dataTransfer?.files ?? []));
@@ -1041,14 +1043,14 @@
 <div
 	class="flex flex-col h-full relative"
 	role="region"
-	aria-label="File browser"
+	aria-label={m.file_browser()}
 	ondragover={handleDragOver}
 	ondragleave={handleDragLeave}
 	ondrop={handleDrop}
 >
 	{#if dragging}
 		<div class="absolute inset-0 z-20 pointer-events-none flex items-center justify-center gap-2 bg-background/80 border-2 border-dashed border-primary rounded-lg text-sm">
-			<Upload class="w-4 h-4" /> Drop files to upload to {currentPath}
+			<Upload class="w-4 h-4" /> {m.drop_files_to_upload_to_currentpath({ currentPath: orEmpty(currentPath) })}
 		</div>
 	{/if}
 	<!-- Header with breadcrumbs and actions -->
@@ -1089,7 +1091,7 @@
 				size="icon"
 				class="h-7 w-7"
 				onclick={() => { createType = 'file'; createName = ''; createOwner = ''; showCreateModal = true; }}
-				title="New file"
+				title={m.new_file()}
 			>
 				<FilePlus class="w-3.5 h-3.5" />
 			</Button>
@@ -1098,7 +1100,7 @@
 				size="icon"
 				class="h-7 w-7"
 				onclick={() => { createType = 'directory'; createName = ''; createOwner = ''; showCreateModal = true; }}
-				title="New directory"
+				title={m.new_directory()}
 			>
 				<FolderPlus class="w-3.5 h-3.5" />
 			</Button>
@@ -1115,7 +1117,7 @@
 				class="h-7 w-7"
 				onclick={() => fileInput.click()}
 				disabled={uploading || loading}
-				title="Upload files"
+				title={m.upload_files()}
 			>
 				{#if uploading}
 					<Loader2 class="w-3.5 h-3.5 animate-spin" />
@@ -1143,7 +1145,7 @@
 			class="h-7 w-7"
 			onclick={() => loadDirectory(currentPath)}
 			disabled={loading}
-			title="Refresh"
+			title={m.refresh()}
 		>
 			<RefreshCw class="w-3.5 h-3.5 {loading ? 'animate-spin' : ''}" />
 		</Button>
@@ -1152,16 +1154,16 @@
 	<!-- File list -->
 	<div class="flex-1 overflow-auto relative">
 		{#if loading}
-			<LoadingState class="absolute inset-0 z-10 bg-background/80" label="Loading files..." />
+			<LoadingState class="absolute inset-0 z-10 bg-background/80" label={m.loading_files()} />
 		{/if}
 		{#if error}
 			<div class="flex items-center justify-center p-4 h-full">
 				<div class="max-w-md bg-destructive/5 border border-destructive/20 rounded-lg p-4 text-center">
 					<AlertCircle class="w-6 h-6 text-destructive mx-auto" />
-					<p class="text-sm font-medium text-destructive mt-2">Unable to browse files</p>
+					<p class="text-sm font-medium text-destructive mt-2">{m.unable_to_browse_files()}</p>
 					<p class="text-xs text-muted-foreground mt-2 break-words font-mono bg-muted/50 rounded px-2 py-1.5">{error}</p>
 					<Button variant="outline" size="sm" class="mt-3" onclick={() => loadDirectory(currentPath)}>
-						Retry
+						{m.retry()}
 					</Button>
 				</div>
 			</div>
@@ -1179,29 +1181,29 @@
 					<Table.Row>
 						<Table.Head class="w-[35%] py-1.5 text-xs font-medium">
 							<button type="button" class="flex items-center gap-1 hover:text-foreground" onclick={() => toggleSort('name')}>
-								Name
+								{m.name()}
 								<svelte:component this={getSortIcon('name')} class="w-3 h-3 opacity-50" />
 							</button>
 						</Table.Head>
 						<Table.Head class="w-[8%] py-1.5 text-xs font-medium">
 							<button type="button" class="flex items-center gap-1 hover:text-foreground" onclick={() => toggleSort('size')}>
-								Size
+								{m.size()}
 								<svelte:component this={getSortIcon('size')} class="w-3 h-3 opacity-50" />
 							</button>
 						</Table.Head>
 						<Table.Head class="w-[14%] py-1.5 text-xs font-medium">
-							<span class="text-muted-foreground">Permissions</span>
+							<span class="text-muted-foreground">{m.permissions()}</span>
 						</Table.Head>
 						<Table.Head class="w-[12%] py-1.5 text-xs font-medium">
-							<span class="text-muted-foreground">Owner</span>
+							<span class="text-muted-foreground">{m.owner()}</span>
 						</Table.Head>
 						<Table.Head class="w-[14%] py-1.5 text-xs font-medium">
 							<button type="button" class="flex items-center gap-1 hover:text-foreground" onclick={() => toggleSort('modified')}>
-								Modified
+								{m.modified()}
 								<svelte:component this={getSortIcon('modified')} class="w-3 h-3 opacity-50" />
 							</button>
 						</Table.Head>
-						<Table.Head class="w-[21%] py-1.5 text-xs font-medium text-right">Actions</Table.Head>
+						<Table.Head class="w-[21%] py-1.5 text-xs font-medium text-right">{m.actions()}</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -1238,10 +1240,10 @@
 									{#if entry.readonly && entry.type === 'file'}
 										<span
 											class="inline-flex items-center gap-0.5 ml-1.5 px-1 py-0.5 text-2xs bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded"
-											title="Read-only file (no write permission)"
+											title={m.read_only_file_no_write_permission()}
 										>
 											<Lock class="w-2.5 h-2.5" />
-											RO
+											{m.ro()}
 										</span>
 									{/if}
 								</button>
@@ -1272,7 +1274,7 @@
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openFileForView(entry); }}
 											disabled={loadingFile}
-											title="View file"
+											title={m.view_file()}
 										>
 											<Eye class="w-3 h-3" />
 										</Button>
@@ -1301,7 +1303,7 @@
 											size="icon"
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openRenameModal(entry); }}
-											title="Rename"
+											title={m.rename()}
 										>
 											<TextCursorInput class="w-3 h-3" />
 										</Button>
@@ -1310,7 +1312,7 @@
 											size="icon"
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openChmodModal(entry); }}
-											title="Change permissions"
+											title={m.change_permissions()}
 										>
 											<Shield class="w-3 h-3" />
 										</Button>
@@ -1319,7 +1321,7 @@
 											size="icon"
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); openChownModal(entry); }}
-											title="Change owner"
+											title={m.change_owner()}
 										>
 											<UserCog class="w-3 h-3" />
 										</Button>
@@ -1348,7 +1350,7 @@
 											size="icon"
 											class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
 											onclick={(e: MouseEvent) => { e.stopPropagation(); downloadFile(entry); }}
-											title="Download"
+											title={m.download()}
 										>
 											<Download class="w-3 h-3" />
 										</Button>
@@ -1385,9 +1387,9 @@
 						{:else}
 							<Save class="w-3.5 h-3.5 mr-1.5" />
 						{/if}
-						Save
+						{m.save()}
 					</Button>
-					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeEditor} title="Close editor">
+					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeEditor} title={m.close_editor()}>
 						<X class="w-3.5 h-3.5" />
 					</Button>
 				</div>
@@ -1407,16 +1409,16 @@
 	<Dialog.Root open={showCloseConfirm} onOpenChange={(o) => { if (!o) showCloseConfirm = false; }}>
 		<Dialog.Content class="sm:max-w-md">
 			<Dialog.Header>
-				<Dialog.Title>Unsaved changes</Dialog.Title>
+				<Dialog.Title>{m.unsaved_changes()}</Dialog.Title>
 				<Dialog.Description>
-					{editingFile?.name ?? 'This file'} has unsaved changes. Save them before closing?
+					{m.arg1_has_unsaved_changes_save_them_before_closin({ arg1: orEmpty(editingFile?.name ?? 'This file') })}
 				</Dialog.Description>
 			</Dialog.Header>
 			<Dialog.Footer class="gap-2 sm:justify-between">
-				<Button variant="outline" onclick={() => showCloseConfirm = false}>Cancel</Button>
+				<Button variant="outline" onclick={() => showCloseConfirm = false}>{m.cancel()}</Button>
 				<div class="flex gap-2">
-					<Button variant="destructive" onclick={forceCloseEditor}>Discard</Button>
-					<Button onclick={saveFile} disabled={savingFile}>Save</Button>
+					<Button variant="destructive" onclick={forceCloseEditor}>{m.discard()}</Button>
+					<Button onclick={saveFile} disabled={savingFile}>{m.save()}</Button>
 				</div>
 			</Dialog.Footer>
 		</Dialog.Content>
@@ -1432,7 +1434,7 @@
 					<Eye class="w-3.5 h-3.5 text-muted-foreground" />
 					<span class="font-medium">{viewingFile.name}</span>
 					<span class="text-muted-foreground">{viewingFile.path}</span>
-					<span class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">read-only</span>
+					<span class="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{m.read_only()}</span>
 				</div>
 				<div class="flex items-center gap-1">
 					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={toggleEditorTheme} title={editorTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
@@ -1442,7 +1444,7 @@
 							<Sun class="w-3.5 h-3.5" />
 						{/if}
 					</Button>
-					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeViewer} title="Close viewer">
+					<Button variant="ghost" size="icon" class="h-7 w-7" onclick={closeViewer} title={m.close_viewer()}>
 						<X class="w-3.5 h-3.5" />
 					</Button>
 				</div>
@@ -1463,11 +1465,11 @@
 <Dialog.Root bind:open={showCreateModal}>
 	<Dialog.Content class="max-w-sm">
 		<Dialog.Header>
-			<Dialog.Title>Create {createType === 'file' ? 'File' : 'Directory'}</Dialog.Title>
+			<Dialog.Title>{m.create_arg1({ arg1: orEmpty(createType === 'file' ? 'File' : 'Directory') })}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
-				<Label for="create-name">Name</Label>
+				<Label for="create-name">{m.name()}</Label>
 				<Input
 					id="create-name"
 					bind:value={createName}
@@ -1476,28 +1478,28 @@
 				/>
 			</div>
 			<div class="space-y-2">
-				<Label for="create-owner">Owner (optional)</Label>
+				<Label for="create-owner">{m.owner_optional()}</Label>
 				<Input
 					id="create-owner"
 					bind:value={createOwner}
-					placeholder="e.g. 1000:1000 or www-data"
+					placeholder={m.e_g_1000_1000_or_www_data()}
 					onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') handleCreate(); }}
 				/>
 				<p class="text-xs text-muted-foreground">
-					Leave blank to use the container's default user (usually root).
+					{m.leave_blank_to_use_the_containers_default_user_u()}
 				</p>
 			</div>
 			<p class="text-xs text-muted-foreground">
-				Will be created in: {currentPath}
+				{m.will_be_created_in_currentpath({ currentPath: orEmpty(currentPath) })}
 			</p>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showCreateModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showCreateModal = false}>{m.cancel()}</Button>
 			<Button onclick={handleCreate} disabled={creating || !createName.trim()}>
 				{#if creating}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				{/if}
-				Create
+				{m.create()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
@@ -1507,11 +1509,11 @@
 <Dialog.Root bind:open={showRenameModal}>
 	<Dialog.Content class="max-w-sm">
 		<Dialog.Header>
-			<Dialog.Title>Rename</Dialog.Title>
+			<Dialog.Title>{m.rename()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
-				<Label for="rename-name">New name</Label>
+				<Label for="rename-name">{m.new_name()}</Label>
 				<Input
 					id="rename-name"
 					bind:value={renameName}
@@ -1520,12 +1522,12 @@
 			</div>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showRenameModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showRenameModal = false}>{m.cancel()}</Button>
 			<Button onclick={handleRename} disabled={renaming || !renameName.trim()}>
 				{#if renaming}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				{/if}
-				Rename
+				{m.rename()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
@@ -1535,12 +1537,12 @@
 <Dialog.Root bind:open={showChmodModal}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Change permissions</Dialog.Title>
+			<Dialog.Title>{m.change_permissions()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			{#if chmodEntry}
 				<p class="text-sm text-muted-foreground">{chmodEntry.name}</p>
-				<p class="text-xs text-muted-foreground">Current: {chmodEntry.permissions}</p>
+				<p class="text-xs text-muted-foreground">{m.current_permissions({ permissions: orEmpty(chmodEntry.permissions) })}</p>
 			{/if}
 
 			<!-- Permission checkboxes -->
@@ -1549,26 +1551,26 @@
 					<thead>
 						<tr class="text-muted-foreground text-xs">
 							<th class="text-left font-normal pb-2"></th>
-							<th class="text-center font-normal pb-2 w-16">Read</th>
-							<th class="text-center font-normal pb-2 w-16">Write</th>
-							<th class="text-center font-normal pb-2 w-16">Execute</th>
+							<th class="text-center font-normal pb-2 w-16">{m.read_852b()}</th>
+							<th class="text-center font-normal pb-2 w-16">{m.write_4a48()}</th>
+							<th class="text-center font-normal pb-2 w-16">{m.execute()}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td class="py-1.5 text-muted-foreground">Owner</td>
+							<td class="py-1.5 text-muted-foreground">{m.owner()}</td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOwnerR} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOwnerW} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOwnerX} onchange={checkboxesToOctal} class="rounded" /></td>
 						</tr>
 						<tr>
-							<td class="py-1.5 text-muted-foreground">Group</td>
+							<td class="py-1.5 text-muted-foreground">{m.group()}</td>
 							<td class="text-center"><input type="checkbox" bind:checked={permGroupR} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permGroupW} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permGroupX} onchange={checkboxesToOctal} class="rounded" /></td>
 						</tr>
 						<tr>
-							<td class="py-1.5 text-muted-foreground">Others</td>
+							<td class="py-1.5 text-muted-foreground">{m.others()}</td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOtherR} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOtherW} onchange={checkboxesToOctal} class="rounded" /></td>
 							<td class="text-center"><input type="checkbox" bind:checked={permOtherX} onchange={checkboxesToOctal} class="rounded" /></td>
@@ -1580,18 +1582,18 @@
 			<!-- Preview -->
 			<div class="flex items-center gap-4 text-sm bg-muted/50 rounded-lg p-3">
 				<div>
-					<span class="text-muted-foreground text-xs">Octal:</span>
+					<span class="text-muted-foreground text-xs">{m.octal()}</span>
 					<span class="font-mono font-medium ml-1">{chmodMode}</span>
 				</div>
 				<div>
-					<span class="text-muted-foreground text-xs">Symbolic:</span>
+					<span class="text-muted-foreground text-xs">{m.symbolic()}</span>
 					<span class="font-mono font-medium ml-1">{checkboxesToSymbolic()}</span>
 				</div>
 			</div>
 
 			<!-- Manual octal input -->
 			<div class="space-y-2">
-				<Label for="chmod-mode">Or enter octal mode directly</Label>
+				<Label for="chmod-mode">{m.or_enter_octal_mode_directly()}</Label>
 				<Input
 					id="chmod-mode"
 					bind:value={chmodMode}
@@ -1605,17 +1607,17 @@
 			{#if chmodEntry?.type === 'directory'}
 				<label class="flex items-center gap-2 text-sm">
 					<input type="checkbox" bind:checked={chmodRecursive} class="rounded" />
-					Apply recursively
+					{m.apply_recursively()}
 				</label>
 			{/if}
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showChmodModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showChmodModal = false}>{m.cancel()}</Button>
 			<Button onclick={handleChmod} disabled={changingPerms || !chmodMode.trim()}>
 				{#if changingPerms}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				{/if}
-				Apply
+				{m.apply()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
@@ -1624,43 +1626,43 @@
 <Dialog.Root bind:open={showChownModal}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Change owner</Dialog.Title>
+			<Dialog.Title>{m.change_owner()}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4 py-4">
 			{#if chownEntry}
 				<p class="text-sm text-muted-foreground">{chownEntry.name}</p>
 				{#if chownEntry.owner}
-					<p class="text-xs text-muted-foreground">Current: {chownEntry.owner}</p>
+					<p class="text-xs text-muted-foreground">{m.current_owner({ owner: orEmpty(chownEntry.owner) })}</p>
 				{/if}
 			{/if}
 
 			<div class="space-y-2">
-				<Label for="chown-owner">Owner</Label>
+				<Label for="chown-owner">{m.owner()}</Label>
 				<Input
 					id="chown-owner"
 					bind:value={chownOwner}
-					placeholder="e.g. 1000:1000 or www-data"
+					placeholder={m.e_g_1000_1000_or_www_data()}
 					onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') handleChown(); }}
 				/>
 				<p class="text-xs text-muted-foreground">
-					A user or user:group. Numeric ids work even when the name is not in the container.
+					{m.a_user_or_user_group_numeric_ids_work_even_when()}
 				</p>
 			</div>
 
 			{#if chownEntry?.type === 'directory'}
 				<label class="flex items-center gap-2 text-sm">
 					<input type="checkbox" bind:checked={chownRecursive} class="rounded" />
-					Apply recursively
+					{m.apply_recursively()}
 				</label>
 			{/if}
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showChownModal = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showChownModal = false}>{m.cancel()}</Button>
 			<Button onclick={handleChown} disabled={changingOwner || !chownOwner.trim()}>
 				{#if changingOwner}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				{/if}
-				Apply
+				{m.apply()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

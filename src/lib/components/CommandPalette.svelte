@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
 	import { onMount, untrack, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -138,7 +139,7 @@
 
 		if ($licenseStore.isEnterprise && $authStore.authEnabled) {
 			add(
-				{ id: 'ent:audit', group: G_ENT, label: 'Audit log', keywords: 'compliance audit' },
+				{ id: 'ent:audit', group: G_ENT, label: m_i18n.audit_log(), keywords: 'compliance audit' },
 				{ icon: ClipboardList, run: () => select('/audit') }
 			);
 		}
@@ -442,8 +443,8 @@
 		class="p-0 gap-0 max-w-2xl overflow-hidden"
 		showCloseButton={false}
 	>
-		<Dialog.Title class="sr-only">Command palette</Dialog.Title>
-		<Dialog.Description class="sr-only">Search for pages, themes, environments, stacks and containers</Dialog.Description>
+		<Dialog.Title class="sr-only">{m_i18n.command_palette()}</Dialog.Title>
+		<Dialog.Description class="sr-only">{m_i18n.search_for_pages_themes_environments_stacks_and()}</Dialog.Description>
 
 		<div class="flex items-center gap-2 border-b px-3">
 			<Search class="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -451,7 +452,7 @@
 				bind:this={inputEl}
 				bind:value={query}
 				onkeydown={onListKeydown}
-				placeholder="Search..."
+				placeholder={m_i18n.search()}
 				role="combobox"
 				aria-expanded="true"
 				aria-controls="palette-list"
@@ -461,7 +462,7 @@
 		</div>
 
 		{#if rows.length === 0}
-			<div class="py-6 text-center text-sm text-muted-foreground">No results found.</div>
+			<div class="py-6 text-center text-sm text-muted-foreground">{m_i18n.no_results_found()}</div>
 		{:else}
 			<div
 				id="palette-list"
@@ -511,12 +512,12 @@
 									{#if isActive}
 										<div class="ml-auto flex items-center gap-1">
 											{#if c.state === 'running'}
-												<button class="rounded p-1 hover:bg-muted" title="View logs" onclick={(e) => { e.stopPropagation(); containerAction(c, 'logs'); }}><FileText class="h-3 w-3" /></button>
-												<button class="rounded p-1 hover:bg-muted" title="Open terminal" onclick={(e) => { e.stopPropagation(); containerAction(c, 'terminal'); }}><Terminal class="h-3 w-3" /></button>
-												<button class="rounded p-1 hover:bg-muted" title="Restart" onclick={(e) => { e.stopPropagation(); containerAction(c, 'restart'); }}><RotateCcw class="h-3 w-3" /></button>
-												<button class="rounded p-1 text-destructive hover:bg-muted" title="Stop" onclick={(e) => { e.stopPropagation(); containerAction(c, 'stop'); }}><Square class="h-3 w-3" /></button>
+												<button class="rounded p-1 hover:bg-muted" title={m_i18n.view_logs()} onclick={(e) => { e.stopPropagation(); containerAction(c, 'logs'); }}><FileText class="h-3 w-3" /></button>
+												<button class="rounded p-1 hover:bg-muted" title={m_i18n.open_terminal()} onclick={(e) => { e.stopPropagation(); containerAction(c, 'terminal'); }}><Terminal class="h-3 w-3" /></button>
+												<button class="rounded p-1 hover:bg-muted" title={m_i18n.restart()} onclick={(e) => { e.stopPropagation(); containerAction(c, 'restart'); }}><RotateCcw class="h-3 w-3" /></button>
+												<button class="rounded p-1 text-destructive hover:bg-muted" title={m_i18n.stop()} onclick={(e) => { e.stopPropagation(); containerAction(c, 'stop'); }}><Square class="h-3 w-3" /></button>
 											{:else}
-												<button class="rounded p-1 text-green-500 hover:bg-muted" title="Start" onclick={(e) => { e.stopPropagation(); containerAction(c, 'start'); }}><Play class="h-3 w-3" /></button>
+												<button class="rounded p-1 text-green-500 hover:bg-muted" title={m_i18n.start()} onclick={(e) => { e.stopPropagation(); containerAction(c, 'start'); }}><Play class="h-3 w-3" /></button>
 											{/if}
 										</div>
 									{/if}

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Tag } from 'lucide-svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import type { NewerVersion } from '$lib/types';
@@ -45,17 +47,17 @@
 		<div class="space-y-1.5">
 			<p class="font-medium text-sm flex items-center gap-1.5">
 				<Tag class="w-4 h-4 text-amber-500 shrink-0" />
-				Newer version available
+				{m.newer_version_available()}
 			</p>
 			<p class="text-xs">
-				<span class="text-muted-foreground">Move to</span>
+				<span class="text-muted-foreground">{m.move_to()}</span>
 				<code class="mx-0.5 rounded bg-muted px-1 py-0.5 font-mono">{newerVersion.tag}</code>
 				<span class="font-semibold uppercase {bumpColor}">{newerVersion.bump}</span>
 			</p>
 			{#if behind > 1}
-				<p class="text-xs text-muted-foreground">{behind} versions ahead of the tag you run.</p>
+				<p class="text-xs text-muted-foreground">{m.behind_versions_ahead_of_the_tag_you_run({ behind: orEmpty(behind) })}</p>
 			{/if}
-			<p class="text-xs text-muted-foreground">Click for release notes. Never auto-applied.</p>
+			<p class="text-xs text-muted-foreground">{m.click_for_release_notes_never_auto_applied()}</p>
 		</div>
 	</Tooltip.Content>
 </Tooltip.Root>

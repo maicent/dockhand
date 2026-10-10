@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
@@ -41,7 +43,7 @@
 			notifications = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch notifications:', error);
-			toast.error('Failed to fetch notification channels');
+			toast.error(m.failed_to_fetch_notification_channels());
 		} finally {
 			notifLoading = false;
 		}
@@ -60,13 +62,13 @@
 
 			if (response.ok) {
 				await fetchNotifications();
-				toast.success('Notification channel deleted');
+				toast.success(m.notification_channel_deleted());
 			} else {
 				const data = await response.json();
 				toast.error(data.error || 'Failed to delete notification channel');
 			}
 		} catch (error) {
-			toast.error('Failed to delete notification channel');
+			toast.error(m.failed_to_delete_notification_channel());
 		}
 	}
 
@@ -81,11 +83,11 @@
 				await fetchNotifications();
 				toast.success(`Channel ${notif.enabled ? 'disabled' : 'enabled'}`);
 			} else {
-				toast.error('Failed to toggle notification channel');
+				toast.error(m.failed_to_toggle_notification_channel());
 			}
 		} catch (error) {
 			console.error('Failed to toggle notification:', error);
-			toast.error('Failed to toggle notification channel');
+			toast.error(m.failed_to_toggle_notification_channel());
 		}
 	}
 
@@ -100,13 +102,13 @@
 			});
 			testResult = await response.json();
 			if (testResult?.success) {
-				toast.success('Test notification sent successfully');
+				toast.success(m.test_notification_sent_successfully());
 			} else {
 				toast.error(`Test failed: ${testResult?.error || 'Unknown error'}`);
 			}
 		} catch (error) {
 			testResult = { success: false, error: 'Failed to test notification' };
-			toast.error('Failed to test notification');
+			toast.error(m.failed_to_test_notification());
 		}
 
 		// Store which notification was tested, clear testing state
@@ -131,13 +133,13 @@
 			<div class="flex items-start gap-3">
 				<Bell class="w-5 h-5 text-muted-foreground mt-0.5" />
 				<div>
-					<p class="text-sm font-medium">Notification channels</p>
+					<p class="text-sm font-medium">{m.notification_channels()}</p>
 					<p class="text-xs text-muted-foreground mt-1">
-						Configure notification channels to receive alerts about Docker events. Supports SMTP email and webhook URLs (Discord, Slack, Telegram, ntfy, Bark, Signal, Zabbix, Apprise, and more).
+						{m.configure_notification_channels_to_receive_alert()}
 					</p>
 					<p class="text-xs text-amber-600 dark:text-amber-500 mt-2 flex items-center gap-1">
 						<Info class="w-3 h-3" />
-						Detailed notification settings (event types, enable/disable) are configured per environment in Environment settings.
+						{m.detailed_notification_settings_event_types_enabl()}
 					</p>
 				</div>
 			</div>
@@ -146,26 +148,26 @@
 
 	<div class="flex justify-between items-center">
 		<div class="flex items-center gap-3">
-			<Badge variant="secondary" class="text-xs">{notifications.length} channels</Badge>
+			<Badge variant="secondary" class="text-xs">{m.length_channels({ length: orEmpty(notifications.length) })}</Badge>
 		</div>
 		<div class="flex gap-2">
 			{#if $canAccess('notifications', 'create')}
 				<Button size="sm" onclick={() => openNotifModal()}>
 					<Plus class="w-4 h-4" />
-					Add channel
+					{m.add_channel()}
 				</Button>
 			{/if}
-			<Button size="sm" variant="outline" onclick={fetchNotifications}>Refresh</Button>
+			<Button size="sm" variant="outline" onclick={fetchNotifications}>{m.refresh()}</Button>
 		</div>
 	</div>
 
 	{#if notifLoading && notifications.length === 0}
-		<p class="text-muted-foreground text-sm">Loading notification channels...</p>
+		<p class="text-muted-foreground text-sm">{m.loading_notification_channels()}</p>
 	{:else if notifications.length === 0}
 		<EmptyState
 			icon={Bell}
-			title="No notification channels configured"
-			description="Add a channel to start receiving alerts about Docker events"
+			title={m.no_notification_channels_configured()}
+			description={m.add_a_channel_to_start_receiving_alerts_about_do()}
 		/>
 	{:else}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -197,22 +199,22 @@
 					<Card.Content class="space-y-3">
 						<div class="text-sm text-muted-foreground">
 							{#if notif.type === 'smtp'}
-								<span>SMTP: {notif.config.host}:{notif.config.port}</span>
+								<span>{m.smtp_host_port({ host: orEmpty(notif.config.host), port: orEmpty(notif.config.port) })}</span>
 							{:else}
-								<span>Webhook: {notif.config.urls?.length || 0} URL{notif.config.urls?.length === 1 ? '' : 's'}</span>
+								<span>{m.webhook_arg1_url_arg2({ arg1: orEmpty(notif.config.urls?.length || 0), arg2: orEmpty(notif.config.urls?.length === 1 ? '' : 's') })}</span>
 							{/if}
 						</div>
 
 						{#if testingNotif === notif.id}
 							<div class="text-xs text-muted-foreground flex items-center gap-1">
 								<RefreshCw class="w-3 h-3 animate-spin" />
-								Sending test...
+								{m.sending_test()}
 							</div>
 						{:else if testResult && testedNotifId === notif.id}
 							<div class="text-xs flex items-center gap-1 {testResult.success ? 'text-green-600' : 'text-destructive'}">
 								{#if testResult.success}
 									<CheckCircle2 class="w-3 h-3" />
-									Test sent successfully
+									{m.test_sent_successfully()}
 								{:else}
 									<XCircle class="w-3 h-3" />
 									{testResult.error || 'Test failed'}
@@ -228,7 +230,7 @@
 								disabled={testingNotif !== null}
 							>
 								<Send class="w-3 h-3" />
-								Test
+								{m.test()}
 							</Button>
 							{#if $canAccess('notifications', 'edit')}
 								<Button
@@ -245,7 +247,7 @@
 									action="Delete"
 									itemType="channel"
 									itemName={notif.name}
-									title="Remove"
+									title={m.remove()}
 									position="left"
 									onConfirm={() => deleteNotification(notif.id)}
 									onOpenChange={(open) => confirmDeleteNotificationId = open ? notif.id : null}

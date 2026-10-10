@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	/**
 	 * Edit a backup config from the Backups page by reusing the container/stack
 	 * Backups tab (BackupPanel) in a modal. BackupPanel needs the target's volume
@@ -62,7 +64,7 @@
 		<Dialog.Header class="pb-0">
 			<Dialog.Title class="flex items-center gap-2 text-base">
 				<Archive class="w-4 h-4" />
-				Edit backup — {config?.targetName ?? ''}
+				{m.edit_backup_arg1({ arg1: orEmpty(config?.targetName ?? '') })}
 			</Dialog.Title>
 		</Dialog.Header>
 
@@ -70,7 +72,7 @@
 			{#if config}
 				{#if loading}
 					<div class="flex items-center gap-2 p-4 text-sm text-muted-foreground">
-						<Loader2 class="w-4 h-4 animate-spin" /> Loading volumes…
+						<Loader2 class="w-4 h-4 animate-spin" /> {m.loading_volumes()}
 					</div>
 				{:else}
 					<BackupPanel

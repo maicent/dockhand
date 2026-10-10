@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -118,7 +120,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to update auth settings:', error);
-			toast.error('Failed to update auth settings');
+			toast.error(m.failed_to_update_auth_settings());
 			// Revert toggle on error
 			authEnabled = !checked;
 		} finally {
@@ -135,14 +137,14 @@
 				body: JSON.stringify({ sessionTimeout: neverExpire ? 0 : sessionTimeout, passkeysEnabled })
 			});
 			if (response.ok) {
-				toast.success('Settings saved');
+				toast.success(m.settings_saved());
 			} else {
 				console.error('Failed to save auth settings');
-				toast.error('Failed to save settings');
+				toast.error(m.failed_to_save_settings());
 			}
 		} catch (error) {
 			console.error('Failed to save auth settings:', error);
-			toast.error('Failed to save settings');
+			toast.error(m.failed_to_save_settings());
 		} finally {
 			authSaving = false;
 		}
@@ -175,7 +177,7 @@
 	<Shield class="w-5 h-5 text-muted-foreground mt-0.5" />
 	<div class="flex-1">
 		<div class="flex items-center gap-3">
-			<p class="text-sm font-medium">Authentication</p>
+			<p class="text-sm font-medium">{m.authentication()}</p>
 			<TogglePill
 				bind:checked={authEnabled}
 				onchange={(checked) => handleAuthEnabledToggle(checked)}
@@ -194,7 +196,7 @@
 					? 'Audit logging is active - all actions are recorded'
 					: 'Enable authentication to activate audit logging'}
 			{:else}
-				Enable authentication to activate audit logging
+				{m.enable_authentication_to_activate_audit_logging()}
 			{/if}
 		</p>
 	</div>
@@ -211,7 +213,7 @@
 		onclick={() => (authSubTab = 'general')}
 	>
 		<Settings class="w-4 h-4" />
-		General
+		{m.general()}
 	</button>
 	<!-- The list behind this tab carries every account's email and says which are
 	     administrators, so the tab follows the same permission the API asks for. -->
@@ -224,7 +226,7 @@
 			onclick={() => (authSubTab = 'local')}
 		>
 			<User class="w-4 h-4" />
-			Users
+			{m.users()}
 		</button>
 	{/if}
 	<!-- Behind this is the identity-provider configuration, which /api/auth/oidc holds
@@ -239,7 +241,7 @@
 			onclick={() => (authSubTab = 'sso')}
 		>
 			<LogIn class="w-4 h-4" />
-			SSO / OIDC
+			{m.sso_oidc()}
 		</button>
 	{/if}
 	<!-- /api/auth/ldap asks for admin, not settings:view, so this tab follows that
@@ -253,7 +255,7 @@
 			onclick={() => (authSubTab = 'ldap')}
 		>
 			<Network class="w-4 h-4" />
-			LDAP / AD
+			{m.ldap_ad()}
 			<Crown class="w-3 h-3 text-amber-500" />
 		</button>
 	{/if}
@@ -268,7 +270,7 @@
 			onclick={() => (authSubTab = 'roles')}
 		>
 			<Shield class="w-4 h-4" />
-			Roles
+			{m.roles()}
 			<Crown class="w-3 h-3 text-amber-500" />
 		</button>
 	{/if}
@@ -285,10 +287,9 @@
 			<div class="flex items-start gap-3 p-3 border rounded-md bg-muted/30">
 				<Shield class="w-5 h-5 text-muted-foreground mt-0.5" />
 				<div class="flex-1">
-					<p class="text-sm font-medium">Authentication settings are not visible to you</p>
+					<p class="text-sm font-medium">{m.authentication_settings_are_not_visible_to_you()}</p>
 					<p class="text-xs text-muted-foreground mt-1">
-						Your account does not have permission to see how this instance
-						authenticates. Ask an administrator if you need it.
+						{m.your_account_does_not_have_permission_to_see_how()}
 					</p>
 				</div>
 			</div>
@@ -297,14 +298,14 @@
 				<Card.Header>
 					<Card.Title class="text-sm font-medium flex items-center gap-2">
 						<KeyRound class="w-4 h-4" />
-						Session settings
+						{m.session_settings()}
 					</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-4">
 					<div class="space-y-1.5">
-						<Label class="text-sm">Session timeout</Label>
+						<Label class="text-sm">{m.session_timeout()}</Label>
 						<p class="text-xs text-muted-foreground mb-2">
-							How long a session stays valid after sign-in
+							{m.how_long_a_session_stays_valid_after_sign_in()}
 						</p>
 						<div class="flex items-center gap-2 mb-2">
 							<ToggleGroup
@@ -331,28 +332,25 @@
 								class="w-32"
 								disabled={neverExpire || !$canAccess('settings', 'edit')}
 							/>
-							<span class="text-sm text-muted-foreground">seconds</span>
+							<span class="text-sm text-muted-foreground">{m.seconds()}</span>
 							<span class="text-xs text-muted-foreground">
-								({Math.floor(sessionTimeout / 3600)} hours)
+								{m.arg1_hours({ arg1: orEmpty(Math.floor(sessionTimeout / 3600)) })}
 							</span>
 						</div>
 					</div>
 					<div class="space-y-1.5 border-t border-border/60 pt-4">
 						<div class="flex items-center gap-3">
-							<Label class="text-sm">Allow passkey sign-in</Label>
+							<Label class="text-sm">{m.allow_passkey_sign_in()}</Label>
 							<TogglePill bind:checked={passkeysEnabled} disabled={!$canAccess('settings', 'edit')} />
 						</div>
 						<p class="text-xs text-muted-foreground">
-							Offer passkeys on the login page, and let people register one from their
-							profile. Off hides the option and refuses the endpoints; existing passkeys
-							are kept and work again when you turn it back on.
+							{m.offer_passkeys_on_the_login_page_and_let_people()}
 						</p>
 						{#if passkeysEnabled && !passkeysConfigurable}
 							<div class="flex items-start gap-2 rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
 								<Info class="w-3.5 h-3.5 mt-0.5 shrink-0" />
 								<span>
-									Nothing is offered yet: passkeys need <code>ORIGIN</code> set to the address
-									people use to reach Dockhand, over HTTPS unless that address is localhost.
+									{m.nothing_is_offered_yet_passkeys_need()} <code>{m.origin()}</code> {m.set_to_the_address_people_use_to_reach_dockhand()}
 								</span>
 							</div>
 						{/if}
@@ -364,7 +362,7 @@
 							{:else}
 								<Save class="w-4 h-4" />
 							{/if}
-							Save settings
+							{m.save_settings()}
 						</Button>
 					{/if}
 				</Card.Content>
@@ -372,7 +370,7 @@
 		{:else}
 			<div class="text-center py-12 text-muted-foreground">
 				<Shield class="w-12 h-12 mx-auto mb-3 opacity-30" />
-				<p class="text-sm">Enable authentication to configure session settings</p>
+				<p class="text-sm">{m.enable_authentication_to_configure_session_setti()}</p>
 			</div>
 		{/if}
 	</div>

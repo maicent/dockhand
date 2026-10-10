@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import LogViewer from '$lib/components/LogViewer.svelte';
@@ -110,7 +111,7 @@
 		/>
 
 		<Dialog.Footer class="shrink-0">
-			<Button variant="outline" onclick={handleClose}>Close</Button>
+			<Button variant="outline" onclick={handleClose}>{m.close()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

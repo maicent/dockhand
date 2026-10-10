@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -74,7 +76,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to fetch LDAP configs:', error);
-			toast.error('Failed to fetch LDAP configurations');
+			toast.error(m.failed_to_fetch_ldap_configurations());
 		} finally {
 			ldapLoading = false;
 		}
@@ -112,13 +114,13 @@
 			const response = await fetch(`/api/auth/ldap/${configId}`, { method: 'DELETE' });
 			if (response.ok) {
 				await fetchLdapConfigs();
-				toast.success('LDAP configuration deleted');
+				toast.success(m.ldap_configuration_deleted());
 			} else {
-				toast.error('Failed to delete LDAP configuration');
+				toast.error(m.failed_to_delete_ldap_configuration());
 			}
 		} catch (error) {
 			console.error('Failed to delete LDAP config:', error);
-			toast.error('Failed to delete LDAP configuration');
+			toast.error(m.failed_to_delete_ldap_configuration());
 		} finally {
 			confirmDeleteLdapId = null;
 		}
@@ -138,7 +140,7 @@
 			}
 		} catch (error) {
 			ldapTestResult = { success: false, error: 'Failed to test connection' };
-			toast.error('Failed to test LDAP connection');
+			toast.error(m.failed_to_test_ldap_connection());
 		} finally {
 			ldapTesting = null;
 		}
@@ -155,11 +157,11 @@
 				await fetchLdapConfigs();
 				toast.success(`LDAP ${config.enabled ? 'disabled' : 'enabled'}`);
 			} else {
-				toast.error('Failed to toggle LDAP configuration');
+				toast.error(m.failed_to_toggle_ldap_configuration());
 			}
 		} catch (error) {
 			console.error('Failed to toggle LDAP config:', error);
-			toast.error('Failed to toggle LDAP configuration');
+			toast.error(m.failed_to_toggle_ldap_configuration());
 		}
 	}
 
@@ -188,14 +190,14 @@
 			<div class="text-center">
 				<h3 class="text-lg font-medium mb-2 flex items-center justify-center gap-2">
 					<Crown class="w-5 h-5 text-amber-500" />
-					Enterprise feature
+					{m.enterprise_feature()}
 				</h3>
 				<p class="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-					LDAP / Active Directory integration is available with an enterprise license. Connect to your organization's directory services for centralized authentication.
+					{m.ldap_active_directory_integration_is_available_w()}
 				</p>
 				<Button onclick={() => onTabChange('license')}>
 					<Key class="w-4 h-4" />
-					Activate license
+					{m.activate_license()}
 				</Button>
 			</div>
 		</Card.Content>
@@ -208,14 +210,14 @@
 					<div>
 						<Card.Title class="text-sm font-medium flex items-center gap-2">
 							<Network class="w-4 h-4" />
-							LDAP configurations
+							{m.ldap_configurations()}
 						</Card.Title>
-						<p class="text-xs text-muted-foreground mt-1">Connect to LDAP or Active Directory servers for centralized user authentication.</p>
+						<p class="text-xs text-muted-foreground mt-1">{m.connect_to_ldap_or_active_directory_servers_for()}</p>
 					</div>
 					{#if $canAccess('settings', 'edit')}
 						<Button size="sm" onclick={() => openLdapModal(null)}>
 							<Plus class="w-4 h-4" />
-							Add LDAP
+							{m.add_ldap()}
 						</Button>
 					{/if}
 				</div>
@@ -228,8 +230,8 @@
 				{:else if ldapConfigs.length === 0}
 					<EmptyState
 						icon={Network}
-						title="No LDAP providers configured"
-						description="Click 'Add LDAP' to configure a new LDAP server"
+						title={m.no_ldap_providers_configured()}
+						description={m.click_add_ldap_to_configure_a_new_ldap_server()}
 						class="py-8"
 					/>
 				{:else}
@@ -242,9 +244,9 @@
 										<div class="flex items-center gap-2">
 											<span class="font-medium">{config.name}</span>
 											{#if config.enabled}
-												<Badge variant="default" class="text-xs">Enabled</Badge>
+												<Badge variant="default" class="text-xs">{m.enabled()}</Badge>
 											{:else}
-												<Badge variant="secondary" class="text-xs">Disabled</Badge>
+												<Badge variant="secondary" class="text-xs">{m.disabled()}</Badge>
 											{/if}
 										</div>
 										<p class="text-xs text-muted-foreground">{config.serverUrl}</p>
@@ -260,7 +262,7 @@
 										{#if ldapTesting === config.id}
 											<RefreshCw class="w-4 h-4 animate-spin" />
 										{:else}
-											Test
+											{m.test()}
 										{/if}
 									</Button>
 									{#if $canAccess('settings', 'edit')}
@@ -298,9 +300,9 @@
 					{#if ldapTestResult}
 						<div class="mt-4 p-3 rounded-lg {ldapTestResult.success ? 'bg-green-500/10 text-green-600' : 'bg-destructive/10 text-destructive'}">
 							{#if ldapTestResult.success}
-								<p class="text-sm">Connection successful! Found {ldapTestResult.userCount} users.</p>
+								<p class="text-sm">{m.connection_successful_found_usercount_users({ userCount: orEmpty(ldapTestResult.userCount) })}</p>
 							{:else}
-								<p class="text-sm">Connection failed: {ldapTestResult.error}</p>
+								<p class="text-sm">{m.connection_failed_error({ error: orEmpty(ldapTestResult.error) })}</p>
 							{/if}
 						</div>
 					{/if}

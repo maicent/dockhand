@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -166,7 +168,7 @@
 				if (skippedCount > 0) {
 					toast.info(`All ${skippedCount} stack(s) in this directory are already adopted`);
 				} else {
-					toast.info('No compose stacks found in this directory');
+					toast.info(m.no_compose_stacks_found_in_this_directory());
 				}
 			} else {
 				const selections = new Map<string, boolean>();
@@ -189,7 +191,7 @@
 
 	async function adoptSingleFile(entry: FileEntry) {
 		if (!envId) {
-			toast.error('No environment selected');
+			toast.error(m.no_environment_selected());
 			return;
 		}
 
@@ -346,12 +348,12 @@
 			<Dialog.Header class="px-6 py-4 border-b shrink-0">
 				<Dialog.Title class="flex items-center gap-2">
 					<Import class="w-5 h-5" />
-					Select stacks to adopt to
+					{m.select_stacks_to_adopt_to()}
 					<EnvironmentIcon icon={envIcon} envId={envId} class="w-4 h-4 text-muted-foreground" />
 					<span class="text-muted-foreground font-normal">{envName}</span>
 				</Dialog.Title>
 				<Dialog.Description>
-					{scanResults.length} stack(s) found. Select which ones to adopt into {envName}.
+					{m.length_stack_s_found_select_which_ones_to_adopt({ length: orEmpty(scanResults.length), envName: orEmpty(envName) })}
 				</Dialog.Description>
 			</Dialog.Header>
 
@@ -375,13 +377,13 @@
 										<span class="font-medium truncate">{stack.name}</span>
 										{#if stack.serviceCount}
 											<Badge variant="outline" class="text-xs">
-												{stack.serviceCount} service{stack.serviceCount !== 1 ? 's' : ''}
+												{m.servicecount_service_arg2({ serviceCount: orEmpty(stack.serviceCount), arg2: orEmpty(stack.serviceCount !== 1 ? 's' : '') })}
 											</Badge>
 										{/if}
 										{#if stack.running}
 											<Badge variant="default" class="text-xs {countsMismatch ? 'bg-amber-600' : 'bg-green-600'}">
 												<Play class="w-3 h-3 mr-1" />
-												{stack.containerCount} running
+												{m.containercount_running({ containerCount: orEmpty(stack.containerCount) })}
 											</Badge>
 										{/if}
 									</div>
@@ -390,7 +392,7 @@
 									</p>
 									{#if stack.envPath}
 										<p class="text-xs text-muted-foreground truncate" title={stack.envPath}>
-											.env: {stack.envPath}
+											{m.env_envpath({ envPath: orEmpty(stack.envPath) })}
 										</p>
 									{/if}
 								</div>
@@ -403,12 +405,12 @@
 					{#if isRemoteEnv}
 						<div class="flex items-start gap-2.5 text-xs bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-md px-3 py-2.5">
 							<ServerCog class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-							<span class="text-blue-700 dark:text-blue-300">These compose files are on the <span class="font-medium">Dockhand host</span>, not on {envName}. Docker commands will be sent to {envName} via Hawser, but the files are managed locally.</span>
+							<span class="text-blue-700 dark:text-blue-300">{m.these_compose_files_are_on_the()} <span class="font-medium">{m.dockhand_host()}</span>{m.not_on_envname_docker_commands_will_be_sent_to_a({ envName: orEmpty(envName), arg2: orEmpty(envName) })}</span>
 						</div>
 					{/if}
 					<div class="flex items-start gap-2.5 text-xs bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2.5">
 						<Info class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-						<span><span class="font-medium text-amber-600 dark:text-amber-400">What happens when you adopt:</span> <span class="text-zinc-600 dark:text-zinc-400">Dockhand will track these compose files, letting you edit, start, and stop the stacks from the UI. Your files stay in their current location.</span></span>
+						<span><span class="font-medium text-amber-600 dark:text-amber-400">{m.what_happens_when_you_adopt()}</span> <span class="text-zinc-600 dark:text-zinc-400">{m.dockhand_will_track_these_compose_files_letting()}</span></span>
 					</div>
 				</div>
 			</div>
@@ -421,15 +423,15 @@
 						onCheckedChange={toggleAll}
 					/>
 					<span class="text-sm text-muted-foreground">
-						<span class="font-medium text-foreground">{selectedCount}</span> of {scanResults.length} selected
+						<span class="font-medium text-foreground">{selectedCount}</span> {m.of_length_selected({ length: orEmpty(scanResults.length) })}
 					</span>
 				</div>
 				<div class="flex gap-2">
 					<Button variant="outline" onclick={goBackToBrowse}>
-						Back
+						{m.back()}
 					</Button>
 					<Button variant="outline" onclick={handleClose}>
-						Cancel
+						{m.cancel()}
 					</Button>
 					<Button
 						variant="default"
@@ -438,10 +440,10 @@
 					>
 						{#if adopting}
 							<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-							Adopting...
+							{m.adopting()}
 						{:else}
 							<Import class="w-4 h-4" />
-							Adopt {selectedCount} stack(s)
+							{m.adopt_selectedcount_stack_s({ selectedCount: orEmpty(selectedCount) })}
 						{/if}
 					</Button>
 				</div>
@@ -456,10 +458,10 @@
 		<Dialog.Header class="px-5 py-4 border-b shrink-0">
 			<Dialog.Title class="flex items-center gap-2">
 				<Import class="w-5 h-5" />
-				Adopt this stack?
+				{m.adopt_this_stack()}
 			</Dialog.Title>
 			<Dialog.Description>
-				Review the compose file before adopting.
+				{m.review_the_compose_file_before_adopting()}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -468,11 +470,11 @@
 				<!-- Stack info bar -->
 				<div class="px-5 py-3 border-b bg-muted/30 flex items-center gap-4 shrink-0">
 					<div class="flex items-center gap-2">
-						<span class="text-sm text-muted-foreground">Stack:</span>
+						<span class="text-sm text-muted-foreground">{m.stack()}</span>
 						<span class="font-medium">{previewComposeName || previewFile.path.replace(/\/[^/]+$/, '').split('/').pop() || 'unknown'}</span>
 						{#if previewServiceCount > 0}
 							<Badge variant="outline" class="text-xs">
-								{previewServiceCount} service{previewServiceCount !== 1 ? 's' : ''}
+								{m.previewservicecount_service_arg2({ previewServiceCount: orEmpty(previewServiceCount), arg2: orEmpty(previewServiceCount !== 1 ? 's' : '') })}
 							</Badge>
 						{/if}
 					</div>
@@ -503,12 +505,12 @@
 					{#if isRemoteEnv}
 						<div class="flex items-start gap-2.5 text-xs bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-md px-3 py-2.5">
 							<ServerCog class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-							<span class="text-blue-700 dark:text-blue-300">This compose file is on the <span class="font-medium">Dockhand host</span>, not on {envName}. Docker commands will be sent to {envName} via Hawser, but the file is managed locally.</span>
+							<span class="text-blue-700 dark:text-blue-300">{m.this_compose_file_is_on_the()} <span class="font-medium">{m.dockhand_host()}</span>{m.not_on_envname_docker_commands_will_be_sent_to_a_6d24({ envName: orEmpty(envName), arg2: orEmpty(envName) })}</span>
 						</div>
 					{/if}
 					<div class="flex items-start gap-2.5 text-xs bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2.5">
 						<Info class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-						<span><span class="font-medium text-amber-600 dark:text-amber-400">What happens when you adopt:</span> <span class="text-zinc-600 dark:text-zinc-400">Dockhand will track this compose file, letting you edit, start, and stop the stack from the UI. Your files stay in their current location.</span></span>
+						<span><span class="font-medium text-amber-600 dark:text-amber-400">{m.what_happens_when_you_adopt()}</span> <span class="text-zinc-600 dark:text-zinc-400">{m.dockhand_will_track_this_compose_file_letting_yo()}</span></span>
 					</div>
 				</div>
 			</div>
@@ -516,15 +518,15 @@
 
 		<div class="px-5 py-3 border-t flex justify-end gap-2 shrink-0">
 			<Button variant="outline" onclick={() => showPreview = false}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button onclick={confirmAdoptFromPreview} disabled={adopting}>
 				{#if adopting}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-					Adopting...
+					{m.adopting()}
 				{:else}
 					<Import class="w-4 h-4" />
-					Adopt stack
+					{m.adopt_stack()}
 				{/if}
 			</Button>
 		</div>

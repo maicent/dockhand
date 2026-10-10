@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -74,20 +76,20 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Copy class="w-5 h-5" />
-				Clone volume
+				{m.clone_volume()}
 			</Dialog.Title>
 			<Dialog.Description>
-				Create a new volume with the same driver and options as "{volumeName}".
+				{m.create_a_new_volume_with_the_same_driver_and_opt({ volumeName: orEmpty(volumeName) })}
 			</Dialog.Description>
 		</Dialog.Header>
 
 		<div class="space-y-4 py-4">
 			<div class="space-y-2">
-				<Label for="new-name">New volume name</Label>
+				<Label for="new-name">{m.new_volume_name()}</Label>
 				<Input
 					id="new-name"
 					bind:value={newName}
-					placeholder="Enter new volume name"
+					placeholder={m.enter_new_volume_name()}
 					disabled={cloning}
 					onkeydown={(e) => e.key === 'Enter' && handleClone()}
 				/>
@@ -98,13 +100,13 @@
 			{/if}
 
 			<p class="text-xs text-muted-foreground">
-				Note: This creates an empty volume with the same configuration. To copy data, use the Export feature on the source volume and import into the new volume.
+				{m.note_this_creates_an_empty_volume_with_the_same()}
 			</p>
 		</div>
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (open = false)} disabled={cloning}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button onclick={handleClone} disabled={cloning || !newName.trim()}>
 				{#if cloning}
@@ -112,7 +114,7 @@
 				{:else}
 					<Copy class="w-4 h-4" />
 				{/if}
-				Clone
+				{m.clone()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

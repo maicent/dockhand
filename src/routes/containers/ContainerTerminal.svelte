@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
@@ -273,11 +275,11 @@
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
 					<TerminalIcon class="w-5 h-5" />
-					<Dialog.Title>Terminal - {containerName}</Dialog.Title>
+					<Dialog.Title>{m.terminal_containername({ containerName: orEmpty(containerName) })}</Dialog.Title>
 					{#if connected}
 						<span class="inline-flex items-center gap-1 text-xs text-green-500">
 							<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-							Connected
+							{m.connected()}
 						</span>
 					{/if}
 				</div>
@@ -295,35 +297,35 @@
 				{#if detectingShells}
 					<div class="text-center">
 						<Loader2 class="w-12 h-12 mx-auto mb-4 text-muted-foreground animate-spin" />
-						<h3 class="text-lg font-medium">Detecting available shells...</h3>
+						<h3 class="text-lg font-medium">{m.detecting_available_shells()}</h3>
 					</div>
 				{:else if !anyShellAvailable}
 					<div class="text-center">
 						<AlertCircle class="w-12 h-12 mx-auto mb-4 text-amber-500" />
-						<h3 class="text-lg font-medium text-amber-500">No shell available</h3>
+						<h3 class="text-lg font-medium text-amber-500">{m.no_shell_available()}</h3>
 						<p class="text-sm text-muted-foreground mt-2">
-							This container does not have any shell installed.
+							{m.this_container_does_not_have_any_shell_installed()}
 						</p>
 						<p class="text-xs text-muted-foreground/70 mt-1">
-							Containers built from scratch or distroless images often don't include shells.
+							{m.containers_built_from_scratch_or_distroless_imag()}
 						</p>
 						<Button onclick={handleClose} variant="outline" class="mt-6">
-							Close
+							{m.close()}
 						</Button>
 					</div>
 				{:else}
 					<div class="w-full max-w-md space-y-6">
 						<div class="text-center">
 							<TerminalIcon class="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-							<h3 class="text-lg font-medium">Open terminal session</h3>
+							<h3 class="text-lg font-medium">{m.open_terminal_session()}</h3>
 							<p class="text-sm text-muted-foreground mt-1">
-								Configure the shell and user for this session
+								{m.configure_the_shell_and_user_for_this_session()}
 							</p>
 						</div>
 
 						<div class="space-y-4">
 							<div class="space-y-2">
-								<Label>Shell</Label>
+								<Label>{m.shell()}</Label>
 								<Select.Root type="single" bind:value={selectedShell}>
 									<Select.Trigger class="w-full h-10">
 										<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
@@ -341,7 +343,7 @@
 													<span class={option.available ? 'text-foreground' : 'text-muted-foreground/60'}>
 														{option.label}
 														{#if !option.available}
-															<span class="text-xs ml-1">(unavailable)</span>
+															<span class="text-xs ml-1">{m.unavailable()}</span>
 														{/if}
 													</span>
 												</Select.Item>
@@ -352,7 +354,7 @@
 							</div>
 
 							<div class="space-y-2">
-								<Label>User</Label>
+								<Label>{m.user()}</Label>
 								<Select.Root type="single" bind:value={selectedUser}>
 									<Select.Trigger class="w-full h-10">
 										<User class="w-4 h-4 mr-2 text-muted-foreground" />
@@ -375,7 +377,7 @@
 								<TerminalIcon class="w-4 h-4" />
 								{xtermLoaded ? 'Connect' : 'Loading...'}
 							</Button>
-							<Button onclick={openInNewWindow} variant="outline" disabled={!xtermLoaded} title="Open in new window">
+							<Button onclick={openInNewWindow} variant="outline" disabled={!xtermLoaded} title={m.open_in_new_window()}>
 								<ExternalLink class="w-4 h-4" />
 							</Button>
 						</div>

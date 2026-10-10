@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { RefreshCw, Copy, Check, Download, WrapText, ArrowDownToLine, Search, ChevronUp, ChevronDown, X, Type, Eraser, Filter, Hash } from 'lucide-svelte';
 	import { wrapHtmlLines, stripLogMarkers } from '$lib/utils/log-lines';
 	import { copyToClipboard } from '$lib/utils/clipboard';
@@ -281,7 +283,7 @@
 			<button
 				onclick={() => onAutoRefreshChange?.(!autoRefresh)}
 				class="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-colors {autoRefresh ? (dark ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : dark ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-300'}"
-				title="Toggle auto-refresh"
+				title={m.toggle_auto_refresh()}
 			>
 				<RefreshCw class="w-3 h-3" />
 			</button>
@@ -289,7 +291,7 @@
 			<button
 				onclick={() => onAutoScrollChange?.(!autoScroll)}
 				class="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-colors {autoScroll ? (dark ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : dark ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-300'}"
-				title="Toggle auto-scroll"
+				title={m.toggle_auto_scroll()}
 			>
 				<ArrowDownToLine class="w-3 h-3" />
 			</button>
@@ -298,15 +300,15 @@
 			     buttons around it -- neutralize all of it with ! overrides and hide the
 			     chevron so it reads as one more toolbar control. -->
 			<Select.Root type="single" value={String(fontSize)} onValueChange={(v) => { fontSize = Number(v); localStorage.setItem(FONT_SIZE_KEY, String(fontSize)); }}>
-				<Select.Trigger class="!h-6 !w-auto !gap-1 !rounded !border-0 !bg-transparent !px-1.5 !py-0.5 !text-xs !shadow-none transition-colors dark:!bg-transparent [&>svg:last-child]:hidden {dark ? 'text-zinc-500 hover:text-zinc-300 hover:!bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:!bg-gray-300'}" title="Font size">
+				<Select.Trigger class="!h-6 !w-auto !gap-1 !rounded !border-0 !bg-transparent !px-1.5 !py-0.5 !text-xs !shadow-none transition-colors dark:!bg-transparent [&>svg:last-child]:hidden {dark ? 'text-zinc-500 hover:text-zinc-300 hover:!bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:!bg-gray-300'}" title={m.font_size()}>
 					<Type class="w-3 h-3" />
-					<span>{fontSize}px</span>
+					<span>{m.fontsize_px({ fontSize: orEmpty(fontSize) })}</span>
 				</Select.Trigger>
 				<Select.Content>
 					{#each fontSizeOptions as size}
 						<Select.Item value={String(size)} label="{size}px">
 							<Type class="w-3 h-3 mr-1.5 text-muted-foreground" />
-							{size}px
+							{m.size_px({ size: orEmpty(size) })}
 						</Select.Item>
 					{/each}
 				</Select.Content>
@@ -315,7 +317,7 @@
 			<button
 				onclick={() => wordWrap = !wordWrap}
 				class="p-1 rounded transition-colors {wordWrap ? (dark ? 'bg-amber-500/20 ring-1 ring-amber-500/50' : 'bg-amber-500/30 ring-1 ring-amber-600/50') : ''} {dark ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Toggle word wrap"
+				title={m.toggle_word_wrap()}
 			>
 				<WrapText class="w-3 h-3 transition-colors {wordWrap ? (dark ? 'text-amber-400' : 'text-amber-700') : dark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -334,7 +336,7 @@
 					<input
 						bind:this={logSearchInputRef}
 						type="text"
-						placeholder="Search..."
+						placeholder={m.search()}
 						bind:value={logSearchQuery}
 						onkeydown={handleLogSearchKeydown}
 						class="bg-transparent border-none outline-none text-xs w-20 {dark ? 'text-zinc-200 placeholder:text-zinc-500' : 'text-gray-800 placeholder:text-gray-400'}"
@@ -351,13 +353,13 @@
 					{:else if logSearchQuery}
 						<span class="text-xs {dark ? 'text-zinc-500' : 'text-gray-400'}">0/0</span>
 					{/if}
-					<button onclick={() => navigateMatch('prev')} class="p-0.5 rounded {dark ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Previous">
+					<button onclick={() => navigateMatch('prev')} class="p-0.5 rounded {dark ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.previous()}>
 						<ChevronUp class="w-3 h-3 {dark ? 'text-zinc-400' : 'text-gray-500'}" />
 					</button>
-					<button onclick={() => navigateMatch('next')} class="p-0.5 rounded {dark ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Next">
+					<button onclick={() => navigateMatch('next')} class="p-0.5 rounded {dark ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.next()}>
 						<ChevronDown class="w-3 h-3 {dark ? 'text-zinc-400' : 'text-gray-500'}" />
 					</button>
-					<button onclick={closeLogSearch} class="p-0.5 rounded {dark ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Close">
+					<button onclick={closeLogSearch} class="p-0.5 rounded {dark ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.close()}>
 						<X class="w-3 h-3 {dark ? 'text-zinc-400' : 'text-gray-500'}" />
 					</button>
 				</div>
@@ -365,7 +367,7 @@
 				<button
 					onclick={toggleLogSearch}
 					class="p-1 rounded transition-colors {dark ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-					title="Search logs"
+					title={m.search_logs()}
 				>
 					<Search class="w-3 h-3 {dark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 				</button>
@@ -386,7 +388,7 @@
 			<button
 				onclick={downloadLogs}
 				class="p-1 rounded transition-colors {dark ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-				title="Download logs"
+				title={m.download_logs()}
 			>
 				<Download class="w-3 h-3 {dark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 			</button>
@@ -395,7 +397,7 @@
 				<button
 					onclick={() => onClear?.()}
 					class="p-1 rounded transition-colors {dark ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-					title="Clear logs"
+					title={m.clear_logs()}
 				>
 					<Eraser class="w-3 h-3 {dark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 				</button>
@@ -405,7 +407,7 @@
 				<button
 					onclick={() => onRefresh?.()}
 					class="p-1 rounded transition-colors {dark ? 'hover:bg-zinc-800' : 'hover:bg-gray-300'}"
-					title="Refresh logs"
+					title={m.refresh_logs()}
 				>
 					<RefreshCw class="w-3 h-3 {dark ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 				</button>
@@ -420,10 +422,10 @@
 		{:else if loading}
 			<div class="flex items-center justify-center h-full {dark ? 'text-zinc-500' : 'text-gray-500'}">
 				<RefreshCw class="w-5 h-5 animate-spin mr-2" />
-				Loading logs...
+				{m.loading_logs()}
 			</div>
 		{:else}
-			<p class="text-sm {dark ? 'text-zinc-500' : 'text-gray-500'}">No logs available</p>
+			<p class="text-sm {dark ? 'text-zinc-500' : 'text-gray-500'}">{m.no_logs_available()}</p>
 		{/if}
 	</div>
 </div>

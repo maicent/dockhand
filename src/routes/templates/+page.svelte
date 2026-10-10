@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Templates - Dockhand</title>
+	<title>{m.templates_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -85,7 +87,7 @@
 			templates = await response.json();
 			cacheTimestamp = Date.now();
 		} catch {
-			toast.error('Failed to load library templates');
+			toast.error(m.failed_to_load_library_templates());
 		} finally {
 			loading = false;
 		}
@@ -128,12 +130,12 @@
 <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
 	<!-- Header -->
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={LibraryBig} title="Templates" count={loading ? undefined : filteredTemplates.length} showConnection={false}>
+		<PageHeader icon={LibraryBig} title={m.templates()} count={loading ? undefined : filteredTemplates.length} showConnection={false}>
 			<button
 				class="p-1 rounded hover:bg-muted transition-colors"
 				onclick={() => fetchTemplates(true)}
 				disabled={loading}
-				title="Refresh templates"
+				title={m.refresh_templates()}
 			>
 				{#if loading}
 					<Loader2 class="w-3.5 h-3.5 animate-spin text-emerald-500" />
@@ -150,14 +152,14 @@
 					onclick={() => activeTab = 'browse'}
 				>
 					<Package class="w-3.5 h-3.5" />
-					Browse
+					{m.browse()}
 				</button>
 				<button
 					class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors {activeTab === 'sources' ? 'bg-white dark:bg-zinc-900 shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
 					onclick={() => activeTab = 'sources'}
 				>
 					<Settings2 class="w-3.5 h-3.5" />
-					Sources
+					{m.sources()}
 				</button>
 			</div>
 		</div>
@@ -170,7 +172,7 @@
 				<Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
 				<Input
 					type="text"
-					placeholder="Search templates..."
+					placeholder={m.search_templates()}
 					class="pl-9 w-64 h-8 text-sm"
 					bind:value={searchQuery}
 					onkeydown={(e) => e.key === 'Escape' && (searchQuery = '')}
@@ -183,11 +185,11 @@
 					<Select.Trigger size="sm" class="w-44 text-sm">
 						<span class="truncate">
 							{#if selectedCategories.length === 0}
-								All categories
+								{m.all_categories()}
 							{:else if selectedCategories.length === 1}
 								{selectedCategories[0]}
 							{:else}
-								{selectedCategories.length} categories
+								{m.length_categories({ length: orEmpty(selectedCategories.length) })}
 							{/if}
 						</span>
 					</Select.Trigger>
@@ -205,11 +207,11 @@
 					<Select.Trigger size="sm" class="w-48 text-sm">
 						<span class="truncate">
 							{#if selectedSources.length === 0}
-								All sources
+								{m.all_sources()}
 							{:else if selectedSources.length === 1}
 								{selectedSources[0]}
 							{:else}
-								{selectedSources.length} sources
+								{m.length_sources({ length: orEmpty(selectedSources.length) })}
 							{/if}
 						</span>
 					</Select.Trigger>
@@ -229,7 +231,7 @@
 					class="text-xs"
 					onclick={() => { selectedCategories = []; selectedSources = []; searchQuery = ''; }}
 				>
-					Clear filters
+					{m.clear_filters()}
 				</Button>
 			{/if}
 		</div>

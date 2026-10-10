@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
@@ -122,8 +124,8 @@
 	const postRestoreOptions = $derived([
 		...(mode === 'in-place' ? [{ value: 'start', label: targetIsStack ? 'Start stack' : 'Start container', icon: Play }] : []),
 		{ value: 'recreate', label: targetIsStack ? 'Recreate if missing' : 'Recreate container', icon: PackagePlus },
-		...(targetIsStack ? [{ value: 'redeploy', label: 'Redeploy stack', icon: Rocket }] : []),
-		{ value: 'none', label: 'Do nothing', icon: Ban }
+		...(targetIsStack ? [{ value: 'redeploy', label: m.redeploy_stack(), icon: Rocket }] : []),
+		{ value: 'none', label: m.do_nothing(), icon: Ban }
 	]);
 	const targetEnv = $derived(envList.find((e) => e.id === effectiveEnvId));
 	const targetEnvName = $derived(targetEnv?.name ?? '');
@@ -585,7 +587,7 @@
 					{/snippet}
 				</SnapshotHeader>
 			</Dialog.Title>
-			<Dialog.Description class="sr-only">Restore snapshot {snapshotId.slice(0, 8)} for {containerName}.</Dialog.Description>
+			<Dialog.Description class="sr-only">{m.restore_snapshot_arg1_for_containername({ arg1: orEmpty(snapshotId.slice(0, 8)), containerName: orEmpty(containerName) })}</Dialog.Description>
 		</Dialog.Header>
 
 		<!-- The single scroll region. flex-1 fills the fixed-height dialog between the
@@ -593,7 +595,7 @@
 		<div class="flex flex-1 flex-col overflow-y-auto -mx-6 px-6">
 		{#if loading}
 			<div class="flex flex-1 items-center justify-center text-muted-foreground">
-				<Loader2 class="h-5 w-5 animate-spin" /> <span class="ml-2">Reading snapshot…</span>
+				<Loader2 class="h-5 w-5 animate-spin" /> <span class="ml-2">{m.reading_snapshot()}</span>
 			</div>
 		{:else if restoreStatus !== 'idle'}
 			<!-- Running AND finished states keep the LIVE LOG visible (no separate result
@@ -605,15 +607,15 @@
 				<LogConsole lines={restoreLogs} class="flex-1 min-h-0" />
 				<div class="mt-2 flex shrink-0 items-center gap-1.5 text-sm">
 					{#if restoreStatus === 'running'}
-						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" /><span class="text-muted-foreground">Restoring…</span>
+						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" /><span class="text-muted-foreground">{m.restoring()}</span>
 					{:else if restoreStatus === 'success'}
 						<CheckCircle2 class="h-4 w-4 text-green-500" />
-						<span class="text-green-500">Restore completed</span>
+						<span class="text-green-500">{m.restore_completed()}</span>
 						<span class="text-muted-foreground">— {mode === 'new-location'
 							? `restored to ${targetEnvName}${postRestore !== 'none' ? (targetIsStack ? ', stack redeployed' : ', container recreated') : ''}`
 							: `live volume replaced — restart ${containerName}${hasStackFiles ? ' / redeploy the stack' : ''} to use it`}.</span>
 					{:else if restoreStatus === 'warning'}
-						<AlertTriangle class="h-4 w-4 text-amber-500" /><span class="text-amber-600 dark:text-amber-400">Restore completed with warnings — {restoreWarning}</span>
+						<AlertTriangle class="h-4 w-4 text-amber-500" /><span class="text-amber-600 dark:text-amber-400">{m.restore_completed_with_warnings_restorewarning({ restoreWarning: orEmpty(restoreWarning) })}</span>
 					{:else}
 						<XCircle class="h-4 w-4 text-destructive" /><span class="text-destructive">{error || 'Restore failed'}</span>
 					{/if}
@@ -632,34 +634,34 @@
 						<span class="-mb-3 w-0.5 flex-1 rounded {stepLineClass}"></span>
 					</div>
 					<div class="space-y-2 pb-3">
-						<div class="text-sm font-semibold">Where does it go? <span class="font-normal text-xs text-muted-foreground">— pick where, and how</span></div>
+						<div class="text-sm font-semibold">{m.where_does_it_go()} <span class="font-normal text-xs text-muted-foreground">{m.pick_where_and_how()}</span></div>
 						<div class="grid grid-cols-2 gap-2">
 							<button
 								type="button"
 								class="rounded border p-3 text-left text-sm {mode === 'new-location' ? 'border-primary bg-primary/5' : ''}"
 								onclick={() => (mode = 'new-location')}
 							>
-								<div class="flex items-center gap-1.5 font-medium"><Server class="h-3.5 w-3.5" /> To an environment</div>
-								<div class="mt-1 text-xs text-muted-foreground">Clone it onto a chosen environment.</div>
+								<div class="flex items-center gap-1.5 font-medium"><Server class="h-3.5 w-3.5" /> {m.to_an_environment()}</div>
+								<div class="mt-1 text-xs text-muted-foreground">{m.clone_it_onto_a_chosen_environment()}</div>
 							</button>
 							<button
 								type="button"
 								class="rounded border p-3 text-left text-sm {mode === 'in-place' ? 'border-primary bg-primary/5' : ''}"
 								onclick={() => (mode = 'in-place')}
 							>
-								<div class="flex items-center gap-1.5 font-medium"><AlertTriangle class="h-3.5 w-3.5 text-destructive" /> Overwrite live</div>
-								<div class="mt-1 text-xs text-muted-foreground">Replace the live data in place. Destructive.</div>
+								<div class="flex items-center gap-1.5 font-medium"><AlertTriangle class="h-3.5 w-3.5 text-destructive" /> {m.overwrite_live()}</div>
+								<div class="mt-1 text-xs text-muted-foreground">{m.replace_the_live_data_in_place_destructive()}</div>
 							</button>
 						</div>
 						{#if mode === 'new-location'}
 							<div class="space-y-1.5">
-								<Label class="flex items-center gap-1.5"><Server class="h-3.5 w-3.5" /> Target environment</Label>
+								<Label class="flex items-center gap-1.5"><Server class="h-3.5 w-3.5" /> {m.target_environment()}</Label>
 								<Select.Root type="single" value={effectiveEnvId != null ? String(effectiveEnvId) : ''} onValueChange={(v) => (targetEnvId = v ? parseInt(v) : undefined)}>
 									<Select.Trigger class="h-9 w-full">
 										{#if targetEnv}
 											<span class="flex items-center gap-2"><EnvironmentIcon icon={targetEnv.icon || 'globe'} envId={targetEnv.id} class="h-4 w-4 text-muted-foreground" />{targetEnv.name}</span>
 										{:else}
-											<span class="text-muted-foreground">Select an environment…</span>
+											<span class="text-muted-foreground">{m.select_an_environment()}</span>
 										{/if}
 									</Select.Trigger>
 									<Select.Content>
@@ -684,18 +686,18 @@
 					<div class="space-y-2 pb-3">
 						<div class="flex items-center gap-1.5 text-sm font-semibold">
 							{mode === 'in-place' ? 'What gets overwritten?' : 'What gets restored?'}
-							<span class="font-normal text-xs text-muted-foreground">— {selectedRows.length} of {volumes.length} {volumes.length === 1 ? 'volume' : 'volumes'}</span>
+							<span class="font-normal text-xs text-muted-foreground">{m.length_of_arg2_arg3({ length: orEmpty(selectedRows.length), arg2: orEmpty(volumes.length), arg3: orEmpty(volumes.length === 1 ? 'volume' : 'volumes') })}</span>
 							{#if mode === 'new-location'}
 								<Tooltip.Root>
 									<Tooltip.Trigger class="ml-0.5"><HelpCircle class="h-3.5 w-3.5 text-muted-foreground opacity-70" /></Tooltip.Trigger>
 									<Tooltip.Content class="w-[22rem] max-w-[90vw]">
-										<p class="text-xs leading-relaxed">Each destination is resolved by <b>{targetEnvName || 'the target'}</b>'s Docker daemon: a <b>host path</b> must exist on that host (not on Dockhand's), while a <b>named volume</b> is created there. Prefer named volumes for portability. The post-restore step brings the {targetIsStack ? 'stack' : 'container'} up; if it fails, the data is still restored and you finish manually.</p>
+										<p class="text-xs leading-relaxed">{m.each_destination_is_resolved_by()} <b>{targetEnvName || 'the target'}</b>{m.s_docker_daemon_a()} <b>{m.host_path_185b()}</b> {m.must_exist_on_that_host_not_on_dockhands_while_a()} <b>{m.named_volume()}</b> {m.is_created_there_prefer_named_volumes_for_portab({ arg1: orEmpty(targetIsStack ? 'stack' : 'container') })}</p>
 									</Tooltip.Content>
 								</Tooltip.Root>
 							{/if}
 						</div>
 					{#if volumes.length === 0}
-						<p class="text-sm text-muted-foreground">This snapshot has no volumes — restore recreates the {targetIsStack ? 'stack' : 'container'} from its saved config.</p>
+						<p class="text-sm text-muted-foreground">{m.this_snapshot_has_no_volumes_restore_recreates_t({ arg1: orEmpty(targetIsStack ? 'stack' : 'container') })}</p>
 						{#if showSecretRestore || (mode === 'new-location' && targetIsStack && hasStackFiles)}
 							<div class="rounded border p-2">{@render secretRestoreBlock()}{@render stackRestoreOptions()}</div>
 						{/if}
@@ -709,10 +711,10 @@
 										<Checkbox bind:checked={vol.selected} />
 										{#if vol.type === 'bind'}
 											<Folder class="h-3.5 w-3.5 shrink-0 text-amber-500" />
-											<span class="w-11 shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">bind</span>
+											<span class="w-11 shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">{m.bind()}</span>
 										{:else}
 											<HardDrive class="h-3.5 w-3.5 shrink-0 text-sky-500" />
-											<span class="w-11 shrink-0 rounded-full bg-sky-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">vol</span>
+											<span class="w-11 shrink-0 rounded-full bg-sky-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">{m.vol()}</span>
 										{/if}
 										<span class="truncate font-mono">{vol.name}</span>
 									</label>
@@ -722,22 +724,22 @@
 											<Select.Root type="single" value={vol.destKind} onValueChange={(v) => onDestKindChange(vol, v as 'volume' | 'path')}>
 												<Select.Trigger class="h-8 w-32 shrink-0 text-xs">
 													{#if vol.destKind === 'path'}
-														<span class="flex items-center gap-1.5"><Folder class="h-3.5 w-3.5 text-amber-500" /> Host path</span>
+														<span class="flex items-center gap-1.5"><Folder class="h-3.5 w-3.5 text-amber-500" /> {m.host_path()}</span>
 													{:else}
-														<span class="flex items-center gap-1.5"><HardDrive class="h-3.5 w-3.5 text-sky-500" /> Volume</span>
+														<span class="flex items-center gap-1.5"><HardDrive class="h-3.5 w-3.5 text-sky-500" /> {m.volume_3b18()}</span>
 													{/if}
 												</Select.Trigger>
 												<Select.Content>
-													<Select.Item value="volume"><span class="flex items-center gap-1.5"><HardDrive class="h-3.5 w-3.5 text-sky-500" /> Volume</span></Select.Item>
-													<Select.Item value="path"><span class="flex items-center gap-1.5"><Folder class="h-3.5 w-3.5 text-amber-500" /> Host path</span></Select.Item>
+													<Select.Item value="volume"><span class="flex items-center gap-1.5"><HardDrive class="h-3.5 w-3.5 text-sky-500" /> {m.volume_3b18()}</span></Select.Item>
+													<Select.Item value="path"><span class="flex items-center gap-1.5"><Folder class="h-3.5 w-3.5 text-amber-500" /> {m.host_path()}</span></Select.Item>
 												</Select.Content>
 											</Select.Root>
 											<Input bind:value={vol.dest} class="h-8 flex-1 font-mono text-xs {(vol.conflict || vol.pathInvalid) ? 'border-destructive' : ''}" placeholder={vol.destKind === 'path' ? '/absolute/path' : 'volume-name'} />
 										</div>
 										{#if vol.conflict}
-											<p class="pl-6 text-xs text-destructive">Volume <span class="font-mono">{vol.dest}</span> already exists on {targetEnvName}. Remove it or choose another destination.</p>
+											<p class="pl-6 text-xs text-destructive">{m.volume_3b18()} <span class="font-mono">{vol.dest}</span> {m.already_exists_on_targetenvname_remove_it_or_cho({ targetEnvName: orEmpty(targetEnvName) })}</p>
 										{:else if vol.pathInvalid}
-											<p class="pl-6 text-xs text-destructive">A host path must be absolute — start it with <span class="font-mono">/</span> (e.g. <span class="font-mono">/srv/{vol.name}</span>).</p>
+											<p class="pl-6 text-xs text-destructive">{m.a_host_path_must_be_absolute_start_it_with()} <span class="font-mono">/</span> {m.e_g()} <span class="font-mono">{m.srv_name({ name: orEmpty(vol.name) })}</span>).</p>
 										{/if}
 									{/if}
 								</div>
@@ -752,10 +754,10 @@
 									<Checkbox bind:checked={vol.selected} class="mt-0.5" />
 									{#if vol.type === 'bind'}
 										<Folder class="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
-										<span class="mt-0.5 w-11 shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">bind</span>
+										<span class="mt-0.5 w-11 shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">{m.bind()}</span>
 									{:else}
 										<HardDrive class="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-500" />
-										<span class="mt-0.5 w-11 shrink-0 rounded-full bg-sky-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">vol</span>
+										<span class="mt-0.5 w-11 shrink-0 rounded-full bg-sky-500/15 px-1.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">{m.vol()}</span>
 									{/if}
 									<span class="min-w-0">
 										<span class="block truncate font-mono">{vol.name}</span>
@@ -781,11 +783,11 @@
 						<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold {stepRingClass}">3</span>
 					</div>
 					<div class="space-y-2 pb-1">
-						<div class="text-sm font-semibold">Then what? <span class="font-normal text-xs text-muted-foreground">— {mode === 'in-place' ? 'bring it back up' : 'bring it up on the target'}</span></div>
+						<div class="text-sm font-semibold">{m.then_what()} <span class="font-normal text-xs text-muted-foreground">— {mode === 'in-place' ? 'bring it back up' : 'bring it up on the target'}</span></div>
 				{#if mode === 'new-location'}
 					<!-- After restore: bring the target up on the chosen env. -->
 					<div class="space-y-1.5">
-						<Label class="sr-only">After restore</Label>
+						<Label class="sr-only">{m.after_restore()}</Label>
 						<Select.Root type="single" value={postRestore} onValueChange={(v) => { postRestore = v as PostRestore; postRestoreUserPicked = true; }}>
 							<Select.Trigger class="h-9">
 								{#each postRestoreOptions as opt}
@@ -805,12 +807,12 @@
 							</Select.Content>
 						</Select.Root>
 						{#if nameConflict}
-							<p class="text-xs text-destructive">A {targetIsStack ? 'stack' : 'container'} named <span class="font-mono">{containerName}</span> already exists on {targetEnvName}. Remove it or choose "Do nothing" — the restore won't overwrite it.</p>
+							<p class="text-xs text-destructive">{m.a_arg1_named({ arg1: orEmpty(targetIsStack ? 'stack' : 'container') })} <span class="font-mono">{containerName}</span> {m.already_exists_on_targetenvname_remove_it_or_cho_8327({ targetEnvName: orEmpty(targetEnvName) })}</p>
 						{/if}
 					</div>
 				{:else}
 						<div class="space-y-1.5">
-							<Label>After restore</Label>
+							<Label>{m.after_restore()}</Label>
 							<Select.Root type="single" value={postRestore} onValueChange={(v) => { postRestore = v as PostRestore; postRestoreUserPicked = true; }}>
 							<Select.Trigger class="h-9">
 								{#each postRestoreOptions as opt}
@@ -842,11 +844,11 @@
 				     certainty about what lands where before committing. -->
 				{#snippet hostDataBadge(kind: ProbeKind)}
 					{#if kind === 'has-data'}
-						<span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400"><AlertTriangle class="h-3 w-3" />has data</span>
+						<span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400"><AlertTriangle class="h-3 w-3" />{m.has_data()}</span>
 					{:else if kind === 'empty'}
-						<span class="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">empty</span>
+						<span class="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">{m.empty()}</span>
 					{:else if kind === 'missing'}
-						<span class="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">new</span>
+						<span class="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">{m.new()}</span>
 					{/if}
 				{/snippet}
 				<!-- VOL / BIND kind pill + icon, used on BOTH sides of "<source> -> <target>" so a
@@ -854,10 +856,10 @@
 				{#snippet kindBadge(kind: 'volume' | 'bind')}
 					{#if kind === 'bind'}
 						<Folder class="h-3 w-3 shrink-0 text-amber-500" />
-						<span class="w-9 shrink-0 rounded-full bg-amber-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">bind</span>
+						<span class="w-9 shrink-0 rounded-full bg-amber-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">{m.bind()}</span>
 					{:else}
 						<HardDrive class="h-3 w-3 shrink-0 text-sky-500" />
-						<span class="w-9 shrink-0 rounded-full bg-sky-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">vol</span>
+						<span class="w-9 shrink-0 rounded-full bg-sky-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">{m.vol()}</span>
 					{/if}
 				{/snippet}
 				<!-- Only the FAILURE states live here now (they block the restore and must be seen even
@@ -868,25 +870,25 @@
 						<div class="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-2.5 text-xs">
 							<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
 							<div class="min-w-0">
-								<div class="font-medium text-destructive">Dockhand cannot read the stack folder</div>
+								<div class="font-medium text-destructive">{m.dockhand_cannot_read_the_stack_folder()}</div>
 								<div class="mt-0.5 break-all text-muted-foreground">{localError}</div>
-								<div class="mt-1 text-muted-foreground">This folder is on Dockhand's own disk, not on {targetEnvName || 'the target environment'}. A restore can't run until Dockhand can read it.</div>
+								<div class="mt-1 text-muted-foreground">{m.this_folder_is_on_dockhands_own_disk_not_on_arg1({ arg1: orEmpty(targetEnvName || 'the target environment') })}</div>
 							</div>
 						</div>
 					{:else if helperError}
 						<div class="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-2.5 text-xs">
 							<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
 							<div class="min-w-0">
-								<div class="font-medium text-destructive">The backup helper can't run on {targetEnvName || 'this environment'}</div>
+								<div class="font-medium text-destructive">{m.the_backup_helper_cant_run_on_arg1({ arg1: orEmpty(targetEnvName || 'this environment') })}</div>
 								<div class="mt-0.5 break-all text-muted-foreground">{helperError}</div>
-								<div class="mt-1 text-muted-foreground">A restore can't run until this is fixed - the same helper writes the restored data.</div>
+								<div class="mt-1 text-muted-foreground">{m.a_restore_cant_run_until_this_is_fixed_the_same()}</div>
 							</div>
 						</div>
 					{:else if targetPreviewError && !targetPreviewLoading}
 						<div class="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-2.5 text-xs">
 							<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
 							<div class="min-w-0">
-								<div class="font-medium text-destructive">Couldn't check the target paths</div>
+								<div class="font-medium text-destructive">{m.couldnt_check_the_target_paths()}</div>
 								<div class="mt-0.5 break-all text-muted-foreground">{targetPreviewError}</div>
 							</div>
 						</div>
@@ -914,9 +916,9 @@
 								<Checkbox bind:checked={restoreSecrets} class="mt-0.5" />
 								<KeyRound class="h-4 w-4 shrink-0 translate-y-0.5 text-amber-500" />
 								<span>
-									Restore {sourceSecretKeys.length} secret{sourceSecretKeys.length === 1 ? '' : 's'} from this backup.
+									{m.restore_length_secret_arg2_from_this_backup({ length: orEmpty(sourceSecretKeys.length), arg2: orEmpty(sourceSecretKeys.length === 1 ? '' : 's') })}
 									<span class="block text-xs text-muted-foreground">
-										Turn off to bring the stack up without secrets and set them by hand.
+										{m.turn_off_to_bring_the_stack_up_without_secrets_a()}
 									</span>
 								</span>
 							</label>
@@ -929,11 +931,8 @@
 								<div class="flex items-start gap-1.5 pl-6 text-xs text-amber-600 dark:text-amber-500">
 									<AlertTriangle class="h-3.5 w-3.5 shrink-0 translate-y-0.5" />
 									<span>
-										Secrets are encrypted with this Dockhand instance's key. Restoring on a
-										different instance requires the same encryption key
-										(<code class="rounded bg-muted px-1 py-0.5">.encryption_key</code> /
-										<code class="rounded bg-muted px-1 py-0.5">ENCRYPTION_KEY</code>), or they
-										stay unreadable.
+										{m.secrets_are_encrypted_with_this_dockhand_instanc()}<code class="rounded bg-muted px-1 py-0.5">{m.encryption_key()}</code> /
+										<code class="rounded bg-muted px-1 py-0.5">{m.encryption_key_828d()}</code>{m.or_they_stay_unreadable()}
 									</span>
 								</div>
 							{/if}
@@ -952,9 +951,9 @@
 								<Checkbox bind:checked={skipStackFiles} class="mt-0.5" />
 								<FileX class="h-4 w-4 shrink-0 translate-y-0.5 text-muted-foreground" />
 								<span>
-									Restore volume data only (skip stack files)
+									{m.restore_volume_data_only_skip_stack_files()}
 									<span class="block text-xs text-muted-foreground">
-										Leave out the captured compose and config - restore just the volume data. Otherwise the stack files are restored and registered in Dockhand so you can edit and redeploy the stack.
+										{m.leave_out_the_captured_compose_and_config_restor()}
 									</span>
 								</span>
 							</label>
@@ -964,11 +963,11 @@
 				<div class="mt-3 rounded-md border border-l-[3px] p-3 text-sm {mode === 'in-place' ? 'border-l-destructive bg-destructive/5' : 'border-l-primary bg-primary/5'}">
 					<div class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
 						{#if mode === 'in-place'}<AlertTriangle class="h-3.5 w-3.5 text-destructive" />{:else}<Info class="h-3.5 w-3.5 text-primary" />{/if}
-						What will happen
+						{m.what_will_happen()}
 					</div>
 					{#if mode === 'in-place'}
 						<p class="leading-relaxed">
-							The snapshot{#if backupTime}&nbsp;taken <span class="font-mono">{formatDateTime(backupTime)}</span>{/if}{#if sourceEnvName}&nbsp;from {@render envChip(sourceEnv, sourceEnvName)}{/if} will <b class="text-destructive">overwrite the live data</b>{#if targetEnvName}&nbsp;on {@render envChip(targetEnv, targetEnvName)}{/if}{#if selectedRows.length > 0}:{:else}.{/if}
+							{m.the_snapshot()}{#if backupTime}{m.taken()} <span class="font-mono">{formatDateTime(backupTime)}</span>{/if}{#if sourceEnvName}{m.from_0b1e()} {@render envChip(sourceEnv, sourceEnvName)}{/if} {m.will()} <b class="text-destructive">{m.overwrite_the_live_data()}</b>{#if targetEnvName}{m.on()} {@render envChip(targetEnv, targetEnvName)}{/if}{#if selectedRows.length > 0}:{:else}.{/if}
 						</p>
 						{#if selectedRows.length > 0}
 							<ul class="mt-1.5 space-y-1">
@@ -976,26 +975,26 @@
 									{@const t = targetPreview?.volumes.find((x) => x.key === v.name)}
 									<li class="flex items-center gap-2 text-xs">
 										{#if v.type === 'bind'}<Folder class="h-3 w-3 shrink-0 text-amber-500" />{:else}<HardDrive class="h-3 w-3 shrink-0 text-sky-500" />{/if}
-										{#if v.type === 'bind'}<span class="w-9 shrink-0 rounded-full bg-amber-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">bind</span>{:else}<span class="w-9 shrink-0 rounded-full bg-sky-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">vol</span>{/if}
+										{#if v.type === 'bind'}<span class="w-9 shrink-0 rounded-full bg-amber-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">{m.bind()}</span>{:else}<span class="w-9 shrink-0 rounded-full bg-sky-500/15 px-1 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">{m.vol()}</span>{/if}
 										<span class="font-mono">{v.name}</span>
 										{#if v.type === 'bind' && (t?.target ?? v.origDest)}
-											<span class="text-muted-foreground">&rarr; host path</span>
+											<span class="text-muted-foreground">{m.host_path_5fdc()}</span>
 											<span class="min-w-0 break-all font-mono text-muted-foreground">{t?.target ?? v.origDest}</span>
 										{:else}
-											<span class="text-muted-foreground">wiped &amp; replaced</span>
+											<span class="text-muted-foreground">{m.wiped_replaced()}</span>
 										{/if}
 									</li>
 								{/each}
 							</ul>
 						{/if}
-						<p class="mt-1.5 leading-relaxed">The {targetIsStack ? 'stack' : 'container'} is <b>stopped before the restore</b> (expect downtime); the volumes are swapped (staged then committed), then <b>{postRestoreLabel.toLowerCase()}</b>.</p>
+						<p class="mt-1.5 leading-relaxed">{m.the_arg1_is({ arg1: orEmpty(targetIsStack ? 'stack' : 'container') })} <b>{m.stopped_before_the_restore()}</b> {m.expect_downtime_the_volumes_are_swapped_staged_t()} <b>{postRestoreLabel.toLowerCase()}</b>.</p>
 						<label class="mt-2.5 flex cursor-pointer items-center gap-2 border-t border-destructive/20 pt-2.5 text-sm">
 							<Checkbox bind:checked={confirmOverwrite} />
-							I understand this replaces the live volume data.
+							{m.i_understand_this_replaces_the_live_volume_data()}
 						</label>
 					{:else}
 						<p class="leading-relaxed">
-							The snapshot{#if backupTime}&nbsp;taken <span class="font-mono">{formatDateTime(backupTime)}</span>{/if}{#if sourceEnvName}&nbsp;from {@render envChip(sourceEnv, sourceEnvName)}{/if} will be restored to {@render envChip(targetEnv, targetEnvName)}{#if selectedRows.length > 0}:{:else}.{/if}
+							{m.the_snapshot()}{#if backupTime}{m.taken()} <span class="font-mono">{formatDateTime(backupTime)}</span>{/if}{#if sourceEnvName}{m.from_0b1e()} {@render envChip(sourceEnv, sourceEnvName)}{/if} {m.will_be_restored_to()} {@render envChip(targetEnv, targetEnvName)}{#if selectedRows.length > 0}:{:else}.{/if}
 						</p>
 						{#if selectedRows.length > 0}
 							<ul class="mt-1.5 space-y-1">
@@ -1010,7 +1009,7 @@
 										<!-- Per-row data probe: a small spinner pill while checking, then a badge. -->
 										{#if v.dest.trim()}
 											{#if probe}{@render hostDataBadge(probe)}
-											{:else if targetPreviewLoading}<span class="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"><Loader2 class="h-2.5 w-2.5 animate-spin" />checking on{#if targetEnv}<EnvironmentIcon icon={targetEnv.icon || 'globe'} envId={targetEnv.id} class="h-3 w-3" />{/if}{targetEnvName || 'host'}</span>{/if}
+											{:else if targetPreviewLoading}<span class="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"><Loader2 class="h-2.5 w-2.5 animate-spin" />{m.checking_on()}{#if targetEnv}<EnvironmentIcon icon={targetEnv.icon || 'globe'} envId={targetEnv.id} class="h-3 w-3" />{/if}{targetEnvName || 'host'}</span>{/if}
 										{/if}
 									</li>
 								{/each}
@@ -1022,7 +1021,7 @@
 							<ul class="mt-1.5 space-y-1">
 								<li class="flex items-center gap-2 text-xs">
 									{@render kindBadge('bind')}
-									<span>stack files</span>
+									<span>{m.stack_files()}</span>
 									<span class="shrink-0 text-muted-foreground">&rarr;</span>
 									<span class="font-mono">{targetPreview.stackFiles.targetDir}</span>
 									{#if targetPreview.stackFiles.hasData}{@render hostDataBadge(targetPreview.stackFiles.hasData)}{/if}
@@ -1034,20 +1033,20 @@
 						{#if overwriteAckReachable(targetsWithData)}
 							<label class="mt-2 flex cursor-pointer items-start gap-2 text-xs text-amber-600 dark:text-amber-400">
 								<Checkbox bind:checked={overwriteAck} class="mt-0.5" />
-								<span>I understand existing data at {targetsWithData === 1 ? 'this location' : `these ${targetsWithData} locations`} will be overwritten.</span>
+								<span>{m.i_understand_existing_data_at_arg1_will_be_overw({ arg1: orEmpty(targetsWithData === 1 ? 'this location' : `these ${targetsWithData} locations`) })}</span>
 							</label>
 						{/if}
 						{#if postRestore !== 'none'}
-							<p class="mt-1.5 leading-relaxed">Then Dockhand will <b>{postRestoreLabel.toLowerCase()}</b> on {@render envChip(targetEnv, targetEnvName)}{#if sourceEnvName && sourceEnvName !== targetEnvName}. Nothing on {@render envChip(sourceEnv, sourceEnvName)} is touched{/if}.</p>
+							<p class="mt-1.5 leading-relaxed">{m.then_dockhand_will()} <b>{postRestoreLabel.toLowerCase()}</b> {m.on()} {@render envChip(targetEnv, targetEnvName)}{#if sourceEnvName && sourceEnvName !== targetEnvName}{m.nothing_on()} {@render envChip(sourceEnv, sourceEnvName)} {m.is_touched()}{/if}.</p>
 						{:else}
-							<p class="mt-1.5 leading-relaxed">The {targetIsStack ? 'stack' : 'container'} is <b>not started</b> — the data lands on {@render envChip(targetEnv, targetEnvName)} and you bring it up yourself.</p>
+							<p class="mt-1.5 leading-relaxed">{m.the_arg1_is({ arg1: orEmpty(targetIsStack ? 'stack' : 'container') })} <b>{m.not_started()}</b> {m.the_data_lands_on()} {@render envChip(targetEnv, targetEnvName)} {m.and_you_bring_it_up_yourself()}</p>
 						{/if}
 						{#if showSecretRestore}
 							<p class="mt-1.5 leading-relaxed">
 								{#if restoreSecrets}
-									Its <b>{sourceSecretKeys.length} secret{sourceSecretKeys.length === 1 ? '' : 's'}</b> will be restored from the backup.
+									{m.its()} <b>{m.length_secret_arg2({ length: orEmpty(sourceSecretKeys.length), arg2: orEmpty(sourceSecretKeys.length === 1 ? '' : 's') })}</b> {m.will_be_restored_from_the_backup()}
 								{:else}
-									Its <b>{sourceSecretKeys.length} secret{sourceSecretKeys.length === 1 ? '' : 's'}</b> will <b>not</b> be restored — set {sourceSecretKeys.length === 1 ? 'it' : 'them'} by hand afterwards.
+									{m.its()} <b>{m.length_secret_arg2({ length: orEmpty(sourceSecretKeys.length), arg2: orEmpty(sourceSecretKeys.length === 1 ? '' : 's') })}</b> {m.will()} <b>{m.not()}</b> {m.be_restored_set_arg1_by_hand_afterwards({ arg1: orEmpty(sourceSecretKeys.length === 1 ? 'it' : 'them') })}
 								{/if}
 							</p>
 						{/if}
@@ -1057,11 +1056,11 @@
 							     name/type, so the target would come up on the wrong (empty) volume. -->
 							<div class="mt-2.5 rounded-md border border-l-[3px] border-amber-500/30 border-l-amber-500 bg-amber-500/10 p-2.5">
 								<div class="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
-									<AlertTriangle class="h-3.5 w-3.5" /> You have changed a volume's name or type
+									<AlertTriangle class="h-3.5 w-3.5" /> {m.you_have_changed_a_volumes_name_or_type()}
 								</div>
-								<p class="text-xs leading-relaxed text-amber-700 dark:text-amber-300/90">Your data goes to the new volumes. But the {targetIsStack ? 'stack redeploys from the stored compose file, which still names' : 'recreated container mounts'} the <b>original</b> ones — so it {targetIsStack ? 'starts with empty volumes' : "won't see the restored data"}.</p>
-								<p class="mt-1 text-xs leading-relaxed text-amber-700 dark:text-amber-300/90"><b>After restoring:</b> {targetIsStack ? 'update the compose file to the new volume names, then redeploy.' : 'edit the container and point the mount at the new volume.'}</p>
-								{#if postRestore === 'none'}<p class="mt-1 text-[11px] leading-relaxed text-amber-600/70 dark:text-amber-300/60">Next step set to <b>Do nothing</b> so it can't start with the wrong data.</p>{/if}
+								<p class="text-xs leading-relaxed text-amber-700 dark:text-amber-300/90">{m.your_data_goes_to_the_new_volumes_but_the_arg1_t({ arg1: orEmpty(targetIsStack ? 'stack redeploys from the stored compose file, which still names' : 'recreated container mounts') })} <b>{m.original()}</b> {m.ones_so_it_arg1({ arg1: orEmpty(targetIsStack ? 'starts with empty volumes' : "won't see the restored data") })}</p>
+								<p class="mt-1 text-xs leading-relaxed text-amber-700 dark:text-amber-300/90"><b>{m.after_restoring()}</b> {targetIsStack ? 'update the compose file to the new volume names, then redeploy.' : 'edit the container and point the mount at the new volume.'}</p>
+								{#if postRestore === 'none'}<p class="mt-1 text-[11px] leading-relaxed text-amber-600/70 dark:text-amber-300/60">{m.next_step_set_to()} <b>{m.do_nothing()}</b> {m.so_it_cant_start_with_the_wrong_data()}</p>{/if}
 							</div>
 						{/if}
 					{/if}
@@ -1072,9 +1071,9 @@
 
 		<Dialog.Footer class="shrink-0">
 			{#if restoreStatus === 'success' || restoreStatus === 'warning' || restoreStatus === 'error'}
-				<Button variant="outline" onclick={() => (open = false)}>OK</Button>
+				<Button variant="outline" onclick={() => (open = false)}>{m.ok()}</Button>
 			{:else if restoreStatus !== 'running'}
-				<Button variant="outline" onclick={() => (open = false)} disabled={restoring}>Cancel</Button>
+				<Button variant="outline" onclick={() => (open = false)} disabled={restoring}>{m.cancel()}</Button>
 				<!-- Hide the restore action until the snapshot is read — until then we
 				     don't know its volumes/target, so there's nothing to restore yet. -->
 				{#if !loading}
@@ -1085,7 +1084,7 @@
 					>
 						{#if restoring}<Loader2 class="mr-1.5 h-4 w-4 animate-spin" />{:else if targetPreviewLoading}<Loader2 class="mr-1.5 h-4 w-4 animate-spin" />{:else}<Play class="mr-1.5 h-4 w-4" />{/if}
 						{#if targetPreviewLoading && !restoring}
-							Checking target&hellip;
+							{m.checking_target()}
 						{:else}
 							{mode === 'in-place' ? 'Overwrite & restore' : (postRestore !== 'none' ? 'Restore & start' : 'Restore')}
 						{/if}

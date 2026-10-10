@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tooltip from '$lib/components/ui/tooltip';
@@ -121,7 +122,7 @@
 								<Tooltip.Trigger>
 									<FileText class="w-3.5 h-3.5 text-muted-foreground" />
 								</Tooltip.Trigger>
-								<Tooltip.Content side="bottom"><p class="whitespace-nowrap">From env file in repository</p></Tooltip.Content>
+								<Tooltip.Content side="bottom"><p class="whitespace-nowrap">{m.from_env_file_in_repository()}</p></Tooltip.Content>
 							</Tooltip.Root>
 						{:else if source === 'override'}
 							<Tooltip.Root>
@@ -158,21 +159,21 @@
 									<Tooltip.Trigger>
 										<CheckCircle2 class="w-4 h-4 text-green-500" />
 									</Tooltip.Trigger>
-									<Tooltip.Content><p>Required variable defined</p></Tooltip.Content>
+									<Tooltip.Content><p>{m.required_variable_defined()}</p></Tooltip.Content>
 								</Tooltip.Root>
 							{:else if isVarOptional}
 								<Tooltip.Root>
 									<Tooltip.Trigger>
 										<CircleDot class="w-4 h-4 text-blue-400" />
 									</Tooltip.Trigger>
-									<Tooltip.Content><p>Optional variable (has default)</p></Tooltip.Content>
+									<Tooltip.Content><p>{m.optional_variable_has_default()}</p></Tooltip.Content>
 								</Tooltip.Root>
 							{:else if isVarUnused}
 								<Tooltip.Root>
 									<Tooltip.Trigger>
 										<AlertCircle class="w-4 h-4 text-amber-500" />
 									</Tooltip.Trigger>
-									<Tooltip.Content><p>Unused variable</p></Tooltip.Content>
+									<Tooltip.Content><p>{m.unused_variable()}</p></Tooltip.Content>
 								</Tooltip.Root>
 							{/if}
 						{/if}
@@ -181,7 +182,7 @@
 
 				<!-- Key Input with floating label -->
 				<div class="flex-1 relative">
-					<span class="absolute -top-2 left-2 text-2xs text-muted-foreground bg-background px-1">Name</span>
+					<span class="absolute -top-2 left-2 text-2xs text-muted-foreground bg-background px-1">{m.name()}</span>
 					<Input
 						bind:value={variable.key}
 						disabled={readonly}
@@ -192,7 +193,7 @@
 
 				<!-- Value Input with floating label -->
 				<div class="flex-1 relative">
-					<span class="absolute -top-2 left-2 text-2xs text-muted-foreground bg-background px-1">Value</span>
+					<span class="absolute -top-2 left-2 text-2xs text-muted-foreground bg-background px-1">{m.value()}</span>
 					<Input
 						bind:value={variable.value}
 						type={variable.isSecret ? 'password' : 'text'}
@@ -213,7 +214,7 @@
 					{@const existingSecret = isExistingSecret(variable.key, variable.isSecret)}
 					{#if existingSecret}
 						<!-- Existing secret from DB - show locked icon, no toggle (value can still be modified) -->
-						<div class="flex items-center h-9 w-9 justify-center shrink-0" title="Secret value (cannot unhide)">
+						<div class="flex items-center h-9 w-9 justify-center shrink-0" title={m.secret_value_cannot_unhide()}>
 							<Key class="w-3.5 h-3.5 text-amber-500" />
 						</div>
 					{:else}
@@ -251,11 +252,11 @@
 		<!-- Empty state -->
 		{#if variables.length === 0}
 			<div class="text-center py-6 text-muted-foreground">
-				<p class="text-sm">No environment variables defined.</p>
+				<p class="text-sm">{m.no_environment_variables_defined()}</p>
 				{#if !readonly}
 					<Button type="button" variant="link" onclick={addVariable} class="mt-1 text-xs">
 						<Plus class="w-3 h-3" />
-						Add your first variable
+						{m.add_your_first_variable()}
 					</Button>
 				{/if}
 			</div>

@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { CheckSquare, SquareMinus, Square as SquareIcon, ArrowUp, ArrowDown, ArrowUpDown, ChevronDown, ChevronRight } from 'lucide-svelte';
@@ -752,7 +753,7 @@
 					<th class="text-right py-2 px-2 font-medium actions-col" style="width: {getDisplayWidth(colId)}px">
 						{#if colId === 'actions'}
 							<div class="flex items-center justify-end gap-1">
-								<span>Actions</span>
+								<span>{m_i18n.actions()}</span>
 								<ColumnSettingsPopover {gridId} />
 							</div>
 						{/if}
@@ -890,7 +891,7 @@
 				<th class="text-right py-2 px-2 font-medium actions-col" style="width: {getDisplayWidth(colId)}px">
 					{#if colId === 'actions'}
 						<div class="flex items-center justify-end gap-1">
-							<span>Actions</span>
+							<span>{m_i18n.actions()}</span>
 							<ColumnSettingsPopover {gridId} />
 						</div>
 					{:else if headerCell}

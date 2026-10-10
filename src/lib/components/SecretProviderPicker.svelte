@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import * as Select from '$lib/components/ui/select';
@@ -51,7 +52,7 @@
 {#if providers.length > 0 || secretProviderId !== null}
 	<div class="px-3 py-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-100/60 dark:bg-zinc-800/60 flex flex-col gap-1.5 text-xs">
 		<div class="flex items-center gap-2">
-			<Label for="secret-provider-select{idSuffix}" class="text-xs text-muted-foreground shrink-0">Secret provider</Label>
+			<Label for="secret-provider-select{idSuffix}" class="text-xs text-muted-foreground shrink-0">{m.secret_provider()}</Label>
 			<Select.Root
 				type="single"
 				value={secretProviderId !== null ? String(secretProviderId) : ''}
@@ -66,12 +67,12 @@
 							<span class="truncate min-w-0">{sel?.name ?? 'Unknown provider'}</span>
 						</span>
 					{:else}
-						<span class="text-muted-foreground truncate">None — disabled</span>
+						<span class="text-muted-foreground truncate">{m.none_disabled()}</span>
 					{/if}
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="" label="None">
-						<span class="text-muted-foreground">None — disabled</span>
+					<Select.Item value="" label={m.none()}>
+						<span class="text-muted-foreground">{m.none_disabled()}</span>
 					</Select.Item>
 					{#each providers as provider (provider.id)}
 						{@const ProviderIcon = getProviderIcon(provider.type)}

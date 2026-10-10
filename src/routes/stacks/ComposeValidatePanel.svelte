@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import { CircleX, TriangleAlert, Info, CheckCircle2, ArrowRight, Loader2, RefreshCw, X, ChevronDown, Wand2 } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
@@ -32,9 +34,9 @@
 	let { report, loading = false, error = null, activeLine = null, onClose, onJumpToLine, onRevalidate, onApplyFix }: Props = $props();
 
 	const SEV = {
-		error: { label: 'Errors', Icon: CircleX, color: 'var(--sev-error)', bg: 'rgba(239,68,68,0.12)' },
-		warn: { label: 'Warnings', Icon: TriangleAlert, color: 'var(--sev-warn)', bg: 'rgba(245,158,11,0.12)' },
-		info: { label: 'Suggestions', Icon: Info, color: 'var(--sev-info)', bg: 'rgba(59,130,246,0.12)' }
+		error: { label: m.errors(), Icon: CircleX, color: 'var(--sev-error)', bg: 'rgba(239,68,68,0.12)' },
+		warn: { label: m.warnings(), Icon: TriangleAlert, color: 'var(--sev-warn)', bg: 'rgba(245,158,11,0.12)' },
+		info: { label: m.suggestions(), Icon: Info, color: 'var(--sev-info)', bg: 'rgba(59,130,246,0.12)' }
 	} as const;
 
 	const findings = $derived(report?.findings ?? []);
@@ -70,7 +72,7 @@
 <div class="cvp">
 	<!-- Header: title + count chips inline -->
 	<div class="cvp-header">
-		<div class="cvp-title">Compose Validate</div>
+		<div class="cvp-title">{m.compose_validate()}</div>
 		{#if !loading && !error && report}
 			<div class="cvp-chips">
 				{#each ['error', 'warn', 'info'] as const as sev}
@@ -85,25 +87,25 @@
 		{/if}
 		<div class="cvp-header-actions">
 			{#if onRevalidate}
-				<button class="cvp-iconbtn" title="Re-check" onclick={onRevalidate} disabled={loading}>
+				<button class="cvp-iconbtn" title={m.re_check()} onclick={onRevalidate} disabled={loading}>
 					{#if loading}<Loader2 class="h-4 w-4 animate-spin" />{:else}<RefreshCw class="h-4 w-4" />{/if}
 				</button>
 			{/if}
-			<button class="cvp-iconbtn" title="Close panel" onclick={onClose}><X class="h-4 w-4" /></button>
+			<button class="cvp-iconbtn" title={m.close_panel()} onclick={onClose}><X class="h-4 w-4" /></button>
 		</div>
 	</div>
 
 	<!-- Body -->
 	<div class="cvp-body" bind:this={bodyEl}>
 		{#if loading}
-			<div class="cvp-center"><Loader2 class="h-5 w-5 animate-spin text-muted-foreground" /><p>Validating...</p></div>
+			<div class="cvp-center"><Loader2 class="h-5 w-5 animate-spin text-muted-foreground" /><p>{m.validating()}</p></div>
 		{:else if error}
 			<div class="cvp-center cvp-error-state"><CircleX class="h-5 w-5" /><p>{error}</p></div>
 		{:else if clean}
 			<div class="cvp-center cvp-clean">
 				<div class="cvp-clean-badge"><CheckCircle2 class="h-7 w-7" /></div>
-				<p class="cvp-clean-title">No problems found</p>
-				<p class="cvp-clean-sub">Passes every enabled check.</p>
+				<p class="cvp-clean-title">{m.no_problems_found()}</p>
+				<p class="cvp-clean-sub">{m.passes_every_enabled_check()}</p>
 			</div>
 		{:else}
 			{#each grouped as group (group.sev)}
@@ -128,7 +130,7 @@
 								<div class="cvp-finding-body">
 									<div class="cvp-finding-top">
 										<span class="cvp-rule">{f.ruleId}</span>
-										{#if f.line}<span class="cvp-line">L{f.line}<ArrowRight class="h-3 w-3" /></span>{/if}
+										{#if f.line}<span class="cvp-line">{m.l_line({ line: orEmpty(f.line) })}<ArrowRight class="h-3 w-3" /></span>{/if}
 										{#if f.fix && onApplyFix}
 											<button
 												type="button"
@@ -137,7 +139,7 @@
 												onclick={() => onApplyFix?.(f)}
 											>
 												<Wand2 class="h-3 w-3" />
-												Fix
+												{m.fix()}
 											</button>
 										{/if}
 									</div>

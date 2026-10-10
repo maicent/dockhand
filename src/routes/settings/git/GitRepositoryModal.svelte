@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -125,7 +127,7 @@
 			}
 		} catch (error) {
 			testResult = { success: false, error: 'Failed to test connection' };
-			toast.error('Failed to test connection');
+			toast.error(m.failed_to_test_connection());
 		} finally {
 			testing = false;
 		}
@@ -186,7 +188,7 @@
 			toast.success(wasEditing ? 'Repository updated' : 'Repository added');
 		} catch (error) {
 			formError = 'Failed to save repository';
-			toast.error('Failed to save repository');
+			toast.error(m.failed_to_save_repository());
 		} finally {
 			formSaving = false;
 		}
@@ -199,7 +201,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<GitBranch class="w-5 h-5" />
-				{isEditing ? 'Edit' : 'Add'} Git repository
+				{m.arg1_git_repository({ arg1: orEmpty(isEditing ? 'Edit' : 'Add') })}
 			</Dialog.Title>
 			<Dialog.Description>
 				{isEditing ? 'Update repository settings' : 'Add a Git repository that can be used to deploy stacks'}
@@ -208,27 +210,27 @@
 
 		<form onsubmit={(e) => { e.preventDefault(); saveRepository(); }} class="space-y-4">
 			<div class="space-y-2">
-				<Label for="repo-name">Name</Label>
+				<Label for="repo-name">{m.name()}</Label>
 				<Input
 					id="repo-name"
 					bind:value={formName}
-					placeholder="e.g., my-app-repo"
+					placeholder={m.e_g_my_app_repo()}
 					class={formErrors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 					oninput={() => formErrors.name = undefined}
 				/>
 				{#if formErrors.name}
 					<p class="text-xs text-destructive">{formErrors.name}</p>
 				{:else if !isEditing}
-					<p class="text-xs text-muted-foreground">A friendly name to identify this repository</p>
+					<p class="text-xs text-muted-foreground">{m.a_friendly_name_to_identify_this_repository()}</p>
 				{/if}
 			</div>
 
 			<div class="space-y-2">
-				<Label for="repo-url">Repository URL</Label>
+				<Label for="repo-url">{m.repository_url()}</Label>
 				<Input
 					id="repo-url"
 					bind:value={formUrl}
-					placeholder="https://github.com/user/repo.git or git@github.com:user/repo.git"
+					placeholder={m.https_github_com_user_repo_git_or_git_github_com()}
 					class={formErrors.url ? 'border-destructive focus-visible:ring-destructive' : ''}
 					oninput={() => { formErrors.url = undefined; testResult = null; }}
 				/>
@@ -238,12 +240,12 @@
 			</div>
 
 			<div class="space-y-2">
-				<Label for="repo-branch">Branch</Label>
-				<Input id="repo-branch" bind:value={formBranch} placeholder="main" oninput={() => testResult = null} />
+				<Label for="repo-branch">{m.branch()}</Label>
+				<Input id="repo-branch" bind:value={formBranch} placeholder={m.main()} oninput={() => testResult = null} />
 			</div>
 
 			<div class="space-y-2">
-				<Label for="repo-credential">Credential (optional)</Label>
+				<Label for="repo-credential">{m.credential_optional()}</Label>
 				<Select.Root
 					type="single"
 					value={formCredentialId?.toString() ?? 'none'}
@@ -260,7 +262,7 @@
 						{:else}
 							<span class="flex items-center gap-2">
 								<Globe class="w-4 h-4 text-muted-foreground" />
-								None (public repository)
+								{m.none_public_repository()}
 							</span>
 						{/if}
 					</Select.Trigger>
@@ -268,7 +270,7 @@
 						<Select.Item value="none">
 							<span class="flex items-center gap-2">
 								<Globe class="w-4 h-4 text-muted-foreground" />
-								None (public repository)
+								{m.none_public_repository()}
 							</span>
 						</Select.Item>
 						{#each credentials as cred}
@@ -289,7 +291,7 @@
 				</Select.Root>
 				{#if credentials.length === 0 && !isEditing}
 					<p class="text-xs text-muted-foreground">
-						<a href="/settings?tab=git&subtab=credentials" class="text-primary hover:underline">Add credentials</a> for private repositories
+						<a href="/settings?tab=git&subtab=credentials" class="text-primary hover:underline">{m.add_credentials()}</a> {m.for_private_repositories()}
 					</p>
 				{/if}
 			</div>
@@ -299,7 +301,7 @@
 			{/if}
 
 			<Dialog.Footer>
-				<Button variant="outline" type="button" onclick={onClose}>Cancel</Button>
+				<Button variant="outline" type="button" onclick={onClose}>{m.cancel()}</Button>
 				<Button
 					type="button"
 					variant="outline"
@@ -314,12 +316,12 @@
 					{:else}
 						<Play class="w-4 h-4 mr-1.5" />
 					{/if}
-					Test
+					{m.test()}
 				</Button>
 				<Button type="submit" disabled={formSaving}>
 					{#if formSaving}
 						<Loader2 class="w-4 h-4 mr-1 animate-spin" />
-						Saving...
+						{m.saving()}
 					{:else}
 						{isEditing ? 'Save changes' : 'Add repository'}
 					{/if}

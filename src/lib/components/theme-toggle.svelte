@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import { Sun, Moon, Monitor } from 'lucide-svelte';
 	import { onMount, onDestroy } from 'svelte';
@@ -56,5 +57,5 @@
 	{:else}
 		<Monitor class="h-4 w-4" />
 	{/if}
-	<span class="sr-only">Toggle theme</span>
+	<span class="sr-only">{m.toggle_theme()}</span>
 </Button>

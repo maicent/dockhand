@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Clock, Box, Layers } from 'lucide-svelte';
 	import EnvironmentIcon from '$lib/components/EnvironmentIcon.svelte';
@@ -44,7 +45,7 @@
 	<span>{name}</span>
 	{#if destinationName}
 		{@const RepoIcon = getRepoTypeIcon(destinationRepository ?? '')}
-		<span class="text-muted-foreground">from</span>
+		<span class="text-muted-foreground">{m.from_0b1e()}</span>
 		<span class="flex items-center gap-1"><RepoIcon class="h-4 w-4 text-muted-foreground" />{destinationName}</span>
 	{/if}
 	<!-- Trailing clause (e.g. Restore's "to <targetEnv>") sits right after the source
@@ -54,7 +55,7 @@
 	{#if snapshotTime}
 		<span class="flex items-center gap-1 text-xs font-normal text-muted-foreground">
 			<Clock class="h-3 w-3" />
-			taken{#if sourceEnvName}&nbsp;on <EnvironmentIcon icon={sourceEnv?.icon || 'globe'} envId={sourceEnv?.id ?? 0} class="h-3.5 w-3.5 text-amber-500" /><span class="text-amber-500 font-medium">{sourceEnvName}</span>{/if}
+			{m.taken()}{#if sourceEnvName}{m.on()} <EnvironmentIcon icon={sourceEnv?.icon || 'globe'} envId={sourceEnv?.id ?? 0} class="h-3.5 w-3.5 text-amber-500" /><span class="text-amber-500 font-medium">{sourceEnvName}</span>{/if}
 			{formatDateTime(snapshotTime)}
 			<span class="opacity-60">({formatRelativeTime(snapshotTime)})</span>
 		</span>

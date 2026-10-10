@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Logs - Dockhand</title>
+	<title>{m.logs_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -91,7 +93,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 	const tailOptions = [
 		{ value: '100', label: '100' },
 		{ value: '500', label: '500' },
-		{ value: '1000', label: '1K' }
+		{ value: '1000', label: m.t_1k() }
 	];
 	const VALID_TAIL_VALUES = new Set(tailOptions.map(o => o.value));
 	let tailCount = $state('500');
@@ -291,9 +293,9 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 
 	// Layout mode options for ToggleGroup
 	const layoutModeOptions = [
-		{ value: 'single', label: 'Single', icon: Square },
-		{ value: 'multi', label: 'Multi', icon: LayoutList },
-		{ value: 'grouped', label: 'Grouped', icon: Layers }
+		{ value: 'single', label: m.single(), icon: Square },
+		{ value: 'multi', label: m.multi(), icon: LayoutList },
+		{ value: 'grouped', label: m.grouped(), icon: Layers }
 	];
 
 	// Svelte action to focus element on mount
@@ -1620,14 +1622,14 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 
 {#if $environments.length === 0 || !$currentEnvironment}
 	<div class="flex flex-col flex-1 min-h-0 h-full">
-		<PageHeader icon={ScrollText} title="Logs" class="h-9 mb-3" />
+		<PageHeader icon={ScrollText} title={m.logs()} class="h-9 mb-3" />
 		<NoEnvironment />
 	</div>
 {:else}
 <div class="flex flex-col flex-1 min-h-0 h-full gap-3">
 	<!-- Header with container selector -->
 	<div class="flex items-center gap-4 h-9">
-		<PageHeader icon={ScrollText} title="Logs" />
+		<PageHeader icon={ScrollText} title={m.logs()} />
 		<!-- Layout toggle - fixed position after title -->
 		<ToggleGroup
 			bind:value={layoutMode}
@@ -1670,7 +1672,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 									<span class="font-medium truncate" title={container.name}>{containerDisplayName(container)}</span>
 									<span class="text-muted-foreground text-xs truncate">({container.image})</span>
 									{#if isCurrentSelection}
-										<span class="ml-auto text-xs text-muted-foreground">current</span>
+										<span class="ml-auto text-xs text-muted-foreground">{m.current()}</span>
 									{/if}
 								</button>
 							{/each}
@@ -1693,7 +1695,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 		{#if layoutMode === 'multi' || layoutMode === 'grouped'}
 			<div class="w-64 shrink-0 border rounded-lg overflow-hidden flex flex-col bg-background">
 				<div class="px-3 py-2 border-b bg-muted/30">
-					<SearchInput bind:value={searchQuery} placeholder="Filter containers..." class="h-8 text-sm" />
+					<SearchInput bind:value={searchQuery} placeholder={m.filter_containers()} class="h-8 text-sm" />
 				</div>
 				{#if layoutMode === 'grouped'}
 					<!-- Grouped mode selection controls -->
@@ -1703,7 +1705,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							onclick={selectAllContainers}
 							class="text-2xs text-muted-foreground hover:text-foreground transition-colors"
 						>
-							Select all
+							{m.select_all()}
 						</button>
 						<span class="text-muted-foreground">|</span>
 						<button
@@ -1711,7 +1713,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							onclick={clearContainerSelection}
 							class="text-2xs text-muted-foreground hover:text-foreground transition-colors"
 						>
-							Clear
+							{m.clear()}
 						</button>
 					</div>
 				{/if}
@@ -1723,7 +1725,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<div class="border-b border-purple-500/30 bg-purple-500/5">
 								<div class="px-2 py-1 text-2xs font-medium text-purple-600 dark:text-purple-400 flex items-center gap-1">
 									<FolderHeart class="w-2.5 h-2.5" />
-									Saved groups
+									{m.saved_groups()}
 								</div>
 								{#each validFavoriteGroups as savedGroup, idx (savedGroup.name || `group-${idx}`)}
 									<div
@@ -1736,13 +1738,13 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 										<Layers class="w-3 h-3 shrink-0 text-purple-500" />
 										<div class="flex-1 min-w-0">
 											<div class="font-medium truncate text-xs leading-tight">{savedGroup.name}</div>
-											<div class="text-2xs text-muted-foreground truncate leading-tight">{savedGroup.containers.length} container{savedGroup.containers.length !== 1 ? 's' : ''}</div>
+											<div class="text-2xs text-muted-foreground truncate leading-tight">{m.length_container_arg2({ length: orEmpty(savedGroup.containers.length), arg2: orEmpty(savedGroup.containers.length !== 1 ? 's' : '') })}</div>
 										</div>
 										<button
 											type="button"
 											onclick={(e) => { e.stopPropagation(); deleteFavoriteGroup(savedGroup.name); }}
 											class="p-0.5 rounded hover:bg-red-500/20 transition-colors opacity-0 [.saved-group-item:hover_&]:opacity-100"
-											title="Delete group"
+											title={m.delete_group()}
 										>
 											<Trash2 class="w-2.5 h-2.5 text-muted-foreground hover:text-red-500" />
 										</button>
@@ -1761,7 +1763,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<div class="border-b border-amber-500/30 bg-amber-500/5">
 								<div class="px-2 py-1 text-2xs font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1">
 									<Star class="w-2.5 h-2.5 fill-current" />
-									Favorites
+									{m.favorites()}
 								</div>
 								{#each favoriteContainers() as container}
 									{@const isMultiSelected = multiModeSelections.has(container.id)}
@@ -1783,7 +1785,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 											type="button"
 											onclick={(e) => toggleMultiModeSelection(container.id, e)}
 											class="w-4 h-4 shrink-0 flex items-center justify-center"
-											title="Select for merge"
+											title={m.select_for_merge()}
 										>
 											{#if isMultiSelected}
 												<div class="w-3.5 h-3.5 rounded border-2 flex items-center justify-center border-blue-500 bg-blue-500/20">
@@ -1803,7 +1805,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 											type="button"
 											onclick={(e) => toggleFavorite(container.name, e)}
 											class="p-0.5 rounded hover:bg-amber-500/20 transition-colors"
-											title="Remove from favorites"
+											title={m.remove_from_favorites()}
 										>
 											<Star class="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
 										</button>
@@ -1816,7 +1818,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<div class="border-b border-amber-500/30 bg-amber-500/5">
 								<div class="px-2 py-1 text-2xs font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1">
 									<Star class="w-2.5 h-2.5 fill-current" />
-									Favorites
+									{m.favorites()}
 								</div>
 								{#each favoriteContainers() as container}
 									{@const isSelected = selectedContainerIds.has(container.id)}
@@ -1846,7 +1848,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 											type="button"
 											onclick={(e) => toggleFavorite(container.name, e)}
 											class="p-0.5 rounded hover:bg-amber-500/20 transition-colors"
-											title="Remove from favorites"
+											title={m.remove_from_favorites()}
 										>
 											<Star class="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
 										</button>
@@ -1858,7 +1860,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 						{#if layoutMode === 'multi' ? nonFavoriteContainers().length > 0 : (layoutMode === 'grouped' ? nonFavoriteContainers().length > 0 : filteredContainers().length > 0)}
 							{#if (layoutMode === 'multi' || layoutMode === 'grouped') && favoriteContainers().length > 0}
 								<div class="px-2 py-1 text-2xs font-medium text-muted-foreground border-b border-border/50">
-									All containers
+									{m.all_containers()}
 								</div>
 							{/if}
 							{#each layoutMode === 'multi' || layoutMode === 'grouped' ? nonFavoriteContainers() : filteredContainers() as container}
@@ -1888,7 +1890,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 											type="button"
 											onclick={(e) => toggleMultiModeSelection(container.id, e)}
 											class="w-4 h-4 shrink-0 flex items-center justify-center"
-											title="Select for merge"
+											title={m.select_for_merge()}
 										>
 											{#if isMultiSelected}
 												<div class="w-3.5 h-3.5 rounded border-2 flex items-center justify-center border-blue-500 bg-blue-500/20">
@@ -1909,7 +1911,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 											type="button"
 											onclick={(e) => toggleFavorite(container.name, e)}
 											class="p-0.5 rounded hover:bg-amber-500/20 transition-colors opacity-30 group-hover:opacity-100"
-											title="Add to favorites"
+											title={m.add_to_favorites()}
 										>
 											<Star class="w-2.5 h-2.5 text-muted-foreground hover:text-amber-500" />
 										</button>
@@ -1923,8 +1925,8 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 					<!-- Grouped mode footer -->
 					<div class="px-2 py-2 border-t bg-muted/30 flex flex-col gap-2">
 						<div class="flex items-center justify-between text-xs text-muted-foreground">
-							<span>{selectedContainerIds.size} selected</span>
-							<span>{containers.length} total</span>
+							<span>{m.size_selected({ size: orEmpty(selectedContainerIds.size) })}</span>
+							<span>{m.length_total({ length: orEmpty(containers.length) })}</span>
 						</div>
 						{#if selectedContainerIds.size > 0}
 							<!-- Save group section -->
@@ -1932,7 +1934,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 								<div class="flex items-center gap-1">
 									<input
 										type="text"
-										placeholder="Group name..."
+										placeholder={m.group_name()}
 										bind:value={newGroupName}
 										onkeydown={(e) => e.key === 'Enter' && saveCurrentGroup()}
 										use:focusOnMount
@@ -1943,7 +1945,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 										onclick={saveCurrentGroup}
 										disabled={!newGroupName.trim()}
 										class="h-6 w-6 flex items-center justify-center rounded hover:bg-green-500/20 text-muted-foreground hover:text-green-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-										title="Save"
+										title={m.save()}
 									>
 										<Check class="w-3.5 h-3.5" />
 									</button>
@@ -1951,7 +1953,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 										type="button"
 										onclick={() => { showSaveGroupInput = false; newGroupName = ''; }}
 										class="h-6 w-6 flex items-center justify-center rounded hover:bg-red-500/20 text-muted-foreground hover:text-red-500 transition-colors"
-										title="Cancel"
+										title={m.cancel()}
 									>
 										<X class="w-3.5 h-3.5" />
 									</button>
@@ -1959,7 +1961,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							{:else}
 								<Button size="sm" variant="outline" onclick={() => showSaveGroupInput = true} class="w-full h-7 gap-1.5 text-xs">
 									<Save class="w-3 h-3" />
-									Save group
+									{m.save_group()}
 								</Button>
 							{/if}
 						{/if}
@@ -1969,22 +1971,22 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 					<div class="px-2 py-2 border-t bg-muted/30 flex flex-col gap-2">
 						<div class="flex items-center justify-between text-xs text-muted-foreground">
 							{#if multiModeSelections.size > 0}
-								<span>{multiModeSelections.size} selected</span>
+								<span>{m.size_selected({ size: orEmpty(multiModeSelections.size) })}</span>
 								<button
 									type="button"
 									onclick={clearMultiModeSelection}
 									class="text-2xs text-muted-foreground hover:text-foreground transition-colors"
 								>
-									Clear
+									{m.clear()}
 								</button>
 							{:else}
-								<span>{containers.length} container{containers.length !== 1 ? 's' : ''}</span>
+								<span>{m.length_container_arg2({ length: orEmpty(containers.length), arg2: orEmpty(containers.length !== 1 ? 's' : '') })}</span>
 							{/if}
 						</div>
 						{#if multiModeSelections.size >= 2}
 							<Button size="sm" variant="default" onclick={mergeSelectedContainers} class="w-full h-7 gap-1.5 text-xs">
 								<Layers class="w-3 h-3" />
-								Merge {multiModeSelections.size} containers logs
+								{m.merge_size_containers_logs({ size: orEmpty(multiModeSelections.size) })}
 							</Button>
 						{/if}
 					</div>
@@ -1998,7 +2000,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 			{#if layoutMode === 'grouped'}
 				{#if selectedContainerIds.size === 0}
 					<div class="flex items-center justify-center h-full text-muted-foreground">
-						Select containers from the list to view merged logs
+						{m.select_containers_from_the_list_to_view_merged_l()}
 					</div>
 				{:else}
 					<!-- Header bar for grouped mode -->
@@ -2006,25 +2008,25 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 						<div class="flex items-center gap-2 shrink-0">
 							{#if streamingEnabled}
 								{#if isConnected}
-									<div class="flex items-center gap-1.5" title="Connected - Live streaming">
+									<div class="flex items-center gap-1.5" title={m.connected_live_streaming()}>
 										<Wifi class="w-3.5 h-3.5 text-green-500" />
-										<span class="text-xs text-green-500 font-medium">Live</span>
+										<span class="text-xs text-green-500 font-medium">{m.live()}</span>
 									</div>
 								{:else if loading}
-									<div class="flex items-center gap-1.5" title="Connecting...">
+									<div class="flex items-center gap-1.5" title={m.connecting()}>
 										<RefreshCw class="w-3.5 h-3.5 animate-spin {darkMode ? 'text-amber-500' : 'text-amber-600'}" />
-										<span class="text-xs {darkMode ? 'text-amber-500' : 'text-amber-600'}">Connecting...</span>
+										<span class="text-xs {darkMode ? 'text-amber-500' : 'text-amber-600'}">{m.connecting()}</span>
 									</div>
 								{:else if connectionError}
 									<button onclick={retryConnection} class="flex items-center gap-1.5 hover:opacity-80" title={connectionError}>
 										<WifiOff class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-										<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Disconnected</span>
+										<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.disconnected()}</span>
 									</button>
 								{/if}
 							{:else}
-								<div class="flex items-center gap-1.5" title="Streaming paused">
+								<div class="flex items-center gap-1.5" title={m.streaming_paused()}>
 									<Pause class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-									<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Paused</span>
+									<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.paused()}</span>
 								</div>
 							{/if}
 							<!-- Stack name / container name and color legend -->
@@ -2056,28 +2058,28 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							>
 								{#if streamingEnabled}
 									<Pause class="w-3 h-3" />
-									<span>Pause</span>
+									<span>{m.pause()}</span>
 								{:else}
 									<Play class="w-3 h-3" />
-									<span>Stream</span>
+									<span>{m.stream()}</span>
 								{/if}
 							</button>
 							<button
 								onclick={() => { autoScroll = !autoScroll; saveState(); }}
 								class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors {autoScroll ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}"
-								title="Toggle auto-scroll"
+								title={m.toggle_auto_scroll()}
 							>
 								<ArrowDownToLine class="w-3 h-3" />
-								<span>Auto-scroll</span>
+								<span>{m.auto_scroll()}</span>
 							</button>
 							<!-- Tail lines selector -->
 							<Select.Root type="single" value={tailCount} onValueChange={(v) => { tailCount = v; saveState(); reloadAllLogs(); }}>
-								<Select.Trigger class="!h-7 w-[52px] text-xs px-2 [&_svg]:size-3 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'}" title="Number of log lines to load">
+								<Select.Trigger class="!h-7 w-[52px] text-xs px-2 [&_svg]:size-3 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'}" title={m.number_of_log_lines_to_load()}>
 									<span>{tailOptions.find(o => o.value === tailCount)?.label ?? tailCount}</span>
 								</Select.Trigger>
 								<Select.Content>
 									{#each tailOptions as opt}
-										<Select.Item value={opt.value} label={opt.label} class="pe-2 [&>span:first-child]:hidden">{opt.label} lines</Select.Item>
+										<Select.Item value={opt.value} label={opt.label} class="pe-2 [&>span:first-child]:hidden">{m.label_lines({ label: orEmpty(opt.label) })}</Select.Item>
 									{/each}
 								</Select.Content>
 							</Select.Root>
@@ -2093,21 +2095,21 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							/>
 							<Select.Root type="single" value={String(fontSize)} onValueChange={(v) => { fontSize = Number(v); saveState(); }}>
 								<Select.Trigger class="!h-7 w-14 text-xs px-2 [&_svg]:size-3 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'}">
-									<span>{fontSize}px</span>
+									<span>{m.fontsize_px({ fontSize: orEmpty(fontSize) })}</span>
 								</Select.Trigger>
 								<Select.Content>
 									{#each fontSizeOptions as size}
-										<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{size}px</Select.Item>
+										<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{m.size_px({ size: orEmpty(size) })}</Select.Item>
 									{/each}
 								</Select.Content>
 							</Select.Root>
 							<button
 								onclick={() => { wordWrap = !wordWrap; saveState(); }}
 								class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors {wordWrap ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}"
-								title="Toggle word wrap"
+								title={m.toggle_word_wrap()}
 							>
 								<WrapText class="w-3 h-3" />
-								<span>Wrap</span>
+								<span>{m.wrap()}</span>
 							</button>
 							<button
 								onclick={() => { showTimestamps = !showTimestamps; localStorage.setItem('dockhand-log-timestamps', String(showTimestamps)); }}
@@ -2143,7 +2145,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 									<input
 										bind:this={logSearchInputRef}
 										type="text"
-										placeholder="Search..."
+										placeholder={m.search()}
 										bind:value={logSearchQuery}
 										onkeydown={handleLogSearchKeydown}
 										class="bg-transparent border-none outline-none text-xs w-28 {darkMode ? 'text-zinc-200 placeholder:text-zinc-500' : 'text-gray-800 placeholder:text-gray-400'}"
@@ -2160,28 +2162,28 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 									{:else if logSearchQuery}
 										<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">0/0</span>
 									{/if}
-									<button onclick={() => navigateMatch('prev')} class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Previous match">
+									<button onclick={() => navigateMatch('prev')} class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.previous_match()}>
 										<ChevronUp class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 									</button>
-									<button onclick={() => navigateMatch('next')} class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Next match">
+									<button onclick={() => navigateMatch('next')} class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.next_match()}>
 										<ChevronDown class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 									</button>
-									<button onclick={closeLogSearch} class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title="Close search">
+									<button onclick={closeLogSearch} class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}" title={m.close_search()}>
 										<X class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 									</button>
 								</div>
 							{:else}
-								<button onclick={toggleLogSearch} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title="Search logs">
+								<button onclick={toggleLogSearch} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title={m.search_logs()}>
 									<Search class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 								</button>
 							{/if}
-							<button onclick={copyLogs} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title="Copy logs">
+							<button onclick={copyLogs} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title={m.copy_logs()}>
 								<Copy class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 							</button>
-							<button onclick={downloadLogs} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title="Download logs">
+							<button onclick={downloadLogs} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title={m.download_logs()}>
 								<Download class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 							</button>
-							<button onclick={clearLogs} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title="Clear logs">
+							<button onclick={clearLogs} class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}" title={m.clear_logs()}>
 								<Eraser class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 							</button>
 						</div>
@@ -2210,14 +2212,14 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 					<!-- Connection status indicator -->
 					{#if streamingEnabled}
 						{#if isConnected}
-							<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Connected - Live streaming">
+							<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.connected_live_streaming()}>
 								<Wifi class="w-3.5 h-3.5 text-green-500" />
-								<span class="text-xs text-green-500 font-medium">Live</span>
+								<span class="text-xs text-green-500 font-medium">{m.live()}</span>
 							</div>
 						{:else if loading}
-							<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Connecting...">
+							<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.connecting()}>
 								<RefreshCw class="w-3.5 h-3.5 animate-spin {darkMode ? 'text-amber-500' : 'text-amber-600'}" />
-								<span class="text-xs {darkMode ? 'text-amber-500' : 'text-amber-600'}">Connecting...</span>
+								<span class="text-xs {darkMode ? 'text-amber-500' : 'text-amber-600'}">{m.connecting()}</span>
 							</div>
 						{:else if connectionError}
 							<button
@@ -2226,18 +2228,18 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 								title={connectionError}
 							>
 								<WifiOff class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-								<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Disconnected</span>
+								<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.disconnected()}</span>
 							</button>
 						{:else}
-							<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Disconnected">
+							<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.disconnected()}>
 								<WifiOff class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-								<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Offline</span>
+								<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.offline()}</span>
 							</div>
 						{/if}
 					{:else}
-						<div class="flex items-center gap-1.5 transition-opacity duration-300" title="Streaming paused">
+						<div class="flex items-center gap-1.5 transition-opacity duration-300" title={m.streaming_paused()}>
 							<Pause class="w-3.5 h-3.5 {darkMode ? 'text-zinc-500' : 'text-gray-400'}" />
-							<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">Paused</span>
+							<span class="text-xs {darkMode ? 'text-zinc-500' : 'text-gray-400'}">{m.paused()}</span>
 						</div>
 					{/if}
 					<!-- Container name + terminal toggles -->
@@ -2247,7 +2249,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<button
 								onclick={() => openTerminal(selectedContainer!.id, selectedContainer!.name, 'below')}
 								class="p-0.5 rounded transition-colors {terminalOpen && terminalLayout === 'below' && terminalContainerId === selectedContainer.id ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50' : 'bg-amber-500/30 ring-1 ring-amber-600/50') : darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-								title="Terminal below"
+								title={m.terminal_below()}
 							>
 								<span class="inline-flex items-center gap-px">
 									<Terminal class="w-3.5 h-3.5 {terminalOpen && terminalLayout === 'below' && terminalContainerId === selectedContainer.id ? (darkMode ? 'text-amber-400' : 'text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
@@ -2257,7 +2259,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<button
 								onclick={() => openTerminal(selectedContainer!.id, selectedContainer!.name, 'right')}
 								class="p-0.5 rounded transition-colors {terminalOpen && terminalLayout === 'right' && terminalContainerId === selectedContainer.id ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50' : 'bg-amber-500/30 ring-1 ring-amber-600/50') : darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-								title="Terminal on side"
+								title={m.terminal_on_side()}
 							>
 								<span class="inline-flex items-center gap-px">
 									<Terminal class="w-3.5 h-3.5 {terminalOpen && terminalLayout === 'right' && terminalContainerId === selectedContainer.id ? (darkMode ? 'text-amber-400' : 'text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
@@ -2276,28 +2278,28 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 					>
 						{#if streamingEnabled}
 							<Pause class="w-3 h-3" />
-							<span>Pause</span>
+							<span>{m.pause()}</span>
 						{:else}
 							<Play class="w-3 h-3" />
-							<span>Stream</span>
+							<span>{m.stream()}</span>
 						{/if}
 					</button>
 					<button
 						onclick={() => { autoScroll = !autoScroll; saveState(); }}
 						class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors {autoScroll ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}"
-						title="Toggle auto-scroll"
+						title={m.toggle_auto_scroll()}
 					>
 						<ArrowDownToLine class="w-3 h-3" />
-						<span>Auto-scroll</span>
+						<span>{m.auto_scroll()}</span>
 					</button>
 					<!-- Tail lines selector -->
 					<Select.Root type="single" value={tailCount} onValueChange={(v) => { tailCount = v; saveState(); reloadAllLogs(); }}>
-						<Select.Trigger class="!h-7 w-[52px] text-xs px-2 [&_svg]:size-3 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'}" title="Number of log lines to load">
+						<Select.Trigger class="!h-7 w-[52px] text-xs px-2 [&_svg]:size-3 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'}" title={m.number_of_log_lines_to_load()}>
 							<span>{tailOptions.find(o => o.value === tailCount)?.label ?? tailCount}</span>
 						</Select.Trigger>
 						<Select.Content>
 							{#each tailOptions as opt}
-								<Select.Item value={opt.value} label={opt.label} class="pe-2 [&>span:first-child]:hidden">{opt.label} lines</Select.Item>
+								<Select.Item value={opt.value} label={opt.label} class="pe-2 [&>span:first-child]:hidden">{m.label_lines({ label: orEmpty(opt.label) })}</Select.Item>
 							{/each}
 						</Select.Content>
 					</Select.Root>
@@ -2313,21 +2315,21 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 					/>
 					<Select.Root type="single" value={String(fontSize)} onValueChange={(v) => { fontSize = Number(v); saveState(); }}>
 						<Select.Trigger class="!h-7 w-14 text-xs px-2 [&_svg]:size-3 {darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-300' : 'bg-white border-gray-300 text-gray-700'}">
-							<span>{fontSize}px</span>
+							<span>{m.fontsize_px({ fontSize: orEmpty(fontSize) })}</span>
 						</Select.Trigger>
 						<Select.Content>
 							{#each fontSizeOptions as size}
-								<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{size}px</Select.Item>
+								<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{m.size_px({ size: orEmpty(size) })}</Select.Item>
 							{/each}
 						</Select.Content>
 					</Select.Root>
 					<button
 						onclick={() => { wordWrap = !wordWrap; saveState(); }}
 						class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors {wordWrap ? (darkMode ? 'bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400' : 'bg-amber-500/30 ring-1 ring-amber-600/50 text-amber-700') : darkMode ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}"
-						title="Toggle word wrap"
+						title={m.toggle_word_wrap()}
 					>
 						<WrapText class="w-3 h-3" />
-						<span>Wrap</span>
+						<span>{m.wrap()}</span>
 					</button>
 					<!-- Timestamps toggle -->
 					<button
@@ -2371,7 +2373,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<input
 								bind:this={logSearchInputRef}
 								type="text"
-								placeholder="Search..."
+								placeholder={m.search()}
 								bind:value={logSearchQuery}
 								onkeydown={handleLogSearchKeydown}
 								class="bg-transparent border-none outline-none text-xs w-28 {darkMode ? 'text-zinc-200 placeholder:text-zinc-500' : 'text-gray-800 placeholder:text-gray-400'}"
@@ -2391,21 +2393,21 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 							<button
 								onclick={() => navigateMatch('prev')}
 								class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}"
-								title="Previous match (Shift+Enter)"
+								title={m.previous_match_shift_enter()}
 							>
 								<ChevronUp class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 							</button>
 							<button
 								onclick={() => navigateMatch('next')}
 								class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}"
-								title="Next match (Enter)"
+								title={m.next_match_enter()}
 							>
 								<ChevronDown class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 							</button>
 							<button
 								onclick={closeLogSearch}
 								class="p-0.5 rounded transition-colors {darkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-300'}"
-								title="Close search (Esc)"
+								title={m.close_search_esc()}
 							>
 								<X class="w-3 h-3 {darkMode ? 'text-zinc-400' : 'text-gray-500'}" />
 							</button>
@@ -2414,7 +2416,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 						<button
 							onclick={toggleLogSearch}
 							class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-							title="Search logs (Ctrl+F)"
+							title={m.search_logs_ctrl_f()}
 						>
 							<Search class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 						</button>
@@ -2422,28 +2424,28 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 					<button
 						onclick={copyLogs}
 						class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-						title="Copy logs"
+						title={m.copy_logs()}
 					>
 						<Copy class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 					</button>
 					<button
 						onclick={downloadLogs}
 						class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-						title="Download logs"
+						title={m.download_logs()}
 					>
 						<Download class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 					</button>
 					<button
 						onclick={clearLogs}
 						class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-						title="Clear logs"
+						title={m.clear_logs()}
 					>
 						<Eraser class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 					</button>
 					<button
 						onclick={() => fetchLogs()}
 						class="p-1 rounded transition-colors {darkMode ? 'hover:bg-zinc-800' : 'hover:bg-gray-200'}"
-						title="Refresh logs"
+						title={m.refresh_logs()}
 					>
 						<RefreshCw class="w-3 h-3 {darkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-500 hover:text-gray-700'}" />
 					</button>
@@ -2452,7 +2454,7 @@ import type { FavoriteGroup } from '../api/preferences/favorite-groups/+server';
 			{#if loading && !logs}
 				<div class="flex items-center justify-center flex-1 text-muted-foreground">
 					<RefreshCw class="w-5 h-5 animate-spin mr-2" />
-					Loading logs...
+					{m.loading_logs()}
 				</div>
 			{:else}
 				<div bind:this={logsRef} onscroll={handleLogsScroll} class="flex-1 overflow-auto p-4">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Package, Star, Download, Loader2, ExternalLink, BookOpen } from 'lucide-svelte';
@@ -98,7 +99,7 @@
 						}}
 					>
 						<ExternalLink class="w-3 h-3" />
-						Project
+						{m.project()}
 					</a>
 				{/if}
 				{#if template.detailsUrl}
@@ -107,7 +108,7 @@
 						target="_blank"
 						rel="noopener"
 						class="flex items-center gap-0.5 hover:text-primary hover:underline"
-						title="Open the detailed guide on portainer-templates.as93.net"
+						title={m.open_the_detailed_guide_on_portainer_templates_a()}
 						onclick={(e: MouseEvent) => {
 							e.stopPropagation();
 							e.preventDefault();
@@ -115,7 +116,7 @@
 						}}
 					>
 						<BookOpen class="w-3 h-3" />
-						Details
+						{m.details()}
 					</a>
 				{/if}
 				{#if template.stars}

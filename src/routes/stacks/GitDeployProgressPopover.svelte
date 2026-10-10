@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { formatErrorLines } from '$lib/utils/format';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -240,17 +241,16 @@
 				<div class="flex items-start gap-3 py-2 px-2">
 					<AlertTriangle class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
 					<div class="space-y-1">
-						<p class="font-medium">Sync from git?</p>
+						<p class="font-medium">{m.sync_from_git()}</p>
 						<p class="text-sm text-muted-foreground">
-							This will pull the latest changes for <strong class="text-foreground">{stackName}</strong>.
-							Containers will only restart if the configuration changed.
+							{m.this_will_pull_the_latest_changes_for()} <strong class="text-foreground">{stackName}</strong>{m.containers_will_only_restart_if_the_configuratio()}
 						</p>
 					</div>
 				</div>
 			{:else if logLines.length === 0 && isDeploying}
 				<div class="flex items-center gap-3 text-muted-foreground py-2 px-2">
 					<Loader2 class="w-4 h-4 animate-spin shrink-0" />
-					<span class="text-sm">Initializing...</span>
+					<span class="text-sm">{m.initializing()}</span>
 				</div>
 			{/if}
 
@@ -284,7 +284,7 @@
 			<!-- Left: cancel (confirm step only). The log has its own copy button. -->
 			<div>
 				{#if overallStatus === 'confirming'}
-					<Button variant="outline" onclick={handleCancelConfirm}>Cancel</Button>
+					<Button variant="outline" onclick={handleCancelConfirm}>{m.cancel()}</Button>
 				{/if}
 			</div>
 
@@ -293,7 +293,7 @@
 				{#if overallStatus === 'confirming'}
 					<Button onclick={handleConfirmDeploy}>
 						<Rocket class="w-4 h-4" />
-						Deploy
+						{m.deploy()}
 					</Button>
 				{:else}
 					<Button
@@ -303,9 +303,9 @@
 					>
 						{#if isDeploying}
 							<Loader2 class="w-4 h-4 animate-spin" />
-							Deploying...
+							{m.deploying()}
 						{:else}
-							Close
+							{m.close()}
 						{/if}
 					</Button>
 				{/if}

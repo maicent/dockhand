@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -37,7 +38,7 @@
 </script>
 
 <svelte:head>
-	<title>Dockhand API Docs</title>
+	<title>{m.dockhand_api_docs()}</title>
 </svelte:head>
 
 <div bind:this={container}></div>

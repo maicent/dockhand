@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import type { Component, Snippet } from 'svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tooltip from '$lib/components/ui/tooltip';
@@ -52,7 +53,7 @@
 		</Tooltip.Root>
 	{/if}
 	{#if env}
-		<span class="shrink-0">on <span class="text-amber-600 dark:text-amber-400">{env}</span></span>
+		<span class="shrink-0">{m.on()} <span class="text-amber-600 dark:text-amber-400">{env}</span></span>
 	{/if}
 	{#if extra}
 		<span class="shrink-0 flex items-center gap-2">{@render extra()}</span>

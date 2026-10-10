@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -33,7 +35,7 @@
 			credentials = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch git credentials:', error);
-			toast.error('Failed to fetch git credentials');
+			toast.error(m.failed_to_fetch_git_credentials());
 		} finally {
 			loading = false;
 		}
@@ -58,24 +60,24 @@
 			const response = await fetch(`/api/git/credentials/${id}`, { method: 'DELETE' });
 			if (response.ok) {
 				await fetchCredentials();
-				toast.success('Credential deleted');
+				toast.success(m.credential_deleted());
 			} else {
-				toast.error('Failed to delete credential');
+				toast.error(m.failed_to_delete_credential());
 			}
 		} catch (error) {
 			console.error('Failed to delete credential:', error);
-			toast.error('Failed to delete credential');
+			toast.error(m.failed_to_delete_credential());
 		}
 	}
 
 	function getAuthTypeBadge(authType: string) {
 		switch (authType) {
 			case 'password':
-				return { label: 'Password', class: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' };
+				return { label: m.password(), class: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' };
 			case 'ssh':
-				return { label: 'SSH Key', class: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' };
+				return { label: m.ssh_key(), class: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' };
 			default:
-				return { label: 'None', class: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' };
+				return { label: m.none(), class: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' };
 		}
 	}
 
@@ -87,26 +89,26 @@
 <div class="space-y-4">
 	<div class="flex justify-between items-center">
 		<div>
-			<h3 class="text-lg font-medium">Git credentials</h3>
-			<p class="text-sm text-muted-foreground">Manage credentials for accessing Git repositories</p>
+			<h3 class="text-lg font-medium">{m.git_credentials()}</h3>
+			<p class="text-sm text-muted-foreground">{m.manage_credentials_for_accessing_git_repositorie()}</p>
 		</div>
 		{#if $canAccess('settings', 'edit')}
 			<Button size="sm" onclick={() => openModal()}>
 				<Plus class="w-4 h-4" />
-				Add credential
+				{m.add_credential()}
 			</Button>
 		{/if}
 	</div>
 
 	{#if loading}
-		<p class="text-sm text-muted-foreground">Loading credentials...</p>
+		<p class="text-sm text-muted-foreground">{m.loading_credentials()}</p>
 	{:else if credentials.length === 0}
 		<Card.Root>
 			<Card.Content>
 				<EmptyState
 					icon={Key}
-					title="No Git credentials configured"
-					description="Add credentials to connect to private Git repositories"
+					title={m.no_git_credentials_configured()}
+					description={m.add_credentials_to_connect_to_private_git_reposi()}
 				/>
 			</Card.Content>
 		</Card.Root>
@@ -129,9 +131,9 @@
 								<div class="font-medium text-sm">{cred.name}</div>
 								<div class="text-xs text-muted-foreground">
 									{#if cred.username}
-										Username: {cred.username}
+										{m.username_username({ username: orEmpty(cred.username) })}
 									{:else}
-										No username
+										{m.no_username()}
 									{/if}
 								</div>
 							</div>
@@ -149,7 +151,7 @@
 									action="Delete"
 									itemType="credential"
 									itemName={cred.name}
-									title="Delete"
+									title={m.delete()}
 									onConfirm={() => deleteCredential(cred.id)}
 									onOpenChange={(open) => confirmDeleteId = open ? cred.id : null}
 								>

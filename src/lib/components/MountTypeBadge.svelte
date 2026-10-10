@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	/**
 	 * A mount-type indicator: a colored icon + uppercase pill for `bind` vs `volume`.
 	 * Shared so every place that lists mounts (backup dialog VolumePicker, snapshot
@@ -17,8 +18,8 @@
 
 {#if isBind}
 	<Folder class="{iconCls} text-amber-500 shrink-0" />
-	<span class="shrink-0 {pillCls} text-center rounded-full px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide bg-amber-500/15 text-amber-600 dark:text-amber-400">bind</span>
+	<span class="shrink-0 {pillCls} text-center rounded-full px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide bg-amber-500/15 text-amber-600 dark:text-amber-400">{m.bind()}</span>
 {:else}
 	<HardDrive class="{iconCls} text-sky-500 shrink-0" />
-	<span class="shrink-0 {pillCls} text-center rounded-full px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide bg-sky-500/15 text-sky-600 dark:text-sky-400">vol</span>
+	<span class="shrink-0 {pillCls} text-center rounded-full px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide bg-sky-500/15 text-sky-600 dark:text-sky-400">{m.vol()}</span>
 {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { onMount } from 'svelte';
 	import { Sun, Moon, Type, AArrowUp, Table, Terminal, MousePointerClick } from 'lucide-svelte';
 	import * as Select from '$lib/components/ui/select';
@@ -169,7 +170,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<Sun class="w-4 h-4 text-muted-foreground" />
-			<Label>Light theme</Label>
+			<Label>{m.light_theme()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedLightTheme} onValueChange={handleLightThemeChange}>
 			<Select.Trigger class="w-56">
@@ -205,7 +206,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<Moon class="w-4 h-4 text-muted-foreground" />
-			<Label>Dark theme</Label>
+			<Label>{m.dark_theme()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedDarkTheme} onValueChange={handleDarkThemeChange}>
 			<Select.Trigger class="w-56">
@@ -241,7 +242,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<Type class="w-4 h-4 text-muted-foreground" />
-			<Label>Font</Label>
+			<Label>{m.font()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedFont} onValueChange={handleFontChange}>
 			<Select.Trigger class="w-56">
@@ -265,7 +266,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<AArrowUp class="w-4 h-4 text-muted-foreground" />
-			<Label>Font size</Label>
+			<Label>{m.font_size()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedFontSize} onValueChange={handleFontSizeChange}>
 			<Select.Trigger class="w-56">
@@ -289,7 +290,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<Table class="w-4 h-4 text-muted-foreground" />
-			<Label>Grid font size</Label>
+			<Label>{m.grid_font_size()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedGridFontSize} onValueChange={handleGridFontSizeChange}>
 			<Select.Trigger class="w-56">
@@ -313,7 +314,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<MousePointerClick class="w-4 h-4 text-muted-foreground" />
-			<Label>Grid buttons</Label>
+			<Label>{m.grid_buttons()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedActionIconSize} onValueChange={handleActionIconSizeChange}>
 			<Select.Trigger class="w-56">
@@ -337,7 +338,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<Terminal class="w-4 h-4 text-muted-foreground" />
-			<Label>Terminal font</Label>
+			<Label>{m.terminal_font()}</Label>
 		</div>
 		<Select.Root type="single" value={selectedTerminalFont} onValueChange={handleTerminalFontChange}>
 			<Select.Trigger class="w-56">

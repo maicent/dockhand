@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	// Navigation preferences (default env + start page + env-click target). Saved to
 	// /api/settings/navigation under the given scope ('global' from Settings, 'user' from Profile).
 	import { onMount } from 'svelte';
@@ -19,20 +21,20 @@
 	// reach. `needsEnv` = the page is env-scoped (shown with the chosen env in the hint and
 	// eligible for env-click). `permission` / `gate` / `enterpriseOnly` mirror canSeeMenuItem.
 	const ALL_PAGES = [
-		{ value: 'dashboard', label: 'Dashboard', Icon: LayoutDashboard, needsEnv: false, permission: 'always' },
-		{ value: 'containers', label: 'Containers', Icon: Box, needsEnv: true, permission: 'containers' },
-		{ value: 'logs', label: 'Logs', Icon: ScrollText, needsEnv: true, permission: 'containers' },
-		{ value: 'terminal', label: 'Shell', Icon: Terminal, needsEnv: true, permission: 'containers' },
-		{ value: 'stacks', label: 'Compose stacks', Icon: Layers, needsEnv: true, permission: 'stacks' },
-		{ value: 'images', label: 'Images', Icon: Images, needsEnv: true, permission: 'images' },
-		{ value: 'volumes', label: 'Volumes', Icon: HardDrive, needsEnv: true, permission: 'volumes' },
-		{ value: 'networks', label: 'Networks', Icon: Network, needsEnv: true, permission: 'networks' },
-		{ value: 'templates', label: 'Templates', Icon: LibraryBig, needsEnv: false, permission: 'templates' },
-		{ value: 'registry', label: 'Registry', Icon: Download, needsEnv: false, permission: 'registries' },
-		{ value: 'activity', label: 'Activity', Icon: Activity, needsEnv: false, permission: 'activity' },
-		{ value: 'backups', label: 'Backups', Icon: Archive, needsEnv: false, permission: 'backups', gate: 'backups' },
-		{ value: 'schedules', label: 'Schedules', Icon: Timer, needsEnv: false, permission: 'schedules' },
-		{ value: 'audit', label: 'Audit log', Icon: ClipboardList, needsEnv: false, permission: 'audit_logs', enterpriseOnly: true }
+		{ value: 'dashboard', label: m_i18n.dashboard(), Icon: LayoutDashboard, needsEnv: false, permission: 'always' },
+		{ value: 'containers', label: m_i18n.containers(), Icon: Box, needsEnv: true, permission: 'containers' },
+		{ value: 'logs', label: m_i18n.logs(), Icon: ScrollText, needsEnv: true, permission: 'containers' },
+		{ value: 'terminal', label: m_i18n.shell(), Icon: Terminal, needsEnv: true, permission: 'containers' },
+		{ value: 'stacks', label: m_i18n.compose_stacks(), Icon: Layers, needsEnv: true, permission: 'stacks' },
+		{ value: 'images', label: m_i18n.images(), Icon: Images, needsEnv: true, permission: 'images' },
+		{ value: 'volumes', label: m_i18n.volumes(), Icon: HardDrive, needsEnv: true, permission: 'volumes' },
+		{ value: 'networks', label: m_i18n.networks(), Icon: Network, needsEnv: true, permission: 'networks' },
+		{ value: 'templates', label: m_i18n.templates(), Icon: LibraryBig, needsEnv: false, permission: 'templates' },
+		{ value: 'registry', label: m_i18n.registry(), Icon: Download, needsEnv: false, permission: 'registries' },
+		{ value: 'activity', label: m_i18n.activity(), Icon: Activity, needsEnv: false, permission: 'activity' },
+		{ value: 'backups', label: m_i18n.backups(), Icon: Archive, needsEnv: false, permission: 'backups', gate: 'backups' },
+		{ value: 'schedules', label: m_i18n.schedules(), Icon: Timer, needsEnv: false, permission: 'schedules' },
+		{ value: 'audit', label: m_i18n.audit_log(), Icon: ClipboardList, needsEnv: false, permission: 'audit_logs', enterpriseOnly: true }
 	] as const;
 
 	// Visibility mirrors app-sidebar's canSeeMenuItem: hide the Backups beta unless the gate is
@@ -111,9 +113,9 @@
 					envClickPage: envClickPageV ?? ''
 				})
 			});
-			if (!res.ok) toast.error('Failed to save navigation preference');
+			if (!res.ok) toast.error(m_i18n.failed_to_save_navigation_preference());
 		} catch {
-			toast.error('Failed to save navigation preference');
+			toast.error(m_i18n.failed_to_save_navigation_preference());
 		}
 	}
 	function persist() {
@@ -130,13 +132,13 @@
 	<!-- 1. Open the app on: the landing PAGE. The environment is not forced - the app opens on
 	     the last-used one. -->
 	<div class="space-y-1.5 min-w-0 flex-1">
-		<Label>Open the app on</Label>
+		<Label>{m_i18n.open_the_app_on()}</Label>
 		<div class="flex items-center gap-2.5">
 			<Select.Root type="single" value={homeSel} onValueChange={(v) => { if (v) pickHome(v); }}>
 				<Select.Trigger class="flex-1 min-w-0">
 					<div class="flex items-center gap-2">
 						{#if isUser && landingPage === null}
-							<span class="text-muted-foreground truncate">Global default ({pageLabel(globalDefaults.landingPage ?? 'dashboard')})</span>
+							<span class="text-muted-foreground truncate">{m_i18n.global_default_arg1({ arg1: orEmpty(pageLabel(globalDefaults.landingPage ?? 'dashboard')) })}</span>
 						{:else}
 							{@const m = pageOf(landingPage)}
 							<m.Icon class="w-4 h-4 text-muted-foreground" />
@@ -146,7 +148,7 @@
 				</Select.Trigger>
 				<Select.Content>
 					{#if isUser}
-						<Select.Item value={INHERIT}><span class="text-muted-foreground">Use global default</span></Select.Item>
+						<Select.Item value={INHERIT}><span class="text-muted-foreground">{m_i18n.use_global_default()}</span></Select.Item>
 					{/if}
 					{#each PAGES as page}
 						<Select.Item value={page.value}>
@@ -159,18 +161,18 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<p class="text-xs text-muted-foreground">Where the app opens (on the last-used environment).</p>
+		<p class="text-xs text-muted-foreground">{m_i18n.where_the_app_opens_on_the_last_used_environment()}</p>
 	</div>
 
 	<!-- 3. Dashboard env-click target. Clicking an environment is an intentional "show me THIS
 	     view of this env", so it's always a concrete page (default: containers). -->
 	<div class="space-y-1.5 min-w-0 flex-1">
-		<Label>Environment click</Label>
+		<Label>{m_i18n.environment_click()}</Label>
 		<Select.Root type="single" value={clickSel} onValueChange={(v) => { if (v) pickClick(v); }}>
 			<Select.Trigger class="w-full">
 				<div class="flex items-center gap-2">
 					{#if isUser && envClickPageV === null}
-						<span class="text-muted-foreground">Global default ({pageLabel(globalDefaults.envClickPage ?? 'containers')})</span>
+						<span class="text-muted-foreground">{m_i18n.global_default_arg1({ arg1: orEmpty(pageLabel(globalDefaults.envClickPage ?? 'containers')) })}</span>
 					{:else}
 						{@const m = pageOf(envClickPageV ?? 'containers')}
 						<m.Icon class="w-4 h-4 text-muted-foreground" />
@@ -180,7 +182,7 @@
 			</Select.Trigger>
 			<Select.Content>
 				{#if isUser}
-					<Select.Item value={INHERIT}><span class="text-muted-foreground">Use global default</span></Select.Item>
+					<Select.Item value={INHERIT}><span class="text-muted-foreground">{m_i18n.use_global_default()}</span></Select.Item>
 				{/if}
 				{#each CLICK_PAGES as page}
 					<Select.Item value={page.value}>
@@ -192,6 +194,6 @@
 				{/each}
 			</Select.Content>
 		</Select.Root>
-		<p class="text-xs text-muted-foreground">Where a tile click goes.</p>
+		<p class="text-xs text-muted-foreground">{m_i18n.where_a_tile_click_goes()}</p>
 	</div>
 </div>

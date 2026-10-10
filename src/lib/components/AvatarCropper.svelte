@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import Cropper from 'svelte-easy-crop';
 	import { Button } from '$lib/components/ui/button';
 	import { ZoomIn, ZoomOut, X, Check } from 'lucide-svelte';
@@ -234,7 +235,7 @@
 			<div class="p-4 border-b">
 				<h3 class="text-lg font-semibold">{title}</h3>
 				<p class="text-sm text-muted-foreground mt-1">
-					Drag to reposition. Use the slider to zoom.
+					{m.drag_to_reposition_use_the_slider_to_zoom()}
 				</p>
 			</div>
 
@@ -278,7 +279,7 @@
 					disabled={saving}
 				>
 					<X class="w-4 h-4" />
-					Cancel
+					{m.cancel()}
 				</Button>
 				<Button
 					class="flex-1"

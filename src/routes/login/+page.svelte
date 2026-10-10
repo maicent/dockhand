@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
@@ -207,7 +209,7 @@
 </script>
 
 <svelte:head>
-	<title>Login - Dockhand</title>
+	<title>{m.login_dockhand()}</title>
 </svelte:head>
 
 <div class="min-h-screen flex items-center justify-center bg-background p-4">
@@ -216,16 +218,16 @@
 			<div class="flex justify-center mb-4">
 				<img
 					src="/logo.svg"
-					alt="Dockhand Logo"
+					alt={m.dockhand_logo()}
 					class="h-16 w-auto object-contain"
 				/>
 			</div>
-			<Card.Title class="text-2xl font-bold">Welcome back</Card.Title>
+			<Card.Title class="text-2xl font-bold">{m.welcome_back()}</Card.Title>
 			<Card.Description>
 				{#if requiresMfa}
-					Enter your two-factor authentication code
+					{m.enter_your_two_factor_authentication_code()}
 				{:else}
-					Sign in to your Dockhand account
+					{m.sign_in_to_your_dockhand_account()}
 				{/if}
 			</Card.Description>
 		</Card.Header>
@@ -250,7 +252,7 @@
 					{:else}
 						<KeyRound class="h-5 w-5" />
 					{/if}
-					<span>Sign in with passkey</span>
+					<span>{m.sign_in_with_passkey()}</span>
 				</Button>
 			{/if}
 
@@ -269,7 +271,7 @@
 							{:else}
 								<KeyRound class="h-5 w-5" />
 							{/if}
-							<span>Continue with {provider.name}</span>
+							<span>{m.continue_with_name({ name: orEmpty(provider.name) })}</span>
 						</Button>
 					{/each}
 				</div>
@@ -280,7 +282,7 @@
 							<span class="w-full border-t"></span>
 						</div>
 						<div class="relative flex justify-center text-xs uppercase">
-							<span class="bg-card px-2 text-muted-foreground">or continue with</span>
+							<span class="bg-card px-2 text-muted-foreground">{m.or_continue_with()}</span>
 						</div>
 					</div>
 				{/if}
@@ -291,7 +293,7 @@
 					{#if !requiresMfa}
 						{#if credentialProviders.length > 1}
 							<div class="space-y-2">
-								<Label>Sign in with</Label>
+								<Label>{m.sign_in_with()}</Label>
 								<div class="grid gap-2">
 									{#each credentialProviders as provider}
 										{@const Icon = getProviderIcon(provider.type)}
@@ -308,11 +310,11 @@
 												<div class="font-medium text-sm">{provider.name}</div>
 												<div class="text-xs text-muted-foreground">
 													{#if provider.type === 'local'}
-														Local account
+														{m.local_account()}
 													{:else if provider.type === 'ldap'}
-														LDAP directory
+														{m.ldap_directory()}
 													{:else}
-														Single sign-on
+														{m.single_sign_on()}
 													{/if}
 												</div>
 											</div>
@@ -326,11 +328,11 @@
 						{/if}
 
 						<div class="space-y-2">
-							<Label for="username">Username</Label>
+							<Label for="username">{m.username()}</Label>
 							<Input
 								id="username"
 								type="text"
-								placeholder="Enter your username"
+								placeholder={m.enter_your_username()}
 								bind:value={username}
 								required
 								disabled={loading}
@@ -340,11 +342,11 @@
 						</div>
 
 						<div class="space-y-2">
-							<Label for="password">Password</Label>
+							<Label for="password">{m.password()}</Label>
 							<Input
 								id="password"
 								type="password"
-								placeholder="Enter your password"
+								placeholder={m.enter_your_password()}
 								bind:value={password}
 								required
 								disabled={loading}
@@ -355,14 +357,14 @@
 						<div class="space-y-2">
 							<div class="flex items-center gap-2 text-sm text-muted-foreground mb-4">
 								<Shield class="h-4 w-4" />
-								<span>Two-factor authentication required</span>
+								<span>{m.two_factor_authentication_required()}</span>
 							</div>
-							<Label for="mfaToken">Authentication code</Label>
+							<Label for="mfaToken">{m.authentication_code()}</Label>
 							<Input
 								id="mfaToken"
 								name="totp"
 								type="text"
-								placeholder="Enter code"
+								placeholder={m.enter_code()}
 								bind:value={mfaToken}
 								required
 								disabled={loading}
@@ -370,7 +372,7 @@
 								autofocus
 							/>
 							<p class="text-xs text-muted-foreground">
-								Enter the 6-digit code from your authenticator app, or use a backup code
+								{m.enter_the_6_digit_code_from_your_authenticator_a()}
 							</p>
 						</div>
 					{/if}
@@ -396,7 +398,7 @@
 								error = null;
 							}}
 						>
-							Back to login
+							{m.back_to_login()}
 						</Button>
 					{/if}
 				</form>
@@ -404,7 +406,7 @@
 		</Card.Content>
 
 		<Card.Footer class="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
-			<p>Dockhand Docker Management</p>
+			<p>{m.dockhand_docker_management_10f5()}</p>
 		</Card.Footer>
 	</Card.Root>
 </div>

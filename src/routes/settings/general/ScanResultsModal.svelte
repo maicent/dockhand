@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
@@ -266,7 +268,7 @@
 			onAdopted?.();
 
 		} catch (err) {
-			toast.error('Failed to adopt stacks');
+			toast.error(m.failed_to_adopt_stacks());
 		} finally {
 			adopting = false;
 		}
@@ -278,10 +280,10 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Search class="w-5 h-5" />
-				External stack scan results
+				{m.external_stack_scan_results()}
 			</Dialog.Title>
 			<Dialog.Description>
-				Scanned {scannedPaths.length} configured path{scannedPaths.length !== 1 ? 's' : ''} for Docker Compose files
+				{m.scanned_length_configured_path_arg2_for_docker_c({ length: orEmpty(scannedPaths.length), arg2: orEmpty(scannedPaths.length !== 1 ? 's' : '') })}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -292,30 +294,30 @@
 				<div class="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
 					<div class="flex items-center gap-2">
 						<FolderOpen class="w-4 h-4 text-muted-foreground" />
-						<span class="text-sm font-medium">{result.discovered.length + result.skipped.length + adoptedStacks.length} found</span>
+						<span class="text-sm font-medium">{m.arg1_found({ arg1: orEmpty(result.discovered.length + result.skipped.length + adoptedStacks.length) })}</span>
 					</div>
 					{#if result.discovered.length > 0}
 						<div class="flex items-center gap-1.5 text-blue-600 dark:text-blue-500">
 							<Import class="w-4 h-4" />
-							<span class="text-sm">{result.discovered.length} new</span>
+							<span class="text-sm">{m.length_new({ length: orEmpty(result.discovered.length) })}</span>
 						</div>
 					{/if}
 					{#if adoptedStacks.length > 0}
 						<div class="flex items-center gap-1.5 text-green-600 dark:text-green-500">
 							<CheckCircle2 class="w-4 h-4" />
-							<span class="text-sm">{adoptedStacks.length} adopted</span>
+							<span class="text-sm">{m.length_adopted({ length: orEmpty(adoptedStacks.length) })}</span>
 						</div>
 					{/if}
 					{#if result.skipped.length > 0}
 						<div class="flex items-center gap-1.5 text-muted-foreground">
 							<SkipForward class="w-4 h-4" />
-							<span class="text-sm">{result.skipped.length} already adopted</span>
+							<span class="text-sm">{m.length_already_adopted({ length: orEmpty(result.skipped.length) })}</span>
 						</div>
 					{/if}
 					{#if result.errors.length > 0}
 						<div class="flex items-center gap-1.5 text-destructive">
 							<AlertCircle class="w-4 h-4" />
-							<span class="text-sm">{result.errors.length} errors</span>
+							<span class="text-sm">{m.length_errors({ length: orEmpty(result.errors.length) })}</span>
 						</div>
 					{/if}
 				</div>
@@ -324,19 +326,19 @@
 				{#if result.discovered.length > 0}
 					{#if loadingEnvs}
 						<div class="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
-							<Label class="text-sm font-medium shrink-0">Adopt to:</Label>
+							<Label class="text-sm font-medium shrink-0">{m.adopt_to()}</Label>
 							<div class="flex items-center gap-2 text-muted-foreground">
 								<Loader2 class="w-4 h-4 animate-spin" />
-								<span class="text-sm">Loading...</span>
+								<span class="text-sm">{m.loading()}</span>
 							</div>
 						</div>
 					{:else if environments.length === 0}
 						<div class="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
-							<p class="text-sm text-destructive">No environments configured</p>
+							<p class="text-sm text-destructive">{m.no_environments_configured()}</p>
 						</div>
 					{:else if environments.length > 1}
 						<div class="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
-							<Label class="text-sm font-medium shrink-0">Adopt to:</Label>
+							<Label class="text-sm font-medium shrink-0">{m.adopt_to()}</Label>
 							<Select.Root
 								type="single"
 								value={defaultEnvId?.toString()}
@@ -362,7 +364,7 @@
 								</Select.Content>
 							</Select.Root>
 							<Button variant="outline" size="sm" onclick={applyDefaultEnvToAll} disabled={stackSelections.size === 0}>
-								Apply to all
+								{m.apply_to_all()}
 							</Button>
 						</div>
 					{/if}
@@ -377,7 +379,7 @@
 						<div class="flex items-center justify-between">
 							<h4 class="text-sm font-medium flex items-center gap-2 text-blue-600 dark:text-blue-500">
 								<Import class="w-4 h-4" />
-								Available for adoption
+								{m.available_for_adoption()}
 							</h4>
 							<button
 								type="button"
@@ -419,13 +421,13 @@
 											{#if stack.unadoptable}
 												<Badge variant="outline" class="text-xs text-amber-600 dark:text-amber-500 border-amber-300 dark:border-amber-600 gap-1">
 													<Lock class="w-3 h-3" />
-													Not adoptable
+													{m.not_adoptable()}
 													<Tooltip.Root>
 														<Tooltip.Trigger>
 															<HelpCircle class="w-3 h-3 opacity-60" />
 														</Tooltip.Trigger>
 														<Tooltip.Content class="max-w-sm">
-															<p class="text-xs">A container in this stack is labelled <code class="bg-muted px-1 rounded">dockhand.adopt=false</code>, so Dockhand won't adopt it.</p>
+															<p class="text-xs">{m.a_container_in_this_stack_is_labelled()} <code class="bg-muted px-1 rounded">{m.dockhand_adopt_false()}</code>{m.so_dockhand_wont_adopt_it()}</p>
 														</Tooltip.Content>
 													</Tooltip.Root>
 												</Badge>
@@ -433,13 +435,13 @@
 											{#if stack.runningOn && stack.runningOn.length > 0}
 												<Badge variant="outline" class="text-xs text-green-600 dark:text-green-500 border-green-300 dark:border-green-600 gap-1">
 													<Play class="w-3 h-3" />
-													Running on {stack.runningOn.map(r => r.envName).join(', ')}
+													{m.running_on_arg1({ arg1: orEmpty(stack.runningOn.map(r => r.envName).join(', ')) })}
 													<Tooltip.Root>
 														<Tooltip.Trigger>
 															<HelpCircle class="w-3 h-3 opacity-60" />
 														</Tooltip.Trigger>
 														<Tooltip.Content class="max-w-sm">
-															<p class="text-xs">This stack is already running (detected via Docker's <code class="bg-muted px-1 rounded">com.docker.compose.project</code> label). Adopting will allow you to manage it through Dockhand.</p>
+															<p class="text-xs">{m.this_stack_is_already_running_detected_via_docke()} <code class="bg-muted px-1 rounded">{m.com_docker_compose_project()}</code> {m.label_adopting_will_allow_you_to_manage_it_throu()}</p>
 														</Tooltip.Content>
 													</Tooltip.Root>
 												</Badge>
@@ -449,7 +451,7 @@
 										{#if stack.envPath}
 											<p class="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
 												<FileText class="w-3 h-3" />
-												.env file detected
+												{m.env_file_detected()}
 											</p>
 										{/if}
 									</button>
@@ -459,13 +461,13 @@
 											<!-- Note if importing to different environment than running -->
 											{#if stack.runningOn && stack.runningOn.length > 0 && !stack.runningOn.some(r => r.envId === stackEnvId)}
 												<Badge variant="outline" class="text-xs text-amber-600 dark:text-amber-500 border-amber-300 dark:border-amber-600 gap-1">
-													Running elsewhere
+													{m.running_elsewhere()}
 													<Tooltip.Root>
 														<Tooltip.Trigger>
 															<HelpCircle class="w-3 h-3 opacity-60" />
 														</Tooltip.Trigger>
 														<Tooltip.Content class="max-w-sm">
-															<p class="text-xs">This stack is running on a different environment ({stack.runningOn?.map(r => r.envName).join(', ')}). You can still adopt it here, but it won't affect the running containers.</p>
+															<p class="text-xs">{m.this_stack_is_running_on_a_different_environment({ arg1: orEmpty(stack.runningOn?.map(r => r.envName).join(', ')) })}</p>
 														</Tooltip.Content>
 													</Tooltip.Root>
 												</Badge>
@@ -508,7 +510,7 @@
 					<div class="space-y-2">
 						<h4 class="text-sm font-medium flex items-center gap-2 text-green-600 dark:text-green-500">
 							<CheckCircle2 class="w-4 h-4" />
-							Adopted stacks
+							{m.adopted_stacks()}
 						</h4>
 						<div class="space-y-1.5">
 							{#each adoptedStacks as adopted}
@@ -533,7 +535,7 @@
 					<div class="space-y-2">
 						<h4 class="text-sm font-medium flex items-center gap-2 text-muted-foreground">
 							<SkipForward class="w-4 h-4" />
-							Already adopted
+							{m.already_adopted()}
 						</h4>
 						<div class="space-y-1.5">
 							{#each result.skipped as stack}
@@ -554,7 +556,7 @@
 					<div class="space-y-2">
 						<h4 class="text-sm font-medium flex items-center gap-2 text-destructive">
 							<AlertCircle class="w-4 h-4" />
-							Errors
+							{m.errors()}
 						</h4>
 						<div class="space-y-1.5">
 							{#each result.errors as error}
@@ -574,14 +576,14 @@
 				{#if result.discovered.length === 0 && result.skipped.length === 0 && result.adopted.length === 0 && result.errors.length === 0}
 					<div class="text-center py-8 text-muted-foreground">
 						<FolderOpen class="w-12 h-12 mx-auto mb-3 opacity-50" />
-						<p class="text-sm">No Docker Compose files found in the configured paths.</p>
-						<p class="text-xs mt-1">Make sure your paths contain compose.yaml, compose.yml, or similar files.</p>
+						<p class="text-sm">{m.no_docker_compose_files_found_in_the_configured()}</p>
+						<p class="text-xs mt-1">{m.make_sure_your_paths_contain_compose_yaml_compos()}</p>
 					</div>
 				{/if}
 
 				<!-- Scanned paths -->
 				<div class="space-y-2 pt-2 border-t">
-					<h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Scanned paths</h4>
+					<h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">{m.scanned_paths()}</h4>
 					<div class="space-y-1">
 						{#each scannedPaths as path}
 							<code class="text-xs text-muted-foreground block">{path}</code>
@@ -594,11 +596,11 @@
 		<Dialog.Footer class="flex items-center justify-between">
 			<div class="text-xs text-muted-foreground">
 				{#if selectedCount > 0}
-					{selectedCount} stack{selectedCount !== 1 ? 's' : ''} selected
+					{m.selectedcount_stack_arg2_selected({ selectedCount: orEmpty(selectedCount), arg2: orEmpty(selectedCount !== 1 ? 's' : '') })}
 				{/if}
 			</div>
 			<div class="flex items-center gap-2">
-				<Button variant="outline" onclick={() => { open = false; onclose(); }}>Close</Button>
+				<Button variant="outline" onclick={() => { open = false; onclose(); }}>{m.close()}</Button>
 				{#if result && result.discovered.length > 0}
 					<Button
 						onclick={handleAdopt}
@@ -606,14 +608,14 @@
 					>
 						{#if adopting}
 							<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-							Adopting...
+							{m.adopting()}
 						{:else}
 							<Import class="w-4 h-4" />
-							Adopt selected
+							{m.adopt_selected()}
 						{/if}
 					</Button>
 				{:else if adoptedStacks.length > 0}
-					<Button href="/stacks">View stacks</Button>
+					<Button href="/stacks">{m.view_stacks()}</Button>
 				{/if}
 			</div>
 		</Dialog.Footer>

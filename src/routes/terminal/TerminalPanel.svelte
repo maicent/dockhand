@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { X, GripHorizontal, RefreshCw, Copy, Trash2 } from 'lucide-svelte';
 	import * as Select from '$lib/components/ui/select';
@@ -174,21 +176,21 @@
 			{#if connected}
 				<span class="inline-flex items-center gap-1 text-xs text-green-500">
 					<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-					Connected
+					{m.connected()}
 				</span>
 			{:else}
-				<span class="text-xs text-zinc-500">Disconnected</span>
+				<span class="text-xs text-zinc-500">{m.disconnected()}</span>
 			{/if}
 		</div>
 		<div class="flex items-center gap-2">
 			<!-- Font size -->
 			<Select.Root type="single" value={String(fontSize)} onValueChange={(v) => updateFontSize(Number(v))}>
 				<Select.Trigger size="sm" class="!h-5 !py-0 w-14 bg-zinc-800 border-zinc-700 text-xs text-zinc-300 px-1.5 [&_svg]:size-3">
-					<span>{fontSize}px</span>
+					<span>{m.fontsize_px({ fontSize: orEmpty(fontSize) })}</span>
 				</Select.Trigger>
 				<Select.Content>
 					{#each fontSizeOptions as size}
-						<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{size}px</Select.Item>
+						<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{m.size_px({ size: orEmpty(size) })}</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -196,7 +198,7 @@
 			<button
 				onclick={() => terminalComponent?.clear()}
 				class="p-1 rounded hover:bg-zinc-800 transition-colors"
-				title="Clear terminal (Ctrl+L)"
+				title={m.clear_terminal_ctrl_l()}
 			>
 				<Trash2 class="w-3 h-3 text-zinc-500 hover:text-zinc-300" />
 			</button>
@@ -204,7 +206,7 @@
 			<button
 				onclick={() => terminalComponent?.copyOutput()}
 				class="p-1 rounded hover:bg-zinc-800 transition-colors"
-				title="Copy output"
+				title={m.copy_output()}
 			>
 				<Copy class="w-3 h-3 text-zinc-500 hover:text-zinc-300" />
 			</button>
@@ -213,7 +215,7 @@
 				<button
 					onclick={() => terminalComponent?.reconnect()}
 					class="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-amber-500/20 ring-1 ring-amber-500/50 text-amber-400 hover:bg-amber-500/30 transition-colors"
-					title="Reconnect"
+					title={m.reconnect()}
 				>
 					<RefreshCw class="w-3 h-3" />
 				</button>
@@ -222,7 +224,7 @@
 			<button
 				onclick={handleClose}
 				class="p-1 rounded hover:bg-zinc-800 transition-colors"
-				title="Close terminal"
+				title={m.close_terminal()}
 			>
 				<X class="w-3 h-3 text-zinc-500 hover:text-zinc-300" />
 			</button>

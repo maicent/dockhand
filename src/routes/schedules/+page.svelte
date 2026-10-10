@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores'; // BETA GATE: backups feature flag
 	import { formatBytes } from '$lib/utils/format';
@@ -713,7 +715,7 @@
 				throw new Error(data.error || 'Failed to delete execution');
 			}
 
-			toast.success('Execution deleted');
+			toast.success(m_i18n.execution_deleted());
 
 			// Remove from the expanded executions list
 			const scheduleKey = schedule.type + '-' + schedule.id;
@@ -737,7 +739,7 @@
 			const executions = expandedExecutions.get(scheduleKey) || [];
 
 			if (executions.length === 0) {
-				toast.error('No executions to delete');
+				toast.error(m_i18n.no_executions_to_delete());
 				return;
 			}
 
@@ -835,7 +837,7 @@
 			// Some updated, some blocked
 			return {
 				status: 'partial',
-				label: 'Partially blocked',
+				label: m_i18n.partially_blocked(),
 				icon: Bug,
 				class: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
 			};
@@ -843,7 +845,7 @@
 			// All blocked, none updated
 			return {
 				status: 'blocked',
-				label: 'Blocked',
+				label: m_i18n.blocked(),
 				icon: Bug,
 				class: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
 			};
@@ -856,19 +858,19 @@
 			case 'cron':
 				return {
 					icon: Timer,
-					label: 'Scheduled',
+					label: m_i18n.scheduled(),
 					class: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
 				};
 			case 'webhook':
 				return {
 					icon: Webhook,
-					label: 'Webhook',
+					label: m_i18n.webhook(),
 					class: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
 				};
 			case 'manual':
 				return {
 					icon: Hand,
-					label: 'Manual',
+					label: m_i18n.manual(),
 					class: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400'
 				};
 			default:
@@ -934,19 +936,19 @@
 </script>
 
 <svelte:head>
-	<title>Schedules - Dockhand</title>
+	<title>{m_i18n.schedules_dockhand()}</title>
 </svelte:head>
 
 <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
 	<!-- Header with filters -->
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={Timer} title="Schedules" count={filteredSchedules.length} />
+		<PageHeader icon={Timer} title={m_i18n.schedules()} count={filteredSchedules.length} />
 		<div class="flex flex-wrap items-center gap-2">
 			<div class="relative">
 				<Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
 				<Input
 					type="text"
-					placeholder="Search schedules..."
+					placeholder={m_i18n.search_schedules()}
 					class="pl-9 w-48 h-8 text-sm"
 					bind:value={searchQuery}
 					onkeydown={(e) => e.key === 'Escape' && (searchQuery = '')}
@@ -958,33 +960,33 @@
 				<Select.Trigger size="sm" class="w-40 text-sm">
 					<span class="truncate">
 						{#if filterTypes.length === 0}
-							All types
+							{m_i18n.all_types()}
 						{:else if filterTypes.length === 1}
 							{#if filterTypes[0] === 'container_update'}
-								Container updates
+								{m_i18n.container_updates()}
 							{:else if filterTypes[0] === 'git_stack_sync'}
-								Git stack syncs
+								{m_i18n.git_stack_syncs()}
 							{:else if filterTypes[0] === 'env_update_check'}
-								Env update checks
+								{m_i18n.env_update_checks()}
 							{:else if filterTypes[0] === 'image_prune'}
-								Image prune
+								{m_i18n.image_prune()}
 							{:else if filterTypes[0] === 'backup'}
-								Backups
+								{m_i18n.backups()}
 							{:else if filterTypes[0] === 'repo_prune'}
-								Repo prune
+								{m_i18n.repo_prune()}
 							{:else if filterTypes[0] === 'repo_check'}
-								Repo check
+								{m_i18n.repo_check()}
 							{:else if filterTypes[0] === 'repo_verify'}
-								Data verify
+								{m_i18n.data_verify()}
 							{:else if filterTypes[0] === 'stack_deploy'}
-								Stack deploy
+								{m_i18n.stack_deploy()}
 							{:else if filterTypes[0] === 'deploy_log_reconcile'}
-								Deploy log reconcile
+								{m_i18n.deploy_log_reconcile()}
 							{:else}
-								System jobs
+								{m_i18n.system_jobs()}
 							{/if}
 						{:else}
-							{filterTypes.length} types
+							{m_i18n.length_types({ length: orEmpty(filterTypes.length) })}
 						{/if}
 					</span>
 				</Select.Trigger>
@@ -995,56 +997,56 @@
 							class="w-full px-2 py-1 text-xs text-left text-muted-foreground/60 hover:text-muted-foreground"
 							onclick={() => filterTypes = []}
 						>
-							Clear
+							{m_i18n.clear()}
 						</button>
 					{/if}
 					<Select.Item value="container_update">
 						<CircleArrowUp class="w-4 h-4 mr-2 inline text-green-500 drop-shadow-[0_0_3px_rgba(34,197,94,0.4)]" />
-						Container updates
+						{m_i18n.container_updates()}
 					</Select.Item>
 					<Select.Item value="git_stack_sync">
 						<GitBranch class="w-4 h-4 mr-2 inline text-purple-500 drop-shadow-[0_0_3px_rgba(168,85,247,0.4)]" />
-						Git stack syncs
+						{m_i18n.git_stack_syncs()}
 					</Select.Item>
 					<Select.Item value="env_update_check">
 						<CircleFadingArrowUp class="w-4 h-4 mr-2 inline text-green-500/50 drop-shadow-[0_0_3px_rgba(34,197,94,0.3)]" />
-						Env update checks
+						{m_i18n.env_update_checks()}
 					</Select.Item>
 					<Select.Item value="image_prune">
 						<Trash2 class="w-4 h-4 mr-2 inline text-amber-500 drop-shadow-[0_0_3px_rgba(245,158,11,0.4)]" />
-						Image prune
+						{m_i18n.image_prune()}
 					</Select.Item>
 					<Select.Item value="stack_deploy">
 						<Server class="w-4 h-4 mr-2 inline text-indigo-500 drop-shadow-[0_0_3px_rgba(99,102,241,0.4)]" />
-						Stack deploy
+						{m_i18n.stack_deploy()}
 					</Select.Item>
 					<!-- BETA GATE: backup schedule filters hidden unless FEAT_BACKUPS_ENABLED (see features.ts) -->
 					{#if $page.data.backupsEnabled}
 						<Select.Item value="backup">
 							<Archive class="w-4 h-4 mr-2 inline text-blue-500 drop-shadow-[0_0_3px_rgba(59,130,246,0.4)]" />
-							Backups
+							{m_i18n.backups()}
 						</Select.Item>
 						<Select.Item value="repo_prune">
 							<ArchiveX class="w-4 h-4 mr-2 inline text-blue-500 drop-shadow-[0_0_3px_rgba(59,130,246,0.4)]" />
-							Repo prune
+							{m_i18n.repo_prune()}
 						</Select.Item>
 						<Select.Item value="repo_check">
 							<PackageCheck class="w-4 h-4 mr-2 inline text-blue-500 drop-shadow-[0_0_3px_rgba(59,130,246,0.4)]" />
-							Repo check
+							{m_i18n.repo_check()}
 						</Select.Item>
 						<Select.Item value="repo_verify">
 							<FolderCheck class="w-4 h-4 mr-2 inline text-blue-500 drop-shadow-[0_0_3px_rgba(59,130,246,0.4)]" />
-							Data verify
+							{m_i18n.data_verify()}
 						</Select.Item>
 					{/if}
 					{#if !hideSystemJobs}
 						<Select.Item value="system_cleanup">
 							<Wrench class="w-4 h-4 mr-2 inline text-amber-500 drop-shadow-[0_0_3px_rgba(245,158,11,0.4)]" />
-							System jobs
+							{m_i18n.system_jobs()}
 						</Select.Item>
 						<Select.Item value="deploy_log_reconcile">
 							<FileText class="w-4 h-4 mr-2 inline text-amber-500 drop-shadow-[0_0_3px_rgba(245,158,11,0.4)]" />
-							Deploy log reconcile
+							{m_i18n.deploy_log_reconcile()}
 						</Select.Item>
 					{/if}
 				</Select.Content>
@@ -1056,11 +1058,11 @@
 					<Server class="w-3.5 h-3.5 mr-2 shrink-0" />
 					<span class="truncate">
 						{#if filterEnvironments.length === 0}
-							All envs
+							{m_i18n.all_envs()}
 						{:else if filterEnvironments.length === 1}
 							{environments.find(e => String(e.id) === filterEnvironments[0])?.name || 'Environment'}
 						{:else}
-							{filterEnvironments.length} envs
+							{m_i18n.length_envs({ length: orEmpty(filterEnvironments.length) })}
 						{/if}
 					</span>
 				</Select.Trigger>
@@ -1071,7 +1073,7 @@
 							class="w-full px-2 py-1 text-xs text-left text-muted-foreground/60 hover:text-muted-foreground"
 							onclick={() => filterEnvironments = []}
 						>
-							Clear
+							{m_i18n.clear()}
 						</button>
 					{/if}
 					{#each environments as env}
@@ -1088,23 +1090,23 @@
 				<Select.Trigger size="sm" class="w-36 text-sm">
 					<span class="truncate">
 						{#if filterStatuses.length === 0}
-							All statuses
+							{m_i18n.all_statuses()}
 						{:else if filterStatuses.length === 1}
 							{#if filterStatuses[0] === 'success'}
-								Success
+								{m_i18n.success()}
 							{:else if filterStatuses[0] === 'warning'}
-								Warning
+								{m_i18n.warning()}
 							{:else if filterStatuses[0] === 'failed'}
-								Failed
+								{m_i18n.failed()}
 							{:else if filterStatuses[0] === 'skipped'}
-								Up-to-date
+								{m_i18n.up_to_date()}
 							{:else if filterStatuses[0] === 'running'}
-								Running
+								{m_i18n.running()}
 							{:else}
 								{filterStatuses[0]}
 							{/if}
 						{:else}
-							{filterStatuses.length} statuses
+							{m_i18n.length_statuses({ length: orEmpty(filterStatuses.length) })}
 						{/if}
 					</span>
 				</Select.Trigger>
@@ -1115,28 +1117,28 @@
 							class="w-full px-2 py-1 text-xs text-left text-muted-foreground/60 hover:text-muted-foreground"
 							onclick={() => filterStatuses = []}
 						>
-							Clear
+							{m_i18n.clear()}
 						</button>
 					{/if}
 					<Select.Item value="success">
 						<Check class="w-4 h-4 mr-2 inline text-green-500" />
-						Success
+						{m_i18n.success()}
 					</Select.Item>
 					<Select.Item value="warning">
 						<AlertTriangle class="w-4 h-4 mr-2 inline text-amber-500" />
-						Warning
+						{m_i18n.warning()}
 					</Select.Item>
 					<Select.Item value="failed">
 						<X class="w-4 h-4 mr-2 inline text-red-500" />
-						Failed
+						{m_i18n.failed()}
 					</Select.Item>
 					<Select.Item value="skipped">
 						<CheckCheck class="w-4 h-4 mr-2 inline text-green-500" />
-						Up-to-date
+						{m_i18n.up_to_date()}
 					</Select.Item>
 					<Select.Item value="running">
 						<Loader2 class="w-4 h-4 mr-2 inline text-sky-500 animate-spin" />
-						Running
+						{m_i18n.running()}
 					</Select.Item>
 				</Select.Content>
 			</Select.Root>
@@ -1151,10 +1153,10 @@
 				>
 					{#if hideSystemJobs}
 						<Eye class="w-3.5 h-3.5" />
-						Show system ({systemJobCount})
+						{m_i18n.show_system_systemjobcount({ systemJobCount: orEmpty(systemJobCount) })}
 					{:else}
 						<EyeOff class="w-3.5 h-3.5" />
-						Hide system
+						{m_i18n.hide_system()}
 					{/if}
 				</Button>
 			{/if}
@@ -1166,7 +1168,7 @@
 				class="h-8 px-2"
 				onclick={clearFilters}
 				disabled={!hasActiveFilters}
-				title="Clear all filters"
+				title={m_i18n.clear_all_filters()}
 			>
 				<X class="w-3.5 h-3.5" />
 			</Button>
@@ -1243,7 +1245,7 @@
 						<div class="font-medium flex items-center gap-2 truncate">
 							<span class="truncate">{schedule.name}</span>
 							{#if schedule.isSystem}
-								<Badge variant="outline" class="text-xs shrink-0">System</Badge>
+								<Badge variant="outline" class="text-xs shrink-0">{m_i18n.system()}</Badge>
 							{/if}
 						</div>
 						<div class="text-xs text-muted-foreground flex items-center gap-1 truncate">
@@ -1255,12 +1257,12 @@
 									<span class="cursor-default shrink-0" title={icon.title}>
 										<IconComponent class={icon.class} />
 									</span>
-									Check, scan & auto-update
+									{m_i18n.check_scan_auto_update()}
 								{:else}
-									Check & auto-update
+									{m_i18n.check_auto_update()}
 								{/if}
 							{:else if schedule.type === 'git_stack_sync'}
-								Git sync
+								{m_i18n.git_sync()}
 							{:else if schedule.type === 'env_update_check'}
 								{#if schedule.autoUpdate && schedule.envHasScanning && schedule.vulnerabilityCriteria}
 									{@const criteria = schedule.vulnerabilityCriteria as VulnerabilityCriteria}
@@ -1276,7 +1278,7 @@
 							{:else if schedule.type === 'backup'}
 								{@const parts = (schedule.description || '').split(' to ')}
 								{#if parts.length === 2}
-									<span class="truncate">{parts[0]} to</span>
+									<span class="truncate">{m_i18n.arg1_to({ arg1: orEmpty(parts[0]) })}</span>
 									<HardDrive class="w-3 h-3 shrink-0 text-muted-foreground" />
 									<span class="truncate">{parts[1]}</span>
 								{:else}
@@ -1284,17 +1286,17 @@
 								{/if}
 							{:else if schedule.type === 'repo_prune'}
 								<Eraser class="w-3 h-3 shrink-0 text-muted-foreground" />
-								<span class="truncate">Prune unused data ({schedule.maxUnused ?? '10'}%) from</span>
+								<span class="truncate">{m_i18n.prune_unused_data_arg1_from({ arg1: orEmpty(schedule.maxUnused ?? '10') })}</span>
 								<HardDrive class="w-3 h-3 shrink-0 text-muted-foreground" />
 								<span class="truncate">{schedule.entityName}</span>
 							{:else if schedule.type === 'repo_check'}
 								<PackageCheck class="w-3 h-3 shrink-0 text-muted-foreground" />
-								<span class="truncate">Check integrity of</span>
+								<span class="truncate">{m_i18n.check_integrity_of()}</span>
 								<HardDrive class="w-3 h-3 shrink-0 text-muted-foreground" />
 								<span class="truncate">{schedule.entityName}</span>
 							{:else if schedule.type === 'repo_verify'}
 								<FolderCheck class="w-3 h-3 shrink-0 text-muted-foreground" />
-								<span class="truncate">Verify {schedule.dataSubset || '5%'} of data in</span>
+								<span class="truncate">{m_i18n.verify_arg1_of_data_in({ arg1: orEmpty(schedule.dataSubset || '5%') })}</span>
 								<HardDrive class="w-3 h-3 shrink-0 text-muted-foreground" />
 								<span class="truncate">{schedule.entityName}</span>
 							{:else}
@@ -1344,7 +1346,7 @@
 						</div>
 					{/if}
 				{:else}
-					<span class="text-muted-foreground text-xs">Never</span>
+					<span class="text-muted-foreground text-xs">{m_i18n.never()}</span>
 				{/if}
 			{:else if column.id === 'nextRun'}
 				<span class="text-xs">{formatNextRun(schedule.nextRun)}</span>
@@ -1376,9 +1378,9 @@
 								{#if envUpdateStatus}
 									{envUpdateStatus.label}
 								{:else if isBlockedByVuln}
-									Update blocked due to vulnerabilities
+									{m_i18n.update_blocked_due_to_vulnerabilities()}
 								{:else if schedule.lastExecution.status === 'skipped'}
-									Up-to-date
+									{m_i18n.up_to_date()}
 								{:else}
 									<span class="capitalize">{schedule.lastExecution.status}</span>
 								{/if}
@@ -1393,7 +1395,7 @@
 							</Badge>
 						</Tooltip.Trigger>
 						<Tooltip.Content>
-							<p class="whitespace-nowrap">No runs</p>
+							<p class="whitespace-nowrap">{m_i18n.no_runs()}</p>
 						</Tooltip.Content>
 					</Tooltip.Root>
 				{/if}
@@ -1403,7 +1405,7 @@
 						<button
 							type="button"
 							onclick={(e) => { e.stopPropagation(); loadExecutionDetail(schedule.lastExecution!.id); }}
-							title="View last execution logs"
+							title={m_i18n.view_last_execution_logs()}
 							class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 						>
 							<FileText class="grid-action-icon grid-action-logs text-muted-foreground hover:text-blue-500" />
@@ -1427,7 +1429,7 @@
 						<button
 							type="button"
 							onclick={(e) => { e.stopPropagation(); triggerSchedule(schedule); }}
-							title="Run now"
+							title={m_i18n.run_now()}
 							class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 						>
 							<Play class="grid-action-icon grid-action-start text-muted-foreground hover:text-green-500" />
@@ -1440,7 +1442,7 @@
 							action="Remove"
 							itemType="schedule"
 							itemName={schedule.entityName}
-							title="Remove schedule"
+							title={m_i18n.remove_schedule()}
 							onConfirm={() => deleteSchedule(schedule.type, schedule.id, schedule.entityName)}
 							onOpenChange={(open) => confirmDeleteId = open ? scheduleKey : null}
 						>
@@ -1460,16 +1462,16 @@
 			{@const canLoadMore = hasMoreExecutions.get(scheduleKey) ?? false}
 			<div class="p-4 pl-12 shadow-inner bg-muted isolate sticky left-0 max-w-[calc(100vw-18rem)]">
 				<div class="flex items-center justify-between mb-2">
-					<h4 class="text-xs font-medium">Execution history</h4>
+					<h4 class="text-xs font-medium">{m_i18n.execution_history()}</h4>
 					{#if executions.length > 0 && canEditSchedules}
 						<button
 							type="button"
 							onclick={() => deleteAllExecutions(schedule)}
-							title="Remove all executions"
+							title={m_i18n.remove_all_executions()}
 							class="text-xs text-muted-foreground hover:text-red-500 transition-colors flex items-center gap-1"
 						>
 							<Trash2 class="w-3 h-3" />
-							Remove all
+							{m_i18n.remove_all()}
 						</button>
 					{/if}
 				</div>
@@ -1478,11 +1480,11 @@
 						<table class="w-full table-fixed">
 							<thead class="sticky top-0 bg-muted z-20">
 								<tr class="text-xs text-muted-foreground">
-									<th class="text-left px-2 py-1 w-36">Triggered</th>
-									<th class="text-center px-2 py-1 w-20">Trigger</th>
-									<th class="text-left px-2 py-1 w-20">Duration</th>
-									<th class="text-center px-2 py-1 w-14">Status</th>
-									<th class="text-left px-2 py-1">Error</th>
+									<th class="text-left px-2 py-1 w-36">{m_i18n.triggered()}</th>
+									<th class="text-center px-2 py-1 w-20">{m_i18n.trigger()}</th>
+									<th class="text-left px-2 py-1 w-20">{m_i18n.duration()}</th>
+									<th class="text-center px-2 py-1 w-14">{m_i18n.status()}</th>
+									<th class="text-left px-2 py-1">{m_i18n.error()}</th>
 									<th class="text-left px-2 py-1 w-14"></th>
 								</tr>
 							</thead>
@@ -1529,7 +1531,7 @@
 											{#if exec.errorMessage}
 												<span class="text-destructive">{cleanError(exec.errorMessage)}</span>
 											{:else if exec.status === 'success' && exec.details?.dataAdded !== undefined}
-												<span class="text-muted-foreground">{exec.details.filesNew ?? 0} new, {exec.details.filesChanged ?? 0} changed · {formatBytes(exec.details.dataAdded ?? 0)} added</span>
+												<span class="text-muted-foreground">{m_i18n.arg1_new_arg2_changed_arg3_added({ arg1: orEmpty(exec.details.filesNew ?? 0), arg2: orEmpty(exec.details.filesChanged ?? 0), arg3: orEmpty(formatBytes(exec.details.dataAdded ?? 0)) })}</span>
 											{/if}
 										</td>
 										<td class="px-2 py-1">
@@ -1537,7 +1539,7 @@
 												<button
 													type="button"
 													onclick={() => loadExecutionDetail(exec.id)}
-													title="View logs"
+													title={m_i18n.view_logs()}
 													class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 												>
 													<FileText class="grid-action-icon grid-action-logs text-muted-foreground hover:text-blue-500" />
@@ -1546,7 +1548,7 @@
 													<button
 														type="button"
 														onclick={() => deleteExecution(schedule, exec.id)}
-														title="Delete execution"
+														title={m_i18n.delete_execution()}
 														class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 													>
 														<Trash2 class="w-3 h-3 text-muted-foreground hover:text-red-500" />
@@ -1568,9 +1570,9 @@
 								>
 									{#if isLoading}
 										<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-										Loading...
+										{m_i18n.loading()}
 									{:else}
-										Load more
+										{m_i18n.load_more()}
 									{/if}
 								</Button>
 							</div>
@@ -1581,7 +1583,7 @@
 						<Loader2 class="w-6 h-6 animate-spin text-muted-foreground" />
 					</div>
 				{:else}
-					<p class="text-xs text-muted-foreground py-4">No executions found</p>
+					<p class="text-xs text-muted-foreground py-4">{m_i18n.no_executions_found()}</p>
 				{/if}
 			</div>
 		{/snippet}
@@ -1589,8 +1591,8 @@
 		{#snippet emptyState()}
 			<div class="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
 				<Calendar class="w-12 h-12" />
-				<p>No schedules found</p>
-				<p class="text-xs">Enable auto-update on containers or auto-sync on git stacks to see them here</p>
+				<p>{m_i18n.no_schedules_found()}</p>
+				<p class="text-xs">{m_i18n.enable_auto_update_on_containers_or_auto_sync_on()}</p>
 			</div>
 		{/snippet}
 	</DataGrid>
@@ -1614,10 +1616,10 @@
 				{:else}
 					<Wrench class="w-5 h-5 text-amber-500 drop-shadow-[0_0_3px_rgba(245,158,11,0.4)]" />
 				{/if}
-				Execution details
+				{m_i18n.execution_details()}
 				{#if selectedExecution}
 					<span class="text-muted-foreground font-normal">
-						({#if selectedExecution.scheduleType === 'container_update'}Container update{:else if selectedExecution.scheduleType === 'env_update_check'}Environment update{:else if selectedExecution.scheduleType === 'git_stack_sync'}Git stack sync{:else if selectedExecution.scheduleType === 'backup'}Backup{:else if selectedExecution.scheduleType === 'repo_prune'}Repo prune{:else if selectedExecution.scheduleType === 'repo_check'}Repo check{:else if selectedExecution.scheduleType === 'repo_verify'}Data verify{:else if selectedExecution.scheduleType === 'stack_deploy'}Stack deploy{:else if selectedExecution.scheduleType === 'deploy_log_reconcile'}Deploy log reconcile{:else}System job{/if})
+						({#if selectedExecution.scheduleType === 'container_update'}{m_i18n.container_update()}{:else if selectedExecution.scheduleType === 'env_update_check'}{m_i18n.environment_update()}{:else if selectedExecution.scheduleType === 'git_stack_sync'}{m_i18n.git_stack_sync()}{:else if selectedExecution.scheduleType === 'backup'}{m_i18n.backup()}{:else if selectedExecution.scheduleType === 'repo_prune'}{m_i18n.repo_prune()}{:else if selectedExecution.scheduleType === 'repo_check'}{m_i18n.repo_check()}{:else if selectedExecution.scheduleType === 'repo_verify'}{m_i18n.data_verify()}{:else if selectedExecution.scheduleType === 'stack_deploy'}{m_i18n.stack_deploy()}{:else if selectedExecution.scheduleType === 'deploy_log_reconcile'}{m_i18n.deploy_log_reconcile()}{:else}{m_i18n.system_job()}{/if})
 					</span>
 				{/if}
 			</Dialog.Title>
@@ -1647,7 +1649,7 @@
 				<!-- Blocked containers list (scrollable) -->
 				{#if selectedExecution.details?.blockedContainers?.length > 0}
 					<div class="shrink-0">
-						<div class="text-xs text-muted-foreground mb-1.5">Blocked containers</div>
+						<div class="text-xs text-muted-foreground mb-1.5">{m_i18n.blocked_containers()}</div>
 						<div class="bg-amber-500/5 border border-amber-500/20 rounded-lg max-h-48 overflow-auto">
 							<div class="divide-y divide-amber-500/10">
 								{#each selectedExecution.details.blockedContainers as bc}
@@ -1670,7 +1672,7 @@
 				<!-- Execution info -->
 				<div class="flex flex-wrap items-center gap-4 text-xs shrink-0">
 					<div class="flex flex-wrap items-center gap-2">
-						<span class="text-muted-foreground">Status</span>
+						<span class="text-muted-foreground">{m_i18n.status()}</span>
 						{#if selectedExecution.status}
 							{@const badge = getStatusBadge(selectedExecution.status)}
 							{@const envUpdateStatus = getEnvUpdateStatus(selectedExecution)}
@@ -1684,7 +1686,7 @@
 							{:else if isBlockedByVuln}
 								<Badge variant="default" class="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
 									<Bug class="w-3 h-3 mr-1" />
-									<span>Blocked</span>
+									<span>{m_i18n.blocked()}</span>
 								</Badge>
 							{:else}
 								{@const SelBadgeIcon = badge.icon}
@@ -1696,7 +1698,7 @@
 						{/if}
 					</div>
 					<div class="flex flex-wrap items-center gap-2">
-						<span class="text-muted-foreground">Trigger</span>
+						<span class="text-muted-foreground">{m_i18n.trigger()}</span>
 						{#if selectedExecution.triggeredBy}
 							{@const trigger = getTriggerBadge(selectedExecution.triggeredBy)}
 							{@const SelTriggerIcon = trigger.icon}
@@ -1708,7 +1710,7 @@
 					</div>
 					{#if selectedExecution.details?.vulnerabilityCriteria}
 						<div class="flex flex-wrap items-center gap-2">
-							<span class="text-muted-foreground">Update block criteria</span>
+							<span class="text-muted-foreground">{m_i18n.update_block_criteria()}</span>
 							<VulnerabilityCriteriaBadge criteria={selectedExecution.details.vulnerabilityCriteria} showLabel />
 						</div>
 					{/if}
@@ -1717,7 +1719,7 @@
 				<!-- Block reason if update was blocked due to vulnerabilities -->
 				{#if selectedExecution.details?.reason === 'vulnerabilities_found'}
 					<div class="shrink-0">
-						<div class="text-xs text-muted-foreground mb-1">Block reason</div>
+						<div class="text-xs text-muted-foreground mb-1">{m_i18n.block_reason()}</div>
 						<div class="bg-amber-500/10 border border-amber-500/30 rounded p-3 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-2">
 							<Bug class="w-4 h-4 shrink-0" />
 							<span>{selectedExecution.details.blockReason || 'Update blocked due to vulnerabilities'}</span>
@@ -1730,15 +1732,15 @@
 					{@const summary = selectedExecution.details.scanResult.summary}
 					{@const scannerResults = selectedExecution.details.scanResult.scannerResults}
 					<div class="shrink-0">
-						<div class="text-xs text-muted-foreground mb-1">Vulnerability scan results</div>
+						<div class="text-xs text-muted-foreground mb-1">{m_i18n.vulnerability_scan_results()}</div>
 						<div class="border border-muted-foreground/20 rounded p-3">
 							<div class="mb-2">
 								<ScannerSeverityPills results={scannerResults ?? []} />
 							</div>
 							<div class="text-xs text-muted-foreground">
-								Scanned with {selectedExecution.details.scanResult.scanners?.join(', ') || 'scanner'}
+								{m_i18n.scanned_with_arg1({ arg1: orEmpty(selectedExecution.details.scanResult.scanners?.join(', ') || 'scanner') })}
 								{#if selectedExecution.details.scanResult.scannedAt}
-									at {formatDateTime(selectedExecution.details.scanResult.scannedAt)}
+									{m_i18n.at_arg1({ arg1: orEmpty(formatDateTime(selectedExecution.details.scanResult.scannedAt)) })}
 								{/if}
 							</div>
 						</div>
@@ -1748,7 +1750,7 @@
 				<!-- Error message -->
 				{#if selectedExecution.errorMessage}
 					<div class="shrink-0">
-						<div class="text-xs text-muted-foreground mb-1">Error</div>
+						<div class="text-xs text-muted-foreground mb-1">{m_i18n.error()}</div>
 						<div class="bg-destructive/10 border border-destructive/20 rounded p-3 text-xs text-destructive break-words">
 							{cleanError(selectedExecution.errorMessage)}
 						</div>
@@ -1768,7 +1770,7 @@
 			</div>
 		{/if}
 		<Dialog.Footer class="flex justify-end border-t pt-4">
-			<Button onclick={() => showExecutionDialog = false}>OK</Button>
+			<Button onclick={() => showExecutionDialog = false}>{m_i18n.ok()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

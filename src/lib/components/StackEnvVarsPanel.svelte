@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { tick, type Snippet } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import StackEnvVarsEditor, { type EnvVar, type ValidationResult } from '$lib/components/StackEnvVarsEditor.svelte';
@@ -312,7 +314,7 @@
 		<!-- Header row: title + info + view toggle + validation pills + actions -->
 		<div class="flex items-center gap-2 justify-between">
 			<div class="flex items-center gap-2 flex-wrap min-w-0">
-				<span class="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">Environment variables</span>
+				<span class="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">{m.environment_variables()}</span>
 			{#if infoText}
 				<Tooltip.Root>
 					<Tooltip.Trigger>
@@ -331,7 +333,7 @@
 					type="button"
 					class="flex items-center gap-1 px-1.5 py-0.5 rounded text-2xs transition-colors {viewMode === 'form' ? 'bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'}"
 					onclick={() => handleViewModeChange('form')}
-					title="Form view"
+					title={m.form_view()}
 				>
 					<List class="w-3 h-3" />
 				</button>
@@ -339,7 +341,7 @@
 					type="button"
 					class="flex items-center gap-1 px-1.5 py-0.5 rounded text-2xs transition-colors {viewMode === 'text' ? 'bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'}"
 					onclick={() => handleViewModeChange('text')}
-					title="Text view (raw .env file)"
+					title={m.text_view_raw_env_file()}
 				>
 					<FileText class="w-3 h-3" />
 				</button>
@@ -349,17 +351,17 @@
 				<div class="flex gap-1 flex-wrap">
 					{#if effectiveValidation.missing.length > 0}
 						<span class="inline-flex items-center px-1.5 py-0.5 rounded text-2xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
-							{effectiveValidation.missing.length} missing
+							{m.length_missing({ length: orEmpty(effectiveValidation.missing.length) })}
 						</span>
 					{/if}
 					{#if effectiveValidation.required.length > 0}
 						<span class="inline-flex items-center px-1.5 py-0.5 rounded text-2xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-							{effectiveValidation.required.length - effectiveValidation.missing.length} defined
+							{m.arg1_defined({ arg1: orEmpty(effectiveValidation.required.length - effectiveValidation.missing.length) })}
 						</span>
 					{/if}
 					{#if effectiveValidation.optional.length > 0}
 						<span class="inline-flex items-center px-1.5 py-0.5 rounded text-2xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-							{effectiveValidation.optional.length} optional
+							{m.length_optional({ length: orEmpty(effectiveValidation.optional.length) })}
 						</span>
 					{/if}
 				</div>
@@ -373,17 +375,17 @@
 					{/if}
 					<Button type="button" size="sm" variant="ghost" onclick={handleLoadFromFile} class="h-6 text-xs px-2">
 						<Upload class="w-3.5 h-3.5" />
-						Load
+						{m.load()}
 					</Button>
 					{#if viewMode === 'form'}
 						<Button type="button" size="sm" variant="ghost" onclick={addEnvVariable} class="h-6 text-xs px-2">
 							<Plus class="w-3.5 h-3.5" />
-							Add
+							{m.add()}
 						</Button>
 					{/if}
 					<ConfirmPopover
 						bind:open={confirmClearOpen}
-						title="Clear all variables?"
+						title={m.clear_all_variables()}
 						action="clear"
 						itemType="environment variables"
 						confirmText="Clear all"
@@ -399,7 +401,7 @@
 								disabled={!hasContent}
 							>
 								<Trash2 class="w-3.5 h-3.5" />
-								Clear
+								{m.clear()}
 							</Button>
 						{/snippet}
 					</ConfirmPopover>
@@ -419,15 +421,14 @@
 				<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
 					<Info class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
 					<p class="text-xs text-blue-700 dark:text-blue-300">
-						These variables are available for <strong>compose file interpolation</strong> using <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">${'{VAR_NAME}'}</code> syntax.
-						To pass them to containers, reference them in the compose file's <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">environment:</code> section.
+						{m.these_variables_are_available_for()} <strong>{m.compose_file_interpolation()}</strong> {m.using()} <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">${'{VAR_NAME}'}</code> {m.syntax_to_pass_them_to_containers_reference_them()} <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">{m.environment_884c()}</code> {m.section()}
 					</p>
 				</div>
 			{/if}
 			<div class="flex flex-wrap gap-x-3 gap-y-0.5 text-2xs text-zinc-400 dark:text-zinc-500 font-mono">
-				<span><span class="text-zinc-500 dark:text-zinc-400">${`{VAR}`}</span> required</span>
-				<span><span class="text-zinc-500 dark:text-zinc-400">${`{VAR:-default}`}</span> optional</span>
-				<span><span class="text-zinc-500 dark:text-zinc-400">${`{VAR:?error}`}</span> required w/ error</span>
+				<span><span class="text-zinc-500 dark:text-zinc-400">${`{VAR}`}</span> {m.required()}</span>
+				<span><span class="text-zinc-500 dark:text-zinc-400">${`{VAR:-default}`}</span> {m.optional_48a7()}</span>
+				<span><span class="text-zinc-500 dark:text-zinc-400">${`{VAR:?error}`}</span> {m.required_w_error()}</span>
 			</div>
 		{:else if showInterpolationHint && secretCount > 0}
 			<!-- Interpolation hint + secrets hint combined for text view -->
@@ -435,15 +436,14 @@
 				<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
 					<Info class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
 					<p class="text-xs text-blue-700 dark:text-blue-300">
-						These variables are available for <strong>compose file interpolation</strong> using <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">${'{VAR_NAME}'}</code> syntax.
-						To pass them to containers, reference them in the compose file's <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">environment:</code> section.
+						{m.these_variables_are_available_for()} <strong>{m.compose_file_interpolation()}</strong> {m.using()} <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">${'{VAR_NAME}'}</code> {m.syntax_to_pass_them_to_containers_reference_them()} <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">{m.environment_884c()}</code> {m.section()}
 					</p>
 				</div>
 				<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
 					<ShieldAlert class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
 					<div class="text-xs text-amber-700 dark:text-amber-300">
-						<span class="font-medium">{secretCount} secret{secretCount === 1 ? '' : 's'} not shown.</span>
-						<span class="text-amber-600 dark:text-amber-400">Secrets are never written to disk and are injected via shell environment when the stack starts.</span>
+						<span class="font-medium">{m.secretcount_secret_arg2_not_shown({ secretCount: orEmpty(secretCount), arg2: orEmpty(secretCount === 1 ? '' : 's') })}</span>
+						<span class="text-amber-600 dark:text-amber-400">{m.secrets_are_never_written_to_disk_and_are_inject()}</span>
 					</div>
 				</div>
 			</div>
@@ -452,8 +452,7 @@
 			<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
 				<Info class="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
 				<p class="text-xs text-blue-700 dark:text-blue-300">
-					These variables are available for <strong>compose file interpolation</strong> using <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">${'{VAR_NAME}'}</code> syntax.
-					To pass them to containers, reference them in the compose file's <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">environment:</code> section.
+					{m.these_variables_are_available_for()} <strong>{m.compose_file_interpolation()}</strong> {m.using()} <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">${'{VAR_NAME}'}</code> {m.syntax_to_pass_them_to_containers_reference_them()} <code class="bg-blue-100 dark:bg-blue-800/40 px-1 rounded">{m.environment_884c()}</code> {m.section()}
 				</p>
 			</div>
 		{:else if secretCount > 0}
@@ -461,8 +460,8 @@
 			<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
 				<ShieldAlert class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
 				<div class="text-xs text-amber-700 dark:text-amber-300">
-					<span class="font-medium">{secretCount} secret{secretCount === 1 ? '' : 's'} not shown.</span>
-					<span class="text-amber-600 dark:text-amber-400">Secrets are never written to disk and are injected via shell environment when the stack starts.</span>
+					<span class="font-medium">{m.secretcount_secret_arg2_not_shown({ secretCount: orEmpty(secretCount), arg2: orEmpty(secretCount === 1 ? '' : 's') })}</span>
+					<span class="text-amber-600 dark:text-amber-400">{m.secrets_are_never_written_to_disk_and_are_inject()}</span>
 				</div>
 			</div>
 		{/if}
@@ -471,7 +470,7 @@
 			<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
 				<Info class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
 				<p class="text-xs text-amber-700 dark:text-amber-300">
-					A secret-provider reference (<code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">op://</code>, <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">keepass://</code>, <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">azurekv://</code>, <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">pass://</code>) is resolved <strong>here</strong>, in the stack's environment. It is <strong>not</strong> resolved when written directly in a compose <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">environment:</code> block - reference the variable there with <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">${'{VAR}'}</code> instead.
+					{m.a_secret_provider_reference()}<code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">{m.op()}</code>, <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">{m.keepass()}</code>, <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">{m.azurekv()}</code>, <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">{m.pass()}</code>{m.is_resolved()} <strong>{m.here()}</strong>{m.in_the_stacks_environment_it_is()} <strong>{m.not()}</strong> {m.resolved_when_written_directly_in_a_compose()} <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">{m.environment_884c()}</code> {m.block_reference_the_variable_there_with()} <code class="bg-amber-100 dark:bg-amber-800/40 px-1 rounded">${'{VAR}'}</code> {m.instead()}
 				</p>
 			</div>
 		{/if}
@@ -480,16 +479,16 @@
 			<div class="flex items-start gap-2 px-2 py-1.5 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
 				<AlertTriangle class="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
 				<div class="text-2xs text-amber-700 dark:text-amber-300">
-					<span class="font-medium">Some lines couldn't be parsed:</span>
+					<span class="font-medium">{m.some_lines_couldnt_be_parsed()}</span>
 					<ul class="mt-0.5 list-disc list-inside">
 						{#each parseWarnings.slice(0, 3) as warning}
 							<li>{warning}</li>
 						{/each}
 						{#if parseWarnings.length > 3}
-							<li>...and {parseWarnings.length - 3} more</li>
+							<li>{m.and_arg1_more({ arg1: orEmpty(parseWarnings.length - 3) })}</li>
 						{/if}
 					</ul>
-					<p class="mt-1 text-amber-600 dark:text-amber-400">Switch to text view to edit these lines.</p>
+					<p class="mt-1 text-amber-600 dark:text-amber-400">{m.switch_to_text_view_to_edit_these_lines()}</p>
 				</div>
 			</div>
 		{/if}
@@ -499,8 +498,8 @@
 				<Check class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
 				<div class="text-xs text-emerald-700 dark:text-emerald-300 min-w-0">
 					<div class="flex items-center gap-1.5 flex-wrap">
-						<span class="font-semibold">{injectedSecretKeys.length} secret{injectedSecretKeys.length === 1 ? '' : 's'} loaded</span>
-						<span class="text-emerald-600/70 dark:text-emerald-400/70">from</span>
+						<span class="font-semibold">{m.length_secret_arg2_loaded({ length: orEmpty(injectedSecretKeys.length), arg2: orEmpty(injectedSecretKeys.length === 1 ? '' : 's') })}</span>
+						<span class="text-emerald-600/70 dark:text-emerald-400/70">{m.from_0b1e()}</span>
 						{#if providerType}
 							{@const ProviderIcon = getProviderIcon(providerType)}
 							<span class="inline-flex items-center gap-1 font-medium">
@@ -509,10 +508,10 @@
 							</span>
 							{#if providerName}<span class="text-emerald-600/70 dark:text-emerald-400/70">&middot; {providerName}</span>{/if}
 						{:else}
-							<span class="font-medium">the provider</span>
+							<span class="font-medium">{m.the_provider()}</span>
 						{/if}
 					</div>
-					<p class="text-emerald-600 dark:text-emerald-400 mt-0.5">Injected into the container at last deploy &mdash; never written to <code>.env</code>.</p>
+					<p class="text-emerald-600 dark:text-emerald-400 mt-0.5">{m.injected_into_the_container_at_last_deploy_never()} <code>{m.env_3c84()}</code>.</p>
 					<div class="flex flex-wrap gap-1.5 mt-1.5">
 						{#each injectedSecretKeys as key}
 							<span class="inline-flex items-center gap-1 font-mono text-2xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-800/40 border border-emerald-300 dark:border-emerald-700">
@@ -527,9 +526,9 @@
 			<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
 				<AlertTriangle class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
 				<div class="text-xs text-amber-700 dark:text-amber-300 min-w-0">
-					<div class="font-semibold">No secret provider is bound</div>
+					<div class="font-semibold">{m.no_secret_provider_is_bound()}</div>
 					<p class="text-amber-600 dark:text-amber-400 mt-0.5">
-						These {injectedSecretKeys.length} secret{injectedSecretKeys.length === 1 ? ' was' : 's were'} injected on the last deploy but the stack is no longer bound to a provider. The next deploy will drop {injectedSecretKeys.length === 1 ? 'it' : 'them'}. Reselect a provider to keep them.
+						{m.these_length_secret_arg2_injected_on_the_last_de({ length: orEmpty(injectedSecretKeys.length), arg2: orEmpty(injectedSecretKeys.length === 1 ? ' was' : 's were'), arg3: orEmpty(injectedSecretKeys.length === 1 ? 'it' : 'them') })}
 					</p>
 					<div class="flex flex-wrap gap-1.5 mt-1.5">
 						{#each injectedSecretKeys as key}
@@ -546,14 +545,14 @@
 			<div class="flex items-start gap-2 px-2.5 py-2 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50">
 				<AlertTriangle class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
 				<div class="text-xs text-amber-700 dark:text-amber-300 min-w-0">
-					Couldn't check {providerName ?? 'the secret provider'}: {probeError}
+					{m.couldnt_check_arg1_probeerror({ arg1: orEmpty(providerName ?? 'the secret provider'), probeError: orEmpty(probeError) })}
 				</div>
 			</div>
 		{/if}
 		<!-- Add missing variables (form mode only) -->
 		{#if viewMode === 'form' && effectiveValidation && effectiveValidation.missing.length > 0 && !readonly}
 			<div class="flex flex-wrap gap-1 items-center">
-				<span class="text-xs text-muted-foreground mr-1">Add missing:</span>
+				<span class="text-xs text-muted-foreground mr-1">{m.add_missing()}</span>
 				{#each effectiveValidation.missing as missing}
 					<button
 						type="button"

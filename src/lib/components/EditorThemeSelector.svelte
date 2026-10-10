@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { onMount } from 'svelte';
 	import { Palette, CodeXml } from 'lucide-svelte';
 	import * as Select from '$lib/components/ui/select';
@@ -105,14 +106,14 @@ volumes:
 <div class="space-y-3">
 	<div class="flex items-center gap-2">
 		<Palette class="w-4 h-4 text-muted-foreground" />
-		<Label class="text-sm font-medium">Editor theme</Label>
+		<Label class="text-sm font-medium">{m.editor_theme()}</Label>
 	</div>
 
 	<!-- Font + theme on one row; editor font moved here from Appearance. -->
 	<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
 		<div class="flex items-center gap-2">
 			<CodeXml class="w-4 h-4 text-muted-foreground" />
-			<Label>Font</Label>
+			<Label>{m.font()}</Label>
 			{#if awaitingGlobal}
 				<div class="h-10 w-52 animate-pulse rounded-md bg-muted/50"></div>
 			{:else}
@@ -132,7 +133,7 @@ volumes:
 		</div>
 
 		<div class="flex items-center gap-2">
-			<Label>Theme</Label>
+			<Label>{m.theme()}</Label>
 			{#if awaitingGlobal}
 				<div class="h-10 w-64 animate-pulse rounded-md bg-muted/50"></div>
 			{:else}
@@ -141,15 +142,15 @@ volumes:
 						<span>{currentLabel}</span>
 					</Select.Trigger>
 					<Select.Content class="max-h-72">
-						<Select.Item value="default">Default (follows app theme)</Select.Item>
+						<Select.Item value="default">{m.default_follows_app_theme()}</Select.Item>
 						<Select.Group>
-							<Select.GroupHeading>Dark</Select.GroupHeading>
+							<Select.GroupHeading>{m.dark()}</Select.GroupHeading>
 							{#each darkThemes as t}
 								<Select.Item value={t.id}>{t.label}</Select.Item>
 							{/each}
 						</Select.Group>
 						<Select.Group>
-							<Select.GroupHeading>Light</Select.GroupHeading>
+							<Select.GroupHeading>{m.light()}</Select.GroupHeading>
 							{#each lightThemes as t}
 								<Select.Item value={t.id}>{t.label}</Select.Item>
 							{/each}
@@ -169,5 +170,5 @@ volumes:
 	>
 		<CodeEditor value={PREVIEW_COMPOSE} language="yaml" readonly editorThemeOverride={selected} />
 	</div>
-	<p class="text-xs text-muted-foreground">Applies to all code editors (compose files, env, config). Follows this theme regardless of the light/dark app setting.</p>
+	<p class="text-xs text-muted-foreground">{m.applies_to_all_code_editors_compose_files_env_co()}</p>
 </div>

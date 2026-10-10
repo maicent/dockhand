@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { page } from '$app/stores';
 	import { onMount, onDestroy } from 'svelte';
 	import { Terminal as TerminalIcon } from 'lucide-svelte';
@@ -194,7 +196,7 @@
 </script>
 
 <svelte:head>
-	<title>Terminal - {containerName || 'Loading...'}</title>
+	<title>{m.terminal_arg1({ arg1: orEmpty(containerName || 'Loading...') })}</title>
 </svelte:head>
 
 <div class="h-screen w-screen flex flex-col bg-[#0c0c0c]">
@@ -206,18 +208,18 @@
 			{#if connected}
 				<span class="inline-flex items-center gap-1 text-xs text-green-500">
 					<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-					Connected
+					{m.connected()}
 				</span>
 			{:else if error}
 				<span class="text-xs text-red-500">{error}</span>
 			{:else}
-				<span class="text-xs text-zinc-500">Connecting...</span>
+				<span class="text-xs text-zinc-500">{m.connecting()}</span>
 			{/if}
 		</div>
 		<div class="flex items-center gap-2 text-xs text-zinc-500">
-			<span>Shell: {shell}</span>
+			<span>{m.shell_shell({ shell: orEmpty(shell) })}</span>
 			<span>|</span>
-			<span>User: {user}</span>
+			<span>{m.user_user({ user: orEmpty(user) })}</span>
 		</div>
 	</div>
 
@@ -227,7 +229,7 @@
 			<div bind:this={terminalRef} class="h-full w-full"></div>
 		{:else}
 			<div class="h-full w-full flex items-center justify-center">
-				<span class="text-zinc-500">Loading terminal...</span>
+				<span class="text-zinc-500">{m.loading_terminal()}</span>
 			</div>
 		{/if}
 	</div>

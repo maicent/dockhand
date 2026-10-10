@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { HardDrive, Lock, Container } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -53,12 +54,12 @@
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
 	<Dialog.Content class="max-w-4xl h-[90vh] sm:h-[80vh] flex flex-col" onOpenAutoFocus={(e) => e.preventDefault()}>
 		<Dialog.Header>
-			<ModalHeader icon={HardDrive} title="Browse volume" name={volumeName}>
+			<ModalHeader icon={HardDrive} title={m.browse_volume()} name={volumeName}>
 				{#snippet extra()}
 					{#if isInUse}
 						<Badge variant="secondary" class="flex items-center gap-1">
 							<Lock class="w-3 h-3" />
-							<span>Read-only</span>
+							<span>{m.read_only_9b19()}</span>
 						</Badge>
 					{/if}
 				{/snippet}
@@ -67,7 +68,7 @@
 				{#if isInUse}
 					<span class="flex items-center gap-1.5 flex-wrap">
 						<Lock class="w-3.5 h-3.5 text-muted-foreground inline" />
-						<span>Volume is in use by:</span>
+						<span>{m.volume_is_in_use_by()}</span>
 						{#each volumeUsage as container, i}
 							<span class="inline-flex items-center gap-1 text-foreground font-medium">
 								<Container class="w-3 h-3" />
@@ -75,10 +76,10 @@
 								<span class="text-muted-foreground">({container.state})</span>{#if i < volumeUsage.length - 1}<span>,</span>{/if}
 							</span>
 						{/each}
-						<span class="text-muted-foreground">- editing disabled</span>
+						<span class="text-muted-foreground">{m.editing_disabled()}</span>
 					</span>
 				{:else}
-					Browse, edit, and manage files in the volume.
+					{m.browse_edit_and_manage_files_in_the_volume()}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>

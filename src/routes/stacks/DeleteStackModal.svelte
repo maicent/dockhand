@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Checkbox } from '$lib/components/ui/checkbox';
@@ -94,16 +96,16 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<StackIcon icon={stackIcon} {stackName} {envId} class="w-5 h-5 shrink-0 text-muted-foreground" />
-				Remove stack "{stackName}"
+				{m.remove_stack_stackname({ stackName: orEmpty(stackName) })}
 			</Dialog.Title>
 			<Dialog.Description>
-				Choose what to remove. The stack's containers are always stopped and removed.
+				{m.choose_what_to_remove_the_stacks_containers_are()}
 			</Dialog.Description>
 		</Dialog.Header>
 
 		{#if loading}
 			<div class="flex items-center gap-2 py-4 text-sm text-muted-foreground">
-				<Loader2 class="w-4 h-4 animate-spin" /> Checking what can be removed…
+				<Loader2 class="w-4 h-4 animate-spin" /> {m.checking_what_can_be_removed()}
 			</div>
 		{:else if preview}
 			<div class="my-1 space-y-3">
@@ -112,7 +114,7 @@
 						<Checkbox bind:checked={removeFiles} class="mt-0.5" />
 						<Folder class="w-4 h-4 shrink-0 translate-y-0.5 text-amber-500" />
 						<div class="min-w-0">
-							<div class="text-sm">Delete files on disk</div>
+							<div class="text-sm">{m.delete_files_on_disk()}</div>
 							{#if preview.stackDir}
 								<code class="block break-all text-xs text-muted-foreground">{preview.stackDir}</code>
 							{/if}
@@ -131,7 +133,7 @@
 						<Checkbox bind:checked={removeVolumes} class="mt-0.5" />
 						<Database class="w-4 h-4 shrink-0 translate-y-0.5 text-blue-500" />
 						<div class="min-w-0">
-							<div class="text-sm">Delete named volumes <span class="text-muted-foreground">(data is unrecoverable)</span></div>
+							<div class="text-sm">{m.delete_named_volumes()} <span class="text-muted-foreground">{m.data_is_unrecoverable()}</span></div>
 							<div class="flex flex-wrap gap-1 mt-0.5">
 								{#each preview.namedVolumes as v}
 									<code class="rounded bg-muted px-1.5 py-0.5 text-xs">{v}</code>
@@ -143,8 +145,7 @@
 
 				{#if !preview.canDeleteFiles && !hasVolumes}
 					<p class="text-sm text-muted-foreground">
-						This stack has no files or named volumes Dockhand manages — only the stack
-						record and its containers will be removed.
+						{m.this_stack_has_no_files_or_named_volumes_dockhan()}
 					</p>
 				{/if}
 			</div>
@@ -152,7 +153,7 @@
 			<!-- What will happen — fixed set of lines; each flips red(delete)/green(keep). -->
 			<div class="mt-2 rounded-md border bg-muted/30 p-3">
 				<div class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-					What will happen
+					{m.what_will_happen()}
 				</div>
 				<ul class="space-y-1 text-sm">
 					{#each willHappen as w}
@@ -180,11 +181,11 @@
 
 		<div class="mt-4 flex justify-end gap-1.5">
 			<Button variant="outline" size="sm" onclick={() => (open = false)} disabled={busy}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button variant="destructive" size="sm" onclick={run} disabled={busy || loading}>
 				{#if busy}<Loader2 class="w-3.5 h-3.5 mr-1 animate-spin" />{:else}<Trash2 class="w-3.5 h-3.5 mr-1" />{/if}
-				Remove
+				{m.remove()}
 			</Button>
 		</div>
 	</Dialog.Content>

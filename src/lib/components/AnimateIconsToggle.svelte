@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Label } from '$lib/components/ui/label';
 	import { TogglePill } from '$lib/components/ui/toggle-pill';
 	import { themeStore } from '$lib/stores/theme';
@@ -33,8 +34,8 @@
 
 <div class="space-y-1">
 	<div class="flex items-center gap-3">
-		<Label>Animate icons</Label>
+		<Label>{m.animate_icons()}</Label>
 		<TogglePill {checked} onchange={onToggle} />
 	</div>
-	<p class="text-xs text-muted-foreground">Spinners during pulls, scans and updates.</p>
+	<p class="text-xs text-muted-foreground">{m.spinners_during_pulls_scans_and_updates()}</p>
 </div>

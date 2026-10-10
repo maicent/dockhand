@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Terminal, Sun, Moon, Folder, HardDrive } from 'lucide-svelte';
 
 	interface Props {
@@ -52,9 +54,9 @@
 	<div class="mb-2 flex shrink-0 items-center justify-between text-xs text-muted-foreground">
 		<div class="flex items-center gap-2">
 			<Terminal class="h-3.5 w-3.5" />
-			<span>Output ({lines.length} {lines.length === 1 ? 'line' : 'lines'})</span>
+			<span>{m_i18n.output_length_arg2({ length: orEmpty(lines.length), arg2: orEmpty(lines.length === 1 ? 'line' : 'lines') })}</span>
 		</div>
-		<button type="button" onclick={() => (dark = !dark)} class="cursor-pointer rounded p-1 transition-colors hover:bg-muted" title="Toggle log theme">
+		<button type="button" onclick={() => (dark = !dark)} class="cursor-pointer rounded p-1 transition-colors hover:bg-muted" title={m_i18n.toggle_log_theme()}>
 			{#if dark}<Sun class="h-3.5 w-3.5" />{:else}<Moon class="h-3.5 w-3.5" />{/if}
 		</button>
 	</div>
@@ -72,9 +74,9 @@
 				{/if}
 				{#if vt}
 					{#if vt.kind === 'bind'}
-						<span class="mt-[2px] inline-flex w-14 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full bg-amber-500/15 px-1.5 text-[9px] font-semibold uppercase tracking-wide text-amber-500"><Folder class="h-2.5 w-2.5 shrink-0" />bind</span>
+						<span class="mt-[2px] inline-flex w-14 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full bg-amber-500/15 px-1.5 text-[9px] font-semibold uppercase tracking-wide text-amber-500"><Folder class="h-2.5 w-2.5 shrink-0" />{m_i18n.bind()}</span>
 					{:else}
-						<span class="mt-[2px] inline-flex w-14 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full bg-sky-500/15 px-1.5 text-[9px] font-semibold uppercase tracking-wide text-sky-500"><HardDrive class="h-2.5 w-2.5 shrink-0" />vol</span>
+						<span class="mt-[2px] inline-flex w-14 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full bg-sky-500/15 px-1.5 text-[9px] font-semibold uppercase tracking-wide text-sky-500"><HardDrive class="h-2.5 w-2.5 shrink-0" />{m_i18n.vol()}</span>
 					{/if}
 					<span class={isError ? 'text-red-400' : ''}>{vt.rest}</span>
 				{:else}

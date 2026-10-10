@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -93,14 +95,14 @@
 				method: 'DELETE'
 			});
 			if (response.ok) {
-				toast.success('MFA disabled for user');
+				toast.success(m.mfa_disabled_for_user());
 				user.mfaEnabled = false;
 			} else {
 				const data = await response.json();
 				toast.error(data.error || 'Failed to disable MFA');
 			}
 		} catch {
-			toast.error('Failed to disable MFA');
+			toast.error(m.failed_to_disable_mfa());
 		} finally {
 			mfaDisabling = false;
 		}
@@ -138,7 +140,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to fetch user roles:', error);
-			toast.error('Failed to fetch user roles');
+			toast.error(m.failed_to_fetch_user_roles());
 		}
 	}
 
@@ -174,7 +176,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to sync user roles:', error);
-			toast.error('Failed to sync user roles');
+			toast.error(m.failed_to_sync_user_roles());
 		}
 	}
 
@@ -232,7 +234,7 @@
 
 				open = false;
 				onSaved();
-				toast.success('User created');
+				toast.success(m.user_created());
 			} else {
 				const data = await response.json();
 				formError = data.details ? `${data.error}: ${data.details}` : (data.error || 'Failed to create user');
@@ -240,7 +242,7 @@
 			}
 		} catch {
 			formError = 'Failed to create user';
-			toast.error('Failed to create user');
+			toast.error(m.failed_to_create_user());
 		} finally {
 			formSaving = false;
 		}
@@ -285,7 +287,7 @@
 				await syncUserRoles(user!.id);
 				open = false;
 				onSaved();
-				toast.success('User updated');
+				toast.success(m.user_updated());
 			} else {
 				const data = await response.json();
 				formError = data.error || 'Failed to update user';
@@ -293,7 +295,7 @@
 			}
 		} catch {
 			formError = 'Failed to update user';
-			toast.error('Failed to update user');
+			toast.error(m.failed_to_update_user());
 		} finally {
 			formSaving = false;
 		}
@@ -329,10 +331,10 @@
 			<Dialog.Title class="flex items-center gap-2">
 				{#if isEditing}
 					<Pencil class="w-5 h-5" />
-					Edit user
+					{m.edit_user()}
 				{:else}
 					<UserPlus class="w-5 h-5" />
-					Add user
+					{m.add_user()}
 				{/if}
 			</Dialog.Title>
 		</Dialog.Header>
@@ -348,7 +350,7 @@
 				<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
 					<ShieldCheck class="w-4 h-4 text-yellow-600 flex-shrink-0" />
 					<p class="text-sm text-yellow-700 dark:text-yellow-500">
-						SSO user - profile synced from identity provider
+						{m.sso_user_profile_synced_from_identity_provider()}
 					</p>
 				</div>
 			{/if}
@@ -357,11 +359,11 @@
 			<div class="space-y-4">
 				<h3 class="text-sm font-medium flex items-center gap-2 text-muted-foreground">
 					<User class="w-4 h-4" />
-					User details
+					{m.user_details()}
 				</h3>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="space-y-2">
-						<Label>Username {#if !isEditing}<span class="text-destructive">*</span>{/if}</Label>
+						<Label>{m.username()} {#if !isEditing}<span class="text-destructive">*</span>{/if}</Label>
 						<Input
 							bind:value={formUsername}
 							placeholder={isEditing ? 'admin' : 'johndoe'}
@@ -375,7 +377,7 @@
 						{/if}
 					</div>
 					<div class="space-y-2">
-						<Label>Email</Label>
+						<Label>{m.email()}</Label>
 						<Input
 							type="email"
 							bind:value={formEmail}
@@ -386,7 +388,7 @@
 					</div>
 				</div>
 				<div class="space-y-2">
-					<Label>Display name</Label>
+					<Label>{m.display_name()}</Label>
 					<Input
 						bind:value={formDisplayName}
 						placeholder={isEditing ? 'Administrator' : 'John Doe'}
@@ -401,14 +403,14 @@
 				<div class="space-y-4">
 					<h3 class="text-sm font-medium flex items-center gap-2 text-muted-foreground">
 						<KeyRound class="w-4 h-4" />
-						Password
+						{m.password()}
 					</h3>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="space-y-2">
 							{#if isEditing}
-								<Label>New password <span class="text-muted-foreground text-xs">(leave blank to keep current)</span></Label>
+								<Label>{m.new_password()} <span class="text-muted-foreground text-xs">{m.leave_blank_to_keep_current()}</span></Label>
 							{:else}
-								<Label>Password <span class="text-destructive">*</span></Label>
+								<Label>{m.password()} <span class="text-destructive">*</span></Label>
 							{/if}
 							<Input
 								type="password"
@@ -425,9 +427,9 @@
 						</div>
 						<div class="space-y-2">
 							{#if isEditing}
-								<Label>Confirm password</Label>
+								<Label>{m.confirm_password()}</Label>
 							{:else}
-								<Label>Confirm password <span class="text-destructive">*</span></Label>
+								<Label>{m.confirm_password()} <span class="text-destructive">*</span></Label>
 							{/if}
 							<Input
 								type="password"
@@ -450,16 +452,16 @@
 				<div class="space-y-3">
 					<h3 class="text-sm font-medium flex items-center gap-2 text-muted-foreground">
 						<Smartphone class="w-4 h-4" />
-						Two-factor authentication
+						{m.two_factor_authentication()}
 					</h3>
 					<div class="flex items-center justify-between p-3 border rounded-lg">
 						<div>
-							<p class="text-sm font-medium">MFA status</p>
+							<p class="text-sm font-medium">{m.mfa_status()}</p>
 							<p class="text-xs text-muted-foreground">
 								{#if user.mfaEnabled}
-									User has MFA configured
+									{m.user_has_mfa_configured()}
 								{:else}
-									User has not configured MFA
+									{m.user_has_not_configured_mfa()}
 								{/if}
 							</p>
 						</div>
@@ -478,8 +480,8 @@
 				{@const customRoles = roles.filter(r => !r.isSystem)}
 				<div class="space-y-3">
 					<div>
-						<Label class="text-sm">Roles</Label>
-						<p class="text-xs text-muted-foreground">Assign roles to this user. Environment scope is configured on the role itself.</p>
+						<Label class="text-sm">{m.roles()}</Label>
+						<p class="text-xs text-muted-foreground">{m.assign_roles_to_this_user_environment_scope_is_c()}</p>
 					</div>
 
 					<div class="border rounded-lg divide-y max-h-[240px] overflow-y-auto">
@@ -488,7 +490,7 @@
 							<div class="p-3 bg-muted/30">
 								<p class="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
 									<Shield class="w-3.5 h-3.5" />
-									System roles
+									{m.system_roles()}
 								</p>
 								<div class="grid grid-cols-3 gap-2">
 									{#each systemRoles as role}
@@ -516,7 +518,7 @@
 							<div class="p-3">
 								<p class="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
 									<Globe class="w-3.5 h-3.5" />
-									Custom roles
+									{m.custom_roles()}
 								</p>
 								<div class="grid grid-cols-2 gap-2">
 									{#each customRoles as role}
@@ -539,9 +541,9 @@
 												<span class="text-2xs opacity-70 flex items-center gap-1">
 													{#if isGlobal}
 														<Globe class="w-2.5 h-2.5" />
-														All environments
+														{m.all_environments()}
 													{:else}
-														{envCount} environment{envCount !== 1 ? 's' : ''}
+														{m.envcount_environment_arg2({ envCount: orEmpty(envCount), arg2: orEmpty(envCount !== 1 ? 's' : '') })}
 													{/if}
 												</span>
 											</div>
@@ -553,7 +555,7 @@
 
 						{#if roles.length === 0}
 							<div class="p-4 text-center text-sm text-muted-foreground">
-								No roles defined yet
+								{m.no_roles_defined_yet()}
 							</div>
 						{/if}
 					</div>
@@ -561,35 +563,35 @@
 			{:else}
 				<div class="space-y-1">
 					<p class="text-xs text-muted-foreground">
-						All users have full access to all environments.
+						{m.all_users_have_full_access_to_all_environments()}
 					</p>
 					<p class="text-xs text-muted-foreground flex items-center gap-1">
 						<Crown class="w-3 h-3 text-amber-500" />
-						Upgrade to Enterprise for role-based access control.
+						{m.upgrade_to_enterprise_for_role_based_access_cont()}
 					</p>
 				</div>
 			{/if}
 		</div>
 		<Dialog.Footer class="mt-4">
 			{#if isEditing}
-				<Button variant="outline" type="button" onclick={handleClose}>Cancel</Button>
+				<Button variant="outline" type="button" onclick={handleClose}>{m.cancel()}</Button>
 				<Button type="submit" disabled={formSaving}>
 					{#if formSaving}
 						<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
 					{:else}
 						<Check class="w-4 h-4" />
 					{/if}
-					Save
+					{m.save()}
 				</Button>
 			{:else}
-				<Button variant="outline" type="button" onclick={handleClose}>Cancel</Button>
+				<Button variant="outline" type="button" onclick={handleClose}>{m.cancel()}</Button>
 				<Button type="submit" disabled={formSaving}>
 					{#if formSaving}
 						<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
 					{:else}
 						<UserPlus class="w-4 h-4" />
 					{/if}
-					Create user
+					{m.create_user()}
 				</Button>
 			{/if}
 		</Dialog.Footer>

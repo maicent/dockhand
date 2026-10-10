@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import { CircleArrowUp, Clock, Tag } from 'lucide-svelte';
 	import { scale } from 'svelte/transition';
@@ -27,7 +28,7 @@
 		variant="outline"
 		onclick={onDismiss}
 		class="gap-1.5 border-amber-500/40 text-amber-600 hover:bg-amber-500/10 hover:border-amber-500"
-		title="Dismiss all update indicators"
+		title={m.dismiss_all_update_indicators()}
 	>
 		{#if digestCount > 0}
 			<span class="flex items-center gap-0.5">

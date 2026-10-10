@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -102,10 +103,10 @@
 			<Dialog.Title class="flex items-center gap-2">
 				{#if showBackupCodes}
 					<ShieldCheck class="w-5 h-5 text-green-500" />
-					MFA enabled successfully
+					{m.mfa_enabled_successfully()}
 				{:else}
 					<QrCode class="w-5 h-5" />
-					Setup two-factor authentication
+					{m.setup_two_factor_authentication()}
 				{/if}
 			</Dialog.Title>
 		</Dialog.Header>
@@ -116,7 +117,7 @@
 				<Alert.Root>
 					<TriangleAlert class="h-4 w-4" />
 					<Alert.Description>
-						Save these backup codes in a safe place. Each code can only be used once to sign in if you lose access to your authenticator app.
+						{m.save_these_backup_codes_in_a_safe_place_each_cod()}
 					</Alert.Description>
 				</Alert.Root>
 
@@ -136,27 +137,27 @@
 								<Tooltip.Trigger>
 									<XCircle class="w-4 h-4 text-red-500" />
 								</Tooltip.Trigger>
-								<Tooltip.Content>Copy requires HTTPS</Tooltip.Content>
+								<Tooltip.Content>{m.copy_requires_https()}</Tooltip.Content>
 							</Tooltip.Root>
-							Failed
+							{m.failed()}
 						{:else if copied === 'ok'}
 							<Check class="w-4 h-4" />
-							Copied!
+							{m.copied_b7c3()}
 						{:else}
 							<Copy class="w-4 h-4" />
-							Copy codes
+							{m.copy_codes()}
 						{/if}
 					</Button>
 					<Button variant="outline" class="flex-1" onclick={downloadBackupCodes}>
 						<Download class="w-4 h-4" />
-						Download
+						{m.download()}
 					</Button>
 				</div>
 			</div>
 			<Dialog.Footer>
 				<Button onclick={handleDone}>
 					<ShieldCheck class="w-4 h-4" />
-					Done
+					{m.done()}
 				</Button>
 			</Dialog.Footer>
 		{:else}
@@ -170,43 +171,43 @@
 				{/if}
 
 				<p class="text-sm text-muted-foreground">
-					Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
+					{m.scan_this_qr_code_with_your_authenticator_app_go()}
 				</p>
 
 				{#if qrCode}
 					<div class="flex justify-center p-4 bg-white rounded-lg">
-						<img src={qrCode} alt="MFA QR Code" class="w-48 h-48" />
+						<img src={qrCode} alt={m.mfa_qr_code()} class="w-48 h-48" />
 					</div>
 				{/if}
 
 				<div class="space-y-2">
-					<Label class="text-xs text-muted-foreground">Or enter this code manually:</Label>
+					<Label class="text-xs text-muted-foreground">{m.or_enter_this_code_manually()}</Label>
 					<code class="block p-2 bg-muted rounded text-sm font-mono break-all">{secret}</code>
 				</div>
 
 				<div class="space-y-2">
-					<Label>Verification code</Label>
+					<Label>{m.verification_code()}</Label>
 					<Input
 						bind:value={token}
 						name="totp"
-						placeholder="Enter 6-digit code"
+						placeholder={m.enter_6_digit_code()}
 						maxlength={6}
 						autocomplete="one-time-code"
 					/>
 					<p class="text-xs text-muted-foreground">
-						Enter the code from your authenticator app to verify setup
+						{m.enter_the_code_from_your_authenticator_app_to_ve()}
 					</p>
 				</div>
 			</div>
 			<Dialog.Footer>
-				<Button variant="outline" onclick={onClose}>Cancel</Button>
+				<Button variant="outline" onclick={onClose}>{m.cancel()}</Button>
 				<Button onclick={verifyAndEnableMfa} disabled={loading || !token}>
 					{#if loading}
 						<RefreshCw class="w-4 h-4 animate-spin" />
 					{:else}
 						<ShieldCheck class="w-4 h-4" />
 					{/if}
-					Enable MFA
+					{m.enable_mfa()}
 				</Button>
 			</Dialog.Footer>
 		{/if}

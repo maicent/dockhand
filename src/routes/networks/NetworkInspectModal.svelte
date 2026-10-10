@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -65,7 +67,7 @@
 <Dialog.Root bind:open>
 	<Dialog.Content class="max-w-4xl max-h-[90vh] flex flex-col" onOpenAutoFocus={(e) => e.preventDefault()}>
 		<Dialog.Header class="shrink-0">
-			<ModalHeader icon={Network} title="Network" name={networkName || networkId} />
+			<ModalHeader icon={Network} title={m.network()} name={networkName || networkId} />
 		</Dialog.Header>
 
 		<div class="flex-1 overflow-auto space-y-4 min-h-0 pr-2">
@@ -80,30 +82,30 @@
 			{:else if networkData}
 				<!-- Basic Info -->
 				<div class="space-y-3">
-					<h3 class="text-sm font-semibold">Basic information</h3>
+					<h3 class="text-sm font-semibold">{m.basic_information()}</h3>
 					<div class="grid grid-cols-2 gap-3 text-sm">
 						<div>
-							<p class="text-muted-foreground">Name</p>
+							<p class="text-muted-foreground">{m.name()}</p>
 							<p class="font-medium">{networkData.Name}</p>
 						</div>
 						<div>
-							<p class="text-muted-foreground">ID</p>
+							<p class="text-muted-foreground">{m.id()}</p>
 							<code class="text-xs">{networkData.Id?.slice(0, 12)}</code>
 						</div>
 						<div>
-							<p class="text-muted-foreground">Driver</p>
+							<p class="text-muted-foreground">{m.driver()}</p>
 							<Badge variant="outline">{networkData.Driver}</Badge>
 						</div>
 						<div>
-							<p class="text-muted-foreground">Scope</p>
+							<p class="text-muted-foreground">{m.scope()}</p>
 							<Badge variant="secondary">{networkData.Scope}</Badge>
 						</div>
 						<div>
-							<p class="text-muted-foreground">Created</p>
+							<p class="text-muted-foreground">{m.created()}</p>
 							<p>{formatNetworkDate(networkData.Created)}</p>
 						</div>
 						<div>
-							<p class="text-muted-foreground">Internal</p>
+							<p class="text-muted-foreground">{m.internal_fc92()}</p>
 							<Badge variant={networkData.Internal ? 'destructive' : 'secondary'}>
 								{networkData.Internal ? 'Yes' : 'No'}
 							</Badge>
@@ -114,32 +116,32 @@
 				<!-- IPAM Configuration -->
 				{#if networkData.IPAM}
 					<div class="space-y-3">
-						<h3 class="text-sm font-semibold">IPAM configuration</h3>
+						<h3 class="text-sm font-semibold">{m.ipam_configuration()}</h3>
 						<div class="space-y-2">
 							<div class="text-sm">
-								<p class="text-muted-foreground">Driver</p>
+								<p class="text-muted-foreground">{m.driver()}</p>
 								<p>{networkData.IPAM.Driver || 'default'}</p>
 							</div>
 							{#if networkData.IPAM.Config && networkData.IPAM.Config.length > 0}
 								<div class="space-y-2">
-									<p class="text-muted-foreground text-sm">Subnets</p>
+									<p class="text-muted-foreground text-sm">{m.subnets()}</p>
 									{#each networkData.IPAM.Config as config}
 										<div class="p-2 bg-muted rounded text-sm space-y-1">
 											{#if config.Subnet}
 												<div class="flex justify-between">
-													<span class="text-muted-foreground">Subnet:</span>
+													<span class="text-muted-foreground">{m.subnet_ff25()}</span>
 													<code>{config.Subnet}</code>
 												</div>
 											{/if}
 											{#if config.Gateway}
 												<div class="flex justify-between">
-													<span class="text-muted-foreground">Gateway:</span>
+													<span class="text-muted-foreground">{m.gateway_7946()}</span>
 													<code>{config.Gateway}</code>
 												</div>
 											{/if}
 											{#if config.IPRange}
 												<div class="flex justify-between">
-													<span class="text-muted-foreground">IP Range:</span>
+													<span class="text-muted-foreground">{m.ip_range_2da7()}</span>
 													<code>{config.IPRange}</code>
 												</div>
 											{/if}
@@ -154,7 +156,7 @@
 				<!-- Connected Containers -->
 				{#if networkData.Containers && Object.keys(networkData.Containers).length > 0}
 					<div class="space-y-3">
-						<h3 class="text-sm font-semibold">Connected containers ({Object.keys(networkData.Containers).length})</h3>
+						<h3 class="text-sm font-semibold">{m.connected_containers_length({ length: orEmpty(Object.keys(networkData.Containers).length) })}</h3>
 						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
 							{#each Object.entries(networkData.Containers) as [id, container]}
 								<ContainerTile
@@ -170,14 +172,14 @@
 					</div>
 				{:else}
 					<div class="text-sm text-muted-foreground text-center py-4">
-						No containers connected to this network
+						{m.no_containers_connected_to_this_network()}
 					</div>
 				{/if}
 
 				<!-- Options -->
 				{#if networkData.Options && Object.keys(networkData.Options).length > 0}
 					<div class="space-y-3">
-						<h3 class="text-sm font-semibold">Driver options</h3>
+						<h3 class="text-sm font-semibold">{m.driver_options()}</h3>
 						<div class="space-y-1">
 							{#each Object.entries(networkData.Options) as [key, value]}
 								<div class="flex justify-between text-sm p-2 bg-muted rounded">
@@ -192,7 +194,7 @@
 				<!-- Labels -->
 				{#if networkData.Labels && Object.keys(networkData.Labels).length > 0}
 					<div class="space-y-3">
-						<h3 class="text-sm font-semibold">Labels</h3>
+						<h3 class="text-sm font-semibold">{m.labels()}</h3>
 						<div class="space-y-1">
 							{#each Object.entries(networkData.Labels) as [key, value]}
 								<div class="flex justify-between text-sm p-2 bg-muted rounded">
@@ -207,7 +209,7 @@
 		</div>
 
 		<Dialog.Footer class="shrink-0">
-			<Button variant="outline" onclick={() => (open = false)}>Close</Button>
+			<Button variant="outline" onclick={() => (open = false)}>{m.close()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

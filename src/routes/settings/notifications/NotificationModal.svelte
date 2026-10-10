@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
@@ -14,13 +16,13 @@
 
 	// System-only events (configured at channel level, not per-environment)
 	const SYSTEM_EVENTS = [
-		{ id: 'license_expiring', label: 'License expiring', description: 'Enterprise license expiring soon' },
-		{ id: 'repo_prune_success', label: 'Backup repository prune success', description: 'Scheduled repository prune completed successfully' },
-		{ id: 'repo_prune_failed', label: 'Backup repository prune failed', description: 'Scheduled repository prune failed' },
-		{ id: 'repo_check_success', label: 'Backup repository check success', description: 'Scheduled integrity check completed successfully' },
-		{ id: 'repo_check_failed', label: 'Backup repository check failed', description: 'Scheduled integrity check found errors or failed' },
-		{ id: 'repo_verify_success', label: 'Backup repository data verification success', description: 'Scheduled data verification completed successfully' },
-		{ id: 'repo_verify_failed', label: 'Backup repository data verification failed', description: 'Scheduled data verification found corruption or failed' }
+		{ id: 'license_expiring', label: m.license_expiring(), description: m.enterprise_license_expiring_soon() },
+		{ id: 'repo_prune_success', label: m.backup_repository_prune_success(), description: m.scheduled_repository_prune_completed_successfull() },
+		{ id: 'repo_prune_failed', label: m.backup_repository_prune_failed(), description: m.scheduled_repository_prune_failed() },
+		{ id: 'repo_check_success', label: m.backup_repository_check_success(), description: m.scheduled_integrity_check_completed_successfully() },
+		{ id: 'repo_check_failed', label: m.backup_repository_check_failed(), description: m.scheduled_integrity_check_found_errors_or_failed() },
+		{ id: 'repo_verify_success', label: m.backup_repository_data_verification_success(), description: m.scheduled_data_verification_completed_successful() },
+		{ id: 'repo_verify_failed', label: m.backup_repository_data_verification_failed(), description: m.scheduled_data_verification_found_corruption_or() }
 	] as const;
 
 	export interface NotificationSetting {
@@ -210,7 +212,7 @@
 
 			if (data.success) {
 				testResult = 'success';
-				toast.success('Test notification sent successfully');
+				toast.success(m.test_notification_sent_successfully());
 				setTimeout(() => { testResult = 'idle'; }, 3000);
 			} else {
 				testResult = 'error';
@@ -301,7 +303,7 @@
 <Dialog.Root bind:open onOpenChange={(o) => { if (o) { formError = ''; focusFirstInput(); } }}>
 	<Dialog.Content class="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
 		<Dialog.Header>
-			<Dialog.Title>{isEditing ? 'Edit' : 'Add'} notification channel</Dialog.Title>
+			<Dialog.Title>{m.arg1_notification_channel({ arg1: orEmpty(isEditing ? 'Edit' : 'Add') })}</Dialog.Title>
 		</Dialog.Header>
 
 		{#if formError}
@@ -312,11 +314,11 @@
 			<Tabs.List class="flex-shrink-0 mb-0 w-full grid grid-cols-2">
 				<Tabs.Trigger value="channel" class="flex items-center justify-center gap-1.5">
 					<Settings class="w-3.5 h-3.5" />
-					Channel
+					{m.channel()}
 				</Tabs.Trigger>
 				<Tabs.Trigger value="events" class="flex items-center justify-center gap-1.5">
 					<Bell class="w-3.5 h-3.5" />
-					System events
+					{m.system_events()}
 					{#if formSystemEvents.length > 0}
 						<Badge variant="secondary" class="ml-1 h-4 px-1.5 text-[10px]">{formSystemEvents.length}</Badge>
 					{/if}
@@ -327,11 +329,11 @@
 				<Tabs.Content value="channel" class="space-y-4 mt-0">
 			<div class="grid grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<Label for="notif-name">Name *</Label>
-					<Input id="notif-name" bind:value={formName} placeholder="My notification channel" />
+					<Label for="notif-name">{m.name_d145()}</Label>
+					<Input id="notif-name" bind:value={formName} placeholder={m.my_notification_channel()} />
 				</div>
 				<div class="space-y-2">
-					<Label>Type</Label>
+					<Label>{m.type()}</Label>
 					{#if isEditing}
 						<Badge variant="secondary" class="h-9 flex items-center justify-center">
 							{formType === 'smtp' ? 'SMTP (Email)' : 'Webhooks'}
@@ -345,18 +347,18 @@
 							<Select.Trigger class="w-full">
 								<span class="flex items-center gap-2">
 									{#if formType === 'smtp'}
-										<Mail class="w-4 h-4" />SMTP (Email)
+										<Mail class="w-4 h-4" />{m.smtp_email()}
 									{:else}
-										<Zap class="w-4 h-4" />Webhooks
+										<Zap class="w-4 h-4" />{m.webhooks()}
 									{/if}
 								</span>
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Item value="smtp">
-									<span class="flex items-center gap-2"><Mail class="w-4 h-4" />SMTP (Email)</span>
+									<span class="flex items-center gap-2"><Mail class="w-4 h-4" />{m.smtp_email()}</span>
 								</Select.Item>
 								<Select.Item value="apprise">
-									<span class="flex items-center gap-2"><Zap class="w-4 h-4" />Webhooks</span>
+									<span class="flex items-center gap-2"><Zap class="w-4 h-4" />{m.webhooks()}</span>
 								</Select.Item>
 							</Select.Content>
 						</Select.Root>
@@ -365,111 +367,88 @@
 			</div>
 
 			<div class="flex items-center gap-2">
-				<Label>Status</Label>
+				<Label>{m.status()}</Label>
 				<TogglePill bind:checked={formEnabled} onLabel="Enabled" offLabel="Disabled" />
 			</div>
 
 			{#if formType === 'smtp'}
 				<div class="space-y-4 border-t pt-4 min-h-[380px]">
 					<div class="flex items-center gap-2">
-						<p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">SMTP configuration</p>
+						<p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.smtp_configuration()}</p>
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<HelpCircle class="w-3.5 h-3.5 text-muted-foreground hover:text-foreground cursor-help" />
 							</Tooltip.Trigger>
 							<Tooltip.Portal>
 								<Tooltip.Content side="right" class="w-80">
-									<p class="text-xs"><span class="font-semibold">Gmail:</span> smtp.gmail.com, port 587, TLS/SSL off. Use an App Password.</p>
-									<p class="text-xs mt-1"><span class="font-semibold">Outlook:</span> smtp.office365.com, port 587, TLS/SSL off.</p>
+									<p class="text-xs"><span class="font-semibold">{m.gmail()}</span> {m.smtp_gmail_com_port_587_tls_ssl_off_use_an_app_p()}</p>
+									<p class="text-xs mt-1"><span class="font-semibold">{m.outlook()}</span> {m.smtp_office365_com_port_587_tls_ssl_off()}</p>
 								</Tooltip.Content>
 							</Tooltip.Portal>
 						</Tooltip.Root>
 					</div>
 					<div class="grid grid-cols-3 gap-4">
 						<div class="space-y-2 col-span-2">
-							<Label for="notif-smtp-host">SMTP host *</Label>
-							<Input id="notif-smtp-host" bind:value={formSmtpHost} placeholder="smtp.gmail.com" />
+							<Label for="notif-smtp-host">{m.smtp_host()}</Label>
+							<Input id="notif-smtp-host" bind:value={formSmtpHost} placeholder={m.smtp_gmail_com()} />
 						</div>
 						<div class="space-y-2">
-							<Label for="notif-smtp-port">Port *</Label>
+							<Label for="notif-smtp-port">{m.port_2e3b()}</Label>
 							<Input id="notif-smtp-port" type="number" bind:value={formSmtpPort} />
 						</div>
 					</div>
 					<div class="flex items-center gap-4">
 						<div class="flex items-center gap-2">
-							<Label>TLS/SSL</Label>
+							<Label>{m.tls_ssl()}</Label>
 							<TogglePill bind:checked={formSmtpSecure} onLabel="Yes" offLabel="No" />
 						</div>
 						<div class="flex items-center gap-2">
-							<Label class="text-muted-foreground">Skip TLS verify</Label>
+							<Label class="text-muted-foreground">{m.skip_tls_verify()}</Label>
 							<TogglePill bind:checked={formSmtpSkipTlsVerify} onLabel="Yes" offLabel="No" />
 						</div>
 					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="space-y-2">
-							<Label for="notif-smtp-username">Username</Label>
-							<Input id="notif-smtp-username" bind:value={formSmtpUsername} placeholder="user@example.com" />
+							<Label for="notif-smtp-username">{m.username()}</Label>
+							<Input id="notif-smtp-username" bind:value={formSmtpUsername} placeholder={m.user_example_com()} />
 						</div>
 						<div class="space-y-2">
-							<Label for="notif-smtp-password">Password</Label>
+							<Label for="notif-smtp-password">{m.password()}</Label>
 							<Input id="notif-smtp-password" type="password" bind:value={formSmtpPassword} placeholder={isEditing ? 'Leave blank to keep existing' : 'App password or token'} />
 						</div>
 					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="space-y-2">
-							<Label for="notif-smtp-from-email">From email *</Label>
-							<Input id="notif-smtp-from-email" bind:value={formSmtpFromEmail} placeholder="alerts@example.com" />
+							<Label for="notif-smtp-from-email">{m.from_email()}</Label>
+							<Input id="notif-smtp-from-email" bind:value={formSmtpFromEmail} placeholder={m.alerts_example_com()} />
 						</div>
 						<div class="space-y-2">
-							<Label for="notif-smtp-from-name">From name</Label>
-							<Input id="notif-smtp-from-name" bind:value={formSmtpFromName} placeholder="Dockhand Alerts" />
+							<Label for="notif-smtp-from-name">{m.from_name()}</Label>
+							<Input id="notif-smtp-from-name" bind:value={formSmtpFromName} placeholder={m.dockhand_alerts()} />
 						</div>
 					</div>
 					<div class="space-y-2">
-						<Label for="notif-smtp-to">Recipients * (comma-separated)</Label>
-						<Input id="notif-smtp-to" bind:value={formSmtpToEmails} placeholder="admin@example.com, ops@example.com" />
+						<Label for="notif-smtp-to">{m.recipients_comma_separated()}</Label>
+						<Input id="notif-smtp-to" bind:value={formSmtpToEmails} placeholder={m.admin_example_com_ops_example_com()} />
 					</div>
 				</div>
 			{:else}
 				<div class="space-y-4 border-t pt-4 min-h-[380px]">
-					<p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Webhook configuration</p>
+					<p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.webhook_configuration()}</p>
 					<div class="space-y-2">
-						<Label for="notif-apprise-urls">Webhook URLs * (one per line)</Label>
+						<Label for="notif-apprise-urls">{m.webhook_urls_one_per_line()}</Label>
 						<textarea
 							id="notif-apprise-urls"
 							bind:value={formAppriseUrls}
-							placeholder="gotify://hostname/app-token
-gotifys://hostname/app-token?priority=5
-discord://webhook_id/webhook_token
-slack://token_a/token_b/token_c
-mmost://hostname/webhook-token
-tgram://bot_token/chat_id
-tgram://bot_token/chat_id:topic_id
-ntfy://my-topic
-ntfy://host/topic?auth=base64token&priority=3
-ntfys://host/topic?auth=base64token
-pushover://user_key/api_token
-pushover://user_key/api_token/device1/device2
-pover://user_key@api_token/device1/device2
-mqtt://user:pass@broker-host:1883/dockhand/events?qos=1&amp;retain=true
-mqtts://broker-host:8883/dockhand/events
-workflows://hostname/workflow/signature
-bark://bark_key
-bark://host/bark_key
-barks://host/bark_key
-signal://host:8080/+sender/+recipient
-apprise://host:8000/your-key
-jsons://hostname/webhook/path
-zabbix://hostname/api_jsonrpc.php?token=TOKEN&amp;host=HOST&amp;key=ITEM_KEY
-zabbixs://hostname/api_jsonrpc.php?token=TOKEN&amp;host=HOST&amp;key=ITEM_KEY"
+							placeholder={m.gotify_hostname_app_token_gotifys_hostname_app_t()}
 						class="flex min-h-[220px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 					></textarea>
 					<p class="text-xs text-muted-foreground">
-						Built-in channels: Discord, Slack, Mattermost, Telegram, ntfy, Gotify, Pushover, MQTT, Bark, Signal (via signal-cli-rest-api), Microsoft Teams (via Workflows), Zabbix (via history.push), and generic JSON.
+						{m.built_in_channels_discord_slack_mattermost_teleg()}
 					</p>
 					<p class="flex gap-1.5 text-xs text-muted-foreground">
 						<HelpCircle class="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
-						<span>Need a provider that is not in the list (Matrix, Nextcloud, Pushbullet, Home Assistant, ...)? Run a <a href="https://github.com/caronc/apprise-api" target="_blank" rel="noopener">caronc/apprise-api</a> server, configure the provider there, and point Dockhand at it with <code>apprise://host/key</code> (or <code>apprises://</code> for TLS). Every provider Apprise supports is then reachable. If the Apprise server is behind basic auth, use <code>apprise://user:pass@host/key</code> (percent-encode special characters in the password).</span>
+						<span>{m.need_a_provider_that_is_not_in_the_list_matrix_n()} <a href="https://github.com/caronc/apprise-api" target="_blank" rel="noopener">{m.caronc_apprise_api()}</a> {m.server_configure_the_provider_there_and_point_do()} <code>{m.apprise_host_key()}</code> {m.or_7739()} <code>{m.apprises()}</code> {m.for_tls_every_provider_apprise_supports_is_then()} <code>{m.apprise_user_pass_host_key()}</code> {m.percent_encode_special_characters_in_the_passwor()}</span>
 					</p>
 					</div>
 				</div>
@@ -479,8 +458,7 @@ zabbixs://hostname/api_jsonrpc.php?token=TOKEN&amp;host=HOST&amp;key=ITEM_KEY"
 
 				<Tabs.Content value="events" class="space-y-3 mt-0">
 					<p class="text-xs text-muted-foreground">
-						These events are not tied to specific environments and are configured globally here.
-						Environment-specific events (containers, stacks, auto-updates) are configured in each environment's settings.
+						{m.these_events_are_not_tied_to_specific_environmen()}
 					</p>
 					<div class="space-y-1">
 						{#each SYSTEM_EVENTS as event}
@@ -504,20 +482,20 @@ zabbixs://hostname/api_jsonrpc.php?token=TOKEN&amp;host=HOST&amp;key=ITEM_KEY"
 			<Button variant="outline" onclick={testConfig} disabled={formTesting || formSaving}>
 				{#if formTesting}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
-					Testing...
+					{m.testing()}
 				{:else if testResult === 'success'}
 					<CheckCircle2 class="w-4 h-4 mr-1 text-green-500" />
-					Sent!
+					{m.sent()}
 				{:else if testResult === 'error'}
 					<XCircle class="w-4 h-4 mr-1 text-destructive" />
-					Failed
+					{m.failed()}
 				{:else}
 					<Send class="w-4 h-4" />
-					Test
+					{m.test()}
 				{/if}
 			</Button>
 			<div class="flex gap-2">
-				<Button variant="outline" onclick={handleClose}>Cancel</Button>
+				<Button variant="outline" onclick={handleClose}>{m.cancel()}</Button>
 				<Button onclick={save} disabled={formSaving || formTesting}>
 					{#if formSaving}
 						<RefreshCw class="w-4 h-4 mr-1 animate-spin" />

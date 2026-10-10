@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Images - Dockhand</title>
+	<title>{m.images_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -278,12 +280,12 @@
 	}
 
 	const vulnSeverityOptions = [
-		{ value: 'critical', label: 'Critical', color: 'text-red-500', icon: ShieldAlert },
-		{ value: 'high', label: 'High', color: 'text-orange-500', icon: ShieldAlert },
-		{ value: 'medium', label: 'Medium', color: 'text-yellow-600', icon: Shield },
-		{ value: 'low', label: 'Low', color: 'text-blue-500', icon: Shield },
-		{ value: 'negligible', label: 'Negligible', color: 'text-gray-500', icon: ShieldCheck },
-		{ value: 'unknown', label: 'Unknown', color: 'text-gray-500', icon: ShieldQuestion }
+		{ value: 'critical', label: m.critical(), color: 'text-red-500', icon: ShieldAlert },
+		{ value: 'high', label: m.high(), color: 'text-orange-500', icon: ShieldAlert },
+		{ value: 'medium', label: m.medium(), color: 'text-yellow-600', icon: Shield },
+		{ value: 'low', label: m.low(), color: 'text-blue-500', icon: Shield },
+		{ value: 'negligible', label: m.negligible(), color: 'text-gray-500', icon: ShieldCheck },
+		{ value: 'unknown', label: m.unknown(), color: 'text-gray-500', icon: ShieldQuestion }
 	];
 
 	// Tab state (persisted in the URL: /images?tab=vulnerabilities)
@@ -632,7 +634,7 @@
 			images = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch images:', error);
-			toast.error('Failed to load images');
+			toast.error(m.failed_to_load_images());
 		} finally {
 			if (isInitialLoad) loading = false;
 		}
@@ -747,7 +749,7 @@
 				if (count > 0) {
 					toast.success(`Pruned ${count} image${count !== 1 ? 's' : ''}, freed ${formatBytes(spaceReclaimed)}`);
 				} else {
-					toast.success('No dangling images to prune');
+					toast.success(m.no_dangling_images_to_prune());
 				}
 				await fetchImages();
 			} else {
@@ -756,7 +758,7 @@
 			}
 		} catch (error) {
 			pruneStatus = 'error';
-			toast.error('Failed to prune images');
+			toast.error(m.failed_to_prune_images());
 		}
 		pendingTimeouts.push(setTimeout(() => { pruneStatus = 'idle'; }, 3000));
 	}
@@ -775,7 +777,7 @@
 				if (count > 0) {
 					toast.success(`Pruned ${count} image${count !== 1 ? 's' : ''}, freed ${formatBytes(spaceReclaimed)}`);
 				} else {
-					toast.success('No unused images to prune');
+					toast.success(m.no_unused_images_to_prune());
 				}
 				await fetchImages();
 			} else {
@@ -784,7 +786,7 @@
 			}
 		} catch (error) {
 			pruneUnusedStatus = 'error';
-			toast.error('Failed to prune unused images');
+			toast.error(m.failed_to_prune_unused_images());
 		}
 		pendingTimeouts.push(setTimeout(() => { pruneUnusedStatus = 'idle'; }, 3000));
 	}
@@ -849,7 +851,7 @@
 				toast.error(data.error || 'Failed to tag image');
 			}
 		} catch (error) {
-			toast.error('Failed to tag image');
+			toast.error(m.failed_to_tag_image());
 		} finally {
 			tagging = false;
 		}
@@ -982,39 +984,39 @@
 
 		{#if activeTab === 'images'}
 		<div class="flex flex-wrap items-center gap-2">
-			<SearchInput bind:value={searchQuery} placeholder="Search images..." class="h-8 w-48 text-sm" />
+			<SearchInput bind:value={searchQuery} placeholder={m.search_images()} class="h-8 w-48 text-sm" />
 			<Select.Root type="single" bind:value={usageFilter}>
 				<Select.Trigger size="sm" class="w-36 text-sm">
 					{#if usageFilter === 'all'}
 						<Filter class="w-3.5 h-3.5 mr-1.5 text-muted-foreground shrink-0" />
-						<span class="text-muted-foreground">All</span>
+						<span class="text-muted-foreground">{m.all()}</span>
 					{:else if usageFilter === 'in-use'}
 						<CircleDot class="w-3.5 h-3.5 mr-1.5 text-emerald-500 shrink-0" />
-						<span>In use</span>
+						<span>{m.in_use()}</span>
 					{:else if usageFilter === 'some-unused'}
 						<CircleDot class="w-3.5 h-3.5 mr-1.5 text-amber-500 shrink-0" />
-						<span>Some unused</span>
+						<span>{m.some_unused()}</span>
 					{:else}
 						<Circle class="w-3.5 h-3.5 mr-1.5 text-muted-foreground shrink-0" />
-						<span>Unused</span>
+						<span>{m.unused()}</span>
 					{/if}
 				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value="all">
 						<Filter class="w-4 h-4 mr-2 text-muted-foreground" />
-						All
+						{m.all()}
 					</Select.Item>
 					<Select.Item value="in-use">
 						<CircleDot class="w-4 h-4 mr-2 text-emerald-500" />
-						In use
+						{m.in_use()}
 					</Select.Item>
 					<Select.Item value="some-unused">
 						<CircleDot class="w-4 h-4 mr-2 text-amber-500" />
-						Some unused
+						{m.some_unused()}
 					</Select.Item>
 					<Select.Item value="unused">
 						<Circle class="w-4 h-4 mr-2 text-muted-foreground" />
-						Unused
+						{m.unused()}
 					</Select.Item>
 				</Select.Content>
 			</Select.Root>
@@ -1023,7 +1025,7 @@
 				open={confirmPrune}
 				action="Prune"
 				itemType="dangling images"
-				title="Prune dangling images"
+				title={m.prune_dangling_images()}
 				position="left"
 				onConfirm={pruneImages}
 				onOpenChange={(open) => confirmPrune = open}
@@ -1032,7 +1034,7 @@
 				{#snippet children({ open })}
 					<span
 						class="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-sm bg-background shadow-xs border hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 {pruneStatus === 'pruning' ? 'opacity-50 pointer-events-none' : ''}"
-						title="Remove untagged intermediate layers (dangling images)"
+						title={m.remove_untagged_intermediate_layers_dangling_ima()}
 					>
 						{#if pruneStatus === 'pruning'}
 							<RefreshCw class="w-3.5 h-3.5 animate-spin" />
@@ -1043,7 +1045,7 @@
 						{:else}
 							<Icon iconNode={broom} class="w-3.5 h-3.5" />
 						{/if}
-						Prune
+						{m.prune()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1051,7 +1053,7 @@
 				open={confirmPruneUnused}
 				action="Prune"
 				itemType="all unused images"
-				title="Prune unused images"
+				title={m.prune_unused_images()}
 				position="left"
 				onConfirm={pruneUnusedImages}
 				onOpenChange={(open) => confirmPruneUnused = open}
@@ -1060,7 +1062,7 @@
 				{#snippet children({ open })}
 					<span
 						class="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-sm bg-background shadow-xs border hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 {pruneUnusedStatus === 'pruning' ? 'opacity-50 pointer-events-none' : ''}"
-						title="Remove ALL images not used by any container (including tagged images)"
+						title={m.remove_all_images_not_used_by_any_container_incl()}
 					>
 						{#if pruneUnusedStatus === 'pruning'}
 							<RefreshCw class="w-3.5 h-3.5 animate-spin" />
@@ -1071,7 +1073,7 @@
 						{:else}
 							<Icon iconNode={broom} class="w-3.5 h-3.5 text-amber-600" />
 						{/if}
-						Prune unused
+						{m.prune_unused()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1079,7 +1081,7 @@
 			{#if $canAccess('images', 'pull')}
 			<Button size="sm" variant="default" onclick={() => showPullModal = true}>
 				<Download class="w-3.5 h-3.5 mr-1.5" />
-				Pull
+				{m.pull()}
 			</Button>
 			{/if}
 			{#if $canAccess('images', 'load')}
@@ -1095,17 +1097,17 @@
 				onchange={handleLoadTar}
 			/>
 			{/if}
-			<Button size="sm" variant="outline" onclick={fetchImages}>Refresh</Button>
+			<Button size="sm" variant="outline" onclick={fetchImages}>{m.refresh()}</Button>
 		</div>
 		{/if}
 
 		{#if activeTab === 'vulnerabilities'}
 		<div class="flex flex-wrap items-center gap-2 w-full">
-			<SearchInput bind:value={vulnSearch} placeholder="Search CVE, package, image, container, stack..." class="h-8 w-80 text-sm" />
+			<SearchInput bind:value={vulnSearch} placeholder={m.search_cve_package_image_container_stack()} class="h-8 w-80 text-sm" />
 			<MultiSelectFilter
 				bind:value={vulnSeverityFilter}
 				options={vulnSeverityOptions}
-				placeholder="All severities"
+				placeholder={m.all_severities()}
 				pluralLabel="severities"
 				width="w-40"
 				defaultIcon={ShieldCheck}
@@ -1113,21 +1115,21 @@
 			<MultiSelectFilter
 				bind:value={vulnImageFilter}
 				options={vulnImageOptions}
-				placeholder="All images"
+				placeholder={m.all_images()}
 				pluralLabel="images"
 				width="w-48"
 			/>
 			<MultiSelectFilter
 				bind:value={vulnContainerFilter}
 				options={vulnContainerOptions}
-				placeholder="All containers"
+				placeholder={m.all_containers()}
 				pluralLabel="containers"
 				width="w-48"
 			/>
 			<MultiSelectFilter
 				bind:value={vulnStackFilter}
 				options={vulnStackOptions}
-				placeholder="All stacks"
+				placeholder={m.all_stacks()}
 				pluralLabel="stacks"
 				width="w-40"
 			/>
@@ -1135,35 +1137,35 @@
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger>
 						{#snippet child({ props })}
-							<Button size="sm" variant="outline" title="Export findings" {...props}>
+							<Button size="sm" variant="outline" title={m.export_findings()} {...props}>
 								<Download class="w-3.5 h-3.5" />
-								Export
+								{m.export()}
 							</Button>
 						{/snippet}
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content align="start">
 						<DropdownMenu.Item onclick={() => exportVulnerabilities('json')}>
 							<FileJson class="w-4 h-4 mr-2 text-amber-500" />
-							JSON
+							{m.json()}
 						</DropdownMenu.Item>
 						<DropdownMenu.Item onclick={() => exportVulnerabilities('csv')}>
 							<FileSpreadsheet class="w-4 h-4 mr-2 text-green-500" />
-							CSV
+							{m.csv()}
 						</DropdownMenu.Item>
 						<DropdownMenu.Item onclick={() => exportVulnerabilities('sarif')}>
 							<ShieldPlus class="w-4 h-4 mr-2 text-blue-500" />
-							SARIF
+							{m.sarif()}
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 				<Button size="sm" variant="outline" onclick={refreshVulnerabilities} disabled={vulnList.loading}>
 					<RefreshCw class="w-3.5 h-3.5 {vulnList.loading ? 'animate-spin' : ''}" />
-					Refresh
+					{m.refresh()}
 				</Button>
 				{#if scannerEnabled}
 					<Button size="sm" variant="secondary" onclick={() => showVulnScanModal = true}>
 						<ShieldCheck class="w-3.5 h-3.5" />
-						Scan all images
+						{m.scan_all_images()}
 					</Button>
 				{/if}
 			</div>
@@ -1180,13 +1182,13 @@
 	<div class="shrink-0">
 		{#if selectedImages.size > 0}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground h-full">
-			<span>{selectedInFilter.length} selected</span>
+			<span>{m.length_selected({ length: orEmpty(selectedInFilter.length) })}</span>
 			<button
 				type="button"
 				class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all"
 				onclick={selectNone}
 			>
-				Clear
+				{m.clear()}
 			</button>
 			{#if $canAccess('images', 'remove')}
 			<button
@@ -1196,7 +1198,7 @@
 				disabled={selectedInFilter.length === 0}
 			>
 				<Trash2 class="w-3 h-3" />
-				Delete
+				{m.delete()}
 			</button>
 			{/if}
 			</div>
@@ -1209,8 +1211,8 @@
 	{:else if !loading && images.length === 0}
 		<EmptyState
 			icon={Images}
-			title="No images found"
-			description="Pull an image from a registry to get started"
+			title={m.no_images_found()}
+			description={m.pull_an_image_from_a_registry_to_get_started()}
 		/>
 	{:else}
 		<DataGrid
@@ -1323,12 +1325,12 @@
 						{/if}
 						{#if group.containers === 0}
 							<Badge variant="outline" class="text-2xs px-1.5 py-0 border-amber-500/50 text-amber-600 dark:text-amber-400 shadow-[0_0_4px_rgba(245,158,11,0.4)]">
-								Unused
+								{m.unused()}
 							</Badge>
 						{:else if group.tags.length > 1 && group.tags.some(t => t.containers === 0)}
-							<Badge variant="outline" class="text-2xs px-1.5 py-0 border-amber-500/30 text-amber-600/70 dark:text-amber-400/70 shadow-[0_0_3px_rgba(245,158,11,0.25)]" title="Some tags are unused">
+							<Badge variant="outline" class="text-2xs px-1.5 py-0 border-amber-500/30 text-amber-600/70 dark:text-amber-400/70 shadow-[0_0_3px_rgba(245,158,11,0.25)]" title={m.some_tags_are_unused()}>
 								<CircleDashed class="w-2.5 h-2.5 mr-0.5" />
-								Some unused
+								{m.some_unused()}
 							</Badge>
 						{/if}
 					</div>
@@ -1350,7 +1352,7 @@
 							<button
 								type="button"
 								onclick={() => openRunModal(firstTag.fullRef)}
-								title="Run container"
+								title={m.run_container()}
 								class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<Play class="grid-action-icon grid-action-start text-muted-foreground hover:text-green-600" />
@@ -1360,7 +1362,7 @@
 							<button
 								type="button"
 								onclick={() => openScanModal(firstTag.fullRef)}
-								title="Scan for vulnerabilities"
+								title={m.scan_for_vulnerabilities()}
 								class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<ShieldCheck class="grid-action-icon grid-action-info text-muted-foreground hover:text-blue-500" />
@@ -1370,7 +1372,7 @@
 							<button
 								type="button"
 								onclick={() => openPushModal(firstTag.imageId, firstTag.fullRef)}
-								title="Push to registry"
+								title={m.push_to_registry()}
 								class="p-1 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<Upload class="grid-action-icon grid-action-transfer text-muted-foreground hover:text-foreground" />
@@ -1434,13 +1436,13 @@
 									<a
 										href="/containers?search={encodeURIComponent(tagInfo.fullRef)}"
 										class="text-muted-foreground hover:text-foreground hover:underline"
-										title="View containers using this image"
+										title={m.view_containers_using_this_image()}
 									>
-										{tagInfo.containers} container{tagInfo.containers === 1 ? '' : 's'}
+										{m.containers_container_arg2({ containers: orEmpty(tagInfo.containers), arg2: orEmpty(tagInfo.containers === 1 ? '' : 's') })}
 									</a>
 								{:else if tagInfo.containers === 0}
 									<Badge variant="outline" class="text-2xs px-1.5 py-0 border-amber-500/50 text-amber-600 dark:text-amber-400 shadow-[0_0_4px_rgba(245,158,11,0.4)]">
-										Unused
+										{m.unused()}
 									</Badge>
 								{:else}
 									<span class="text-muted-foreground/50">—</span>
@@ -1451,7 +1453,7 @@
 									<button
 										type="button"
 										onclick={() => openHistoryModal(tagInfo.imageId, tagInfo.fullRef)}
-										title="View layers"
+										title={m.view_layers()}
 										class="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
 									>
 										<Layers class="grid-action-icon grid-action-info text-muted-foreground hover:text-foreground" />
@@ -1461,7 +1463,7 @@
 									<button
 										type="button"
 										onclick={() => openRunModal(tagInfo.fullRef)}
-										title="Run container"
+										title={m.run_container()}
 										class="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
 									>
 										<Play class="grid-action-icon grid-action-start text-muted-foreground hover:text-green-600" />
@@ -1471,7 +1473,7 @@
 									<button
 										type="button"
 										onclick={() => openScanModal(tagInfo.fullRef)}
-										title="Scan for vulnerabilities"
+										title={m.scan_for_vulnerabilities()}
 										class="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
 									>
 										<ShieldCheck class="grid-action-icon grid-action-info text-muted-foreground hover:text-blue-500" />
@@ -1481,7 +1483,7 @@
 									<button
 										type="button"
 										onclick={() => openPushModal(tagInfo.imageId, tagInfo.fullRef)}
-										title="Push to registry"
+										title={m.push_to_registry()}
 										class="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
 									>
 										<Upload class="grid-action-icon grid-action-transfer text-muted-foreground hover:text-foreground" />
@@ -1502,7 +1504,7 @@
 									<button
 										type="button"
 										onclick={() => openTagModal(tagInfo.imageId, tagInfo.fullRef)}
-										title="Tag image"
+										title={m.tag_image()}
 										class="p-1 rounded hover:bg-muted transition-colors cursor-pointer"
 									>
 										<Tag class="grid-action-icon grid-action-edit text-muted-foreground hover:text-foreground" />
@@ -1515,7 +1517,7 @@
 											action="Delete"
 											itemType="image"
 											itemName={tagInfo.fullRef}
-											title="Remove"
+											title={m.remove()}
 											onConfirm={() => removeImage(tagInfo.imageId, tagInfo.fullRef)}
 											onOpenChange={(open) => confirmDeleteId = open ? tagInfo.fullRef : null}
 										>
@@ -1627,28 +1629,28 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Tag class="w-5 h-5" />
-				Tag image
+				{m.tag_image()}
 			</Dialog.Title>
 			<Dialog.Description>
-				Add a new tag to <span class="font-mono text-foreground truncate" title={tagImageCurrentName}>{tagImageCurrentName.startsWith('sha256:') ? tagImageCurrentName.slice(0, 19) : tagImageCurrentName}</span>
+				{m.add_a_new_tag_to()} <span class="font-mono text-foreground truncate" title={tagImageCurrentName}>{tagImageCurrentName.startsWith('sha256:') ? tagImageCurrentName.slice(0, 19) : tagImageCurrentName}</span>
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="py-4 space-y-4">
 			<div>
-				<Label for="tagRepo">Repository name</Label>
+				<Label for="tagRepo">{m.repository_name()}</Label>
 				<Input
 					id="tagRepo"
 					bind:value={tagNewRepo}
-					placeholder="e.g., myregistry/myimage"
+					placeholder={m.e_g_myregistry_myimage()}
 					class="mt-2"
 				/>
 			</div>
 			<div>
-				<Label for="tagTag">Tag</Label>
+				<Label for="tagTag">{m.tag()}</Label>
 				<Input
 					id="tagTag"
 					bind:value={tagNewTag}
-					placeholder="e.g., latest, v1.0.0"
+					placeholder={m.e_g_latest_v1_0_0()}
 					class="mt-2"
 					onkeydown={(e: KeyboardEvent) => {
 						if (e.key === 'Enter' && !tagging && tagNewRepo.trim() && tagNewTag.trim()) {
@@ -1660,7 +1662,7 @@
 		</div>
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => showTagModal = false} disabled={tagging}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button
 				onclick={tagImage}
@@ -1668,9 +1670,9 @@
 			>
 				{#if tagging}
 					<RefreshCw class="w-4 h-4 mr-2 animate-spin" />
-					Tagging...
+					{m.tagging()}
 				{:else}
-					Tag
+					{m.tag()}
 				{/if}
 			</Button>
 		</Dialog.Footer>

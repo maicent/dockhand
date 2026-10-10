@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onDestroy } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { CircleArrowUp, Check, XCircle } from 'lucide-svelte';
@@ -83,7 +85,7 @@
 			descriptionClass: 'whitespace-pre-line',
 			class: '!w-[28rem] !max-w-[28rem]',
 			duration: Infinity,
-			action: { label: 'OK', onClick: () => {} }
+			action: { label: m.ok(), onClick: () => {} }
 		});
 	}
 
@@ -156,7 +158,7 @@
 						descriptionClass: 'whitespace-pre-line'
 					});
 				} else {
-					toast.success('All containers are up to date');
+					toast.success(m.all_containers_are_up_to_date());
 				}
 			} else {
 				status = 'found';
@@ -191,28 +193,28 @@
 	variant="outline"
 	onclick={checkForUpdates}
 	disabled={status === 'checking'}
-	title="Check for available updates"
+	title={m.check_for_available_updates()}
 	class="relative overflow-hidden"
 >
 	{#if displayStatus === 'checking'}
 		<CircleArrowUp class="w-3.5 h-3.5 animate-spin" />
 		{#if progress.total > 0}
-			<span class="tabular-nums">Checking {String(progress.checked).padStart(String(progress.total).length, ' ')}/{progress.total}</span>
+			<span class="tabular-nums">{m.checking_arg1_total({ arg1: orEmpty(String(progress.checked).padStart(String(progress.total).length, ' ')), total: orEmpty(progress.total) })}</span>
 			<div
 				class="absolute bottom-0 left-0 h-px bg-foreground transition-[width] duration-150 ease-out"
 				style="width: {(progress.checked / progress.total) * 100}%"
 			></div>
 		{:else}
-			Check for updates
+			{m.check_for_updates()}
 		{/if}
 	{:else if displayStatus === 'none' || displayStatus === 'found'}
 		<Check class="w-3.5 h-3.5 mr-1 text-green-600" />
-		Check for updates
+		{m.check_for_updates()}
 	{:else if displayStatus === 'error'}
 		<XCircle class="w-3.5 h-3.5 mr-1 text-destructive" />
-		Check for updates
+		{m.check_for_updates()}
 	{:else}
 		<CircleArrowUp class="w-3.5 h-3.5" />
-		Check for updates
+		{m.check_for_updates()}
 	{/if}
 </Button>

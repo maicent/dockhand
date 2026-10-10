@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import { Loader2, MapPin } from 'lucide-svelte';
 
@@ -55,18 +57,18 @@
 
 <div class="mb-4 w-full max-w-sm space-y-2 text-xs">
 	{#if checking}
-		<p class="flex items-center justify-center gap-2 text-muted-foreground"><Loader2 class="h-3.5 w-3.5 animate-spin" />Checking Compose path labels...</p>
+		<p class="flex items-center justify-center gap-2 text-muted-foreground"><Loader2 class="h-3.5 w-3.5 animate-spin" />{m.checking_compose_path_labels()}</p>
 	{:else if path}
-		<p class="text-muted-foreground">Detected from container labels:</p>
+		<p class="text-muted-foreground">{m.detected_from_container_labels()}</p>
 		<code class="block break-all">{path}</code>
-		<p class="text-muted-foreground">Uses files on Dockhand's filesystem. For a remote environment, these must be the same shared files.</p>
+		<p class="text-muted-foreground">{m.uses_files_on_dockhands_filesystem_for_a_remote()}</p>
 		<Button variant="outline" size="sm" onclick={select} disabled={disabled || selecting}>
 			{#if selecting}<Loader2 class="h-4 w-4 animate-spin" />{:else}<MapPin class="h-4 w-4" />{/if}
-			Use detected file
+			{m.use_detected_file()}
 		</Button>
-		<p class="text-muted-foreground">Loads the file into the editor, just like Browse. Click Save to keep the assignment.</p>
+		<p class="text-muted-foreground">{m.loads_the_file_into_the_editor_just_like_browse()}</p>
 	{:else if !error}
-		<p role="status" class="text-muted-foreground">Could not detect a Compose file. You can browse for a file manually.</p>
+		<p role="status" class="text-muted-foreground">{m.could_not_detect_a_compose_file_you_can_browse_f()}</p>
 	{/if}
-	{#if error}<p role="status" class="break-words text-amber-700 dark:text-amber-400">{error} You can still browse for a file manually.</p>{/if}
+	{#if error}<p role="status" class="break-words text-amber-700 dark:text-amber-400">{m.error_you_can_still_browse_for_a_file_manually({ error: orEmpty(error) })}</p>{/if}
 </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Sparkles, Bug, Zap, CheckCircle, ScrollText } from 'lucide-svelte';
@@ -55,7 +57,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<ScrollText class="w-5 h-5 text-muted-foreground" />
-				Dockhand has been updated to {version}
+				{m.dockhand_has_been_updated_to_version({ version: orEmpty(version) })}
 			</Dialog.Title>
 		</Dialog.Header>
 
@@ -63,7 +65,7 @@
 			{#each missedReleases as release}
 				<div>
 					<h3 class="font-semibold text-sm mb-2 flex items-center gap-2">
-						<span>v{release.version}</span>
+						<span>{m.v_version({ version: orEmpty(release.version) })}</span>
 						<span class="text-muted-foreground font-normal">({release.date})</span>
 					</h3>
 					<div class="space-y-1.5 ml-1">
@@ -80,7 +82,7 @@
 		</div>
 
 		<Dialog.Footer>
-			<Button onclick={onDismiss}>Got it</Button>
+			<Button onclick={onDismiss}>{m.got_it()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

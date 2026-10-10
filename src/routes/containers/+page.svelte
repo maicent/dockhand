@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Containers - Dockhand</title>
+	<title>{m_i18n.containers_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -358,12 +360,12 @@
 
 	// Status types with icons for filter and table
 	const statusTypes = [
-		{ value: 'running', label: 'Running', icon: Play, color: 'text-emerald-500' },
-		{ value: 'paused', label: 'Paused', icon: Pause, color: 'text-amber-500' },
-		{ value: 'restarting', label: 'Restarting', icon: RotateCw, color: 'text-red-500' },
-		{ value: 'exited', label: 'Exited', icon: Square, color: 'text-rose-500' },
-		{ value: 'created', label: 'Created', icon: Plus, color: 'text-sky-500' },
-		{ value: 'dead', label: 'Dead', icon: Skull, color: 'text-gray-500' }
+		{ value: 'running', label: m_i18n.running(), icon: Play, color: 'text-emerald-500' },
+		{ value: 'paused', label: m_i18n.paused(), icon: Pause, color: 'text-amber-500' },
+		{ value: 'restarting', label: m_i18n.restarting(), icon: RotateCw, color: 'text-red-500' },
+		{ value: 'exited', label: m_i18n.exited(), icon: Square, color: 'text-rose-500' },
+		{ value: 'created', label: m_i18n.created(), icon: Plus, color: 'text-sky-500' },
+		{ value: 'dead', label: m_i18n.dead(), icon: Skull, color: 'text-gray-500' }
 	];
 
 	function getStatusIcon(state: string) {
@@ -586,7 +588,7 @@
 		...(containersWithUpdatesSet.size > 0
 			? [{
 					value: UPDATE_AVAILABLE_FILTER_VALUE,
-					label: 'Update available',
+					label: m_i18n.update_available(),
 					icon: CircleArrowUp,
 					color: 'text-amber-500'
 				}]
@@ -594,16 +596,16 @@
 		...(hasNewerVersions
 			? [{
 					value: NEWER_VERSION_FILTER_VALUE,
-					label: 'Newer version',
+					label: m_i18n.newer_version(),
 					icon: Tag,
 					color: 'text-amber-500'
 				}]
 			: []),
 		// Always offered, unlike the entries above: the question "is anything
 		// unhealthy" is asked precisely when the answer is no.
-		{ value: 'health:unhealthy', label: 'Unhealthy', icon: HeartOff, color: 'text-red-500', colorLabel: true },
-		{ value: 'health:starting', label: 'Starting up', icon: Heart, color: 'text-amber-500' },
-		{ value: 'health:healthy', label: 'Healthy', icon: HeartPulse, color: 'text-emerald-500' }
+		{ value: 'health:unhealthy', label: m_i18n.unhealthy(), icon: HeartOff, color: 'text-red-500', colorLabel: true },
+		{ value: 'health:starting', label: m_i18n.starting_up(), icon: Heart, color: 'text-amber-500' },
+		{ value: 'health:healthy', label: m_i18n.healthy(), icon: HeartPulse, color: 'text-emerald-500' }
 	]);
 
 	// Drop the 'update-available' filter when no pending updates remain —
@@ -819,7 +821,7 @@
 				containerStore.setCoolingDown(new Map());
 			}
 		} catch {
-			toast.error('Failed to clear update indicators');
+			toast.error(m_i18n.failed_to_clear_update_indicators());
 		}
 	}
 
@@ -1514,7 +1516,7 @@
 		const ok = await copyToClipboard(text);
 		if (ok) {
 			copiedCommand = text;
-			toast.success('Copied to clipboard');
+			toast.success(m_i18n.copied_to_clipboard());
 			setTimeout(() => { copiedCommand = null; }, 2000);
 		} else {
 			copyFailed = true;
@@ -1623,16 +1625,16 @@
 
 <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
-		<PageHeader icon={Box} title="Containers" count={containers.length} />
+		<PageHeader icon={Box} title={m_i18n.containers()} count={containers.length} />
 		<div class="flex flex-wrap items-center gap-2">
-			<SearchInput bind:value={searchQuery} placeholder="Search name, image, label..." class="h-8 w-64 text-sm" />
+			<SearchInput bind:value={searchQuery} placeholder={m_i18n.search_name_image_label()} class="h-8 w-64 text-sm" />
 			<!-- Status filter (multi-select). The synthetic 'update-available'
 			     entry appears once at least one container has a pending update,
 			     and ANDs with selected real states (#1063). -->
 			<MultiSelectFilter
 				bind:value={statusFilter}
 				options={filterOptions}
-				placeholder="All statuses"
+				placeholder={m_i18n.all_statuses()}
 				pluralLabel="filters"
 				width="w-48"
 				defaultIcon={Box}
@@ -1645,7 +1647,7 @@
 				{#if $canAccess('containers', 'create')}
 				<Button size="sm" variant="secondary" onclick={() => (showCreateModal = true)}>
 					<Plus class="w-3.5 h-3.5" />
-					Create
+					{m_i18n.create()}
 				</Button>
 				{/if}
 				<CheckUpdatesButton
@@ -1661,7 +1663,7 @@
 					itemType="all {updatableContainersCount} containers"
 					confirmText="Update all"
 					variant="default"
-					title="Update all containers with available updates"
+					title={m_i18n.update_all_containers_with_available_updates()}
 					position="left"
 					onConfirm={updateAllContainers}
 					onOpenChange={(open) => confirmUpdateAll = open}
@@ -1674,7 +1676,7 @@
 							class="border-amber-500/40 text-amber-600 hover:bg-amber-500/10 hover:border-amber-500"
 						>
 							<CircleArrowUp class="w-3.5 h-3.5" />
-							Update all ({updatableContainersCount})
+							{m_i18n.update_all_updatablecontainerscount({ updatableContainersCount: orEmpty(updatableContainersCount) })}
 						</Button>
 					{/snippet}
 				</ConfirmPopover>
@@ -1691,7 +1693,7 @@
 					open={confirmPrune}
 					action="Prune"
 					itemType="stopped containers"
-					title="Prune containers"
+					title={m_i18n.prune_containers()}
 					position="left"
 					onConfirm={pruneContainers}
 					onOpenChange={(open) => confirmPrune = open}
@@ -1708,12 +1710,12 @@
 							{:else}
 								<Icon iconNode={broom} class="w-3.5 h-3.5" />
 							{/if}
-							Prune
+							{m_i18n.prune()}
 						</Button>
 					{/snippet}
 				</ConfirmPopover>
 				{/if}
-				<Button size="sm" variant="outline" onclick={fetchContainers}>Refresh</Button>
+				<Button size="sm" variant="outline" onclick={fetchContainers}>{m_i18n.refresh()}</Button>
 				<Button
 					size="sm"
 					variant="outline"
@@ -1735,14 +1737,14 @@
 	<div class="h-4 shrink-0">
 		{#if selectedContainers.size > 0}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground h-full">
-			<span>{selectedInFilter.length} selected</span>
+			<span>{m_i18n.length_selected({ length: orEmpty(selectedInFilter.length) })}</span>
 			<button
 				type="button"
 				class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all"
 				onclick={selectNone}
 				disabled={bulkActionInProgress}
 			>
-				Clear
+				{m_i18n.clear()}
 			</button>
 			{#if selectedStopped.length > 0 && $canAccess('containers', 'start')}
 				<ConfirmPopover
@@ -1758,7 +1760,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-green-600 hover:border-green-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Play class="w-3 h-3" />
-							Start
+							{m_i18n.start()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1776,7 +1778,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-red-600 hover:border-red-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Square class="w-3 h-3" />
-							Stop
+							{m_i18n.stop()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1793,7 +1795,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-yellow-600 hover:border-yellow-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Pause class="w-3 h-3" />
-							Pause
+							{m_i18n.pause()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1812,7 +1814,7 @@
 					{#snippet children({ open })}
 						<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-blue-600 hover:border-blue-500/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 							<Play class="w-3 h-3" />
-							Unpause
+							{m_i18n.unpause()}
 						</span>
 					{/snippet}
 				</ConfirmPopover>
@@ -1831,7 +1833,7 @@
 				{#snippet children({ open })}
 					<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:border-foreground/30 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 						<RotateCw class="w-3 h-3" />
-						Restart
+						{m_i18n.restart()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1849,7 +1851,7 @@
 				{#snippet children({ open })}
 					<span class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-border hover:text-destructive hover:border-destructive/40 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}">
 						<Trash2 class="w-3 h-3" />
-						Remove
+						{m_i18n.remove()}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1861,7 +1863,7 @@
 				itemType="{selectedWithUpdatesCount} selected container(s)"
 				confirmText="Update"
 				variant="default"
-				title="Update selected containers to latest image"
+				title={m_i18n.update_selected_containers_to_latest_image()}
 				onConfirm={updateSelectedContainers}
 				onOpenChange={(open) => confirmUpdateSelected = open}
 				unstyled
@@ -1871,7 +1873,7 @@
 						class="inline-flex items-center gap-1 px-1.5 py-0 rounded border border-amber-500/40 text-amber-600 hover:border-amber-500 hover:shadow transition-all cursor-pointer {bulkActionInProgress ? 'opacity-50' : ''}"
 					>
 						<CircleArrowUp class="w-3 h-3" />
-						Update {selectedWithUpdatesCount}
+						{m_i18n.update_selectedwithupdatescount({ selectedWithUpdatesCount: orEmpty(selectedWithUpdatesCount) })}
 					</span>
 				{/snippet}
 			</ConfirmPopover>
@@ -1888,8 +1890,8 @@
 	{:else if !loading && containers.length === 0}
 		<EmptyState
 			icon={Box}
-			title="No containers found"
-			description="Create a new container to get started"
+			title={m_i18n.no_containers_found()}
+			description={m_i18n.create_a_new_container_to_get_started()}
 		/>
 	{:else}
 		<!-- Main content area - changes based on layout mode -->
@@ -1958,7 +1960,7 @@
 										<div class="space-y-2">
 											<p class="font-medium text-sm flex items-center gap-1.5 whitespace-nowrap">
 												<CircleArrowUp class="w-4 h-4 text-amber-500" />
-												Update available
+												{m_i18n.update_available()}
 											</p>
 											{#if container.systemContainer === 'dockhand'}
 												<a
@@ -1966,10 +1968,10 @@
 													class="text-primary hover:underline text-xs flex items-center gap-1 whitespace-nowrap"
 													onclick={(e) => e.stopPropagation()}
 												>
-													Settings &gt; About
+													{m_i18n.settings_about()}
 												</a>
 											{:else}
-												<p class="text-muted-foreground text-xs whitespace-nowrap">Update on the remote host where Hawser runs.</p>
+												<p class="text-muted-foreground text-xs whitespace-nowrap">{m_i18n.update_on_the_remote_host_where_hawser_runs()}</p>
 												<a
 													href="https://github.com/Finsys/hawser"
 													target="_blank"
@@ -1978,7 +1980,7 @@
 													onclick={(e) => e.stopPropagation()}
 												>
 													<ExternalLink class="w-3 h-3" />
-													Update instructions on GitHub
+													{m_i18n.update_instructions_on_github()}
 												</a>
 											{/if}
 										</div>
@@ -2005,7 +2007,7 @@
 								{#if container.systemContainer}
 									<!-- System containers cannot be updated from the UI - show the
 									     indicator but leave it non-clickable (matches the actions column). -->
-									<span title="Update available">
+									<span title={m_i18n.update_available()}>
 										<CircleArrowUp class="w-3 h-3 text-amber-500 {$appSettings.highlightUpdates ? 'glow-amber' : ''} shrink-0" />
 									</span>
 								{:else}
@@ -2014,12 +2016,12 @@
 										action="Update"
 										itemType="container"
 										itemName={container.name}
-										title="Update available - click to update"
+										title={m_i18n.update_available_click_to_update()}
 										onConfirm={() => updateSingleContainer(container.id, container.name)}
 										onOpenChange={(open) => confirmImageUpdateId = open ? container.id : null}
 									>
 										{#snippet children({ open })}
-											<span title="Update available" class="cursor-pointer">
+											<span title={m_i18n.update_available()} class="cursor-pointer">
 												<CircleArrowUp class="w-3 h-3 text-amber-500 hover:text-amber-400 transition-colors {$appSettings.highlightUpdates ? 'glow-amber' : ''} shrink-0" />
 											</span>
 										{/snippet}
@@ -2033,7 +2035,7 @@
 											target="_blank"
 											rel="noopener noreferrer"
 											onclick={(e) => e.stopPropagation()}
-											title="View changelog"
+											title={m_i18n.view_changelog()}
 											class="shrink-0 text-amber-500 hover:text-amber-400 transition-colors"
 										>
 											<NotepadText class="w-3 h-3" />
@@ -2055,10 +2057,10 @@
 										<div class="space-y-1.5">
 											<p class="font-medium text-sm flex items-center gap-1.5 whitespace-nowrap">
 												<AlertTriangle class="w-4 h-4 text-red-500 shrink-0" />
-												Update check failed
+												{m_i18n.update_check_failed()}
 											</p>
 											<p class="text-muted-foreground text-xs break-words">{failedUpdateErrors.get(container.id) ?? 'Could not query registry'}</p>
-											<p class="text-muted-foreground text-xs">Update status unknown — often a Docker Hub rate limit. Try again later.</p>
+											<p class="text-muted-foreground text-xs">{m_i18n.update_status_unknown_often_a_docker_hub_rate_li()}</p>
 										</div>
 									</Tooltip.Content>
 								</Tooltip.Root>
@@ -2146,7 +2148,7 @@
 							{#if containerStats.get(container.id)}
 								{@const stats = containerStats.get(container.id)}
 								<span class="text-xs font-mono text-muted-foreground" title="↓{formatBytes(stats.blockRead)} read / ↑{formatBytes(stats.blockWrite)} written">
-									<span class="text-2xs text-green-400">r</span>{formatBytesCompact(stats.blockRead, 0)} <span class="text-2xs text-yellow-400">w</span>{formatBytesCompact(stats.blockWrite, 0)}
+									<span class="text-2xs text-green-400">{m_i18n.r()}</span>{formatBytesCompact(stats.blockRead, 0)} <span class="text-2xs text-yellow-400">{m_i18n.w()}</span>{formatBytesCompact(stats.blockWrite, 0)}
 								</span>
 							{:else if container.state === 'running'}
 								<span class="text-xs text-muted-foreground/50">...</span>
@@ -2271,7 +2273,7 @@
 									>+{remainingCount}</span>
 								{/if}
 								{#each exposedPorts as port}
-									<code class="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-1 py-0.5 rounded shrink-0" title="Exposed (internal) port">{port.display}</code>
+									<code class="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-1 py-0.5 rounded shrink-0" title={m_i18n.exposed_internal_port()}>{port.display}</code>
 								{/each}
 							</div>
 						{:else}
@@ -2298,7 +2300,7 @@
 							     that rather than the "-" that claims nothing is scheduled. -->
 							<span
 								class="text-gray-400 dark:text-gray-600 text-xs text-center block cursor-default"
-								title="You do not have permission to view schedules">?</span>
+								title={m_i18n.you_do_not_have_permission_to_view_schedules()}>?</span>
 						{:else}
 							<span class="text-gray-400 dark:text-gray-600 text-xs text-center block">-</span>
 						{/if}
@@ -2329,7 +2331,7 @@
 									action="Update"
 									itemType="container"
 									itemName={container.name}
-									title="Update available - click to update"
+									title={m_i18n.update_available_click_to_update()}
 									onConfirm={() => updateSingleContainer(container.id, container.name)}
 									onOpenChange={(open) => confirmUpdateId = open ? container.id : null}
 								>
@@ -2343,7 +2345,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); currentLogsContainerId = container.id; }}
-									title="Show logs"
+									title={m_i18n.show_logs()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<FileText class="w-4 h-4 text-blue-400" style="filter: drop-shadow(0 0 4px rgba(96,165,250,0.9)) drop-shadow(0 0 8px rgba(96,165,250,0.6));" strokeWidth={2.5} />
@@ -2352,7 +2354,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); showLogs(container); }}
-									title="Open logs"
+									title={m_i18n.open_logs()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<FileText class="grid-action-icon grid-action-logs text-muted-foreground hover:text-foreground" />
@@ -2364,7 +2366,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.stopPropagation(); currentTerminalContainerId = container.id; }}
-									title="Show terminal"
+									title={m_i18n.show_terminal()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Terminal class="w-4 h-4 text-green-400" style="filter: drop-shadow(0 0 4px rgba(74,222,128,0.9)) drop-shadow(0 0 8px rgba(74,222,128,0.6));" strokeWidth={2.5} />
@@ -2398,18 +2400,18 @@
 										{#if terminalMode === 'exec' && detectingShellsFor === container.id}
 											<div class="p-4 text-center">
 												<Loader2 class="w-5 h-5 mx-auto mb-2 text-muted-foreground animate-spin" />
-												<p class="text-xs text-muted-foreground">Detecting shells...</p>
+												<p class="text-xs text-muted-foreground">{m_i18n.detecting_shells()}</p>
 											</div>
 										{:else if terminalMode === 'exec' && !anyShellAvailableFor(container.id)}
 											<div class="p-4 text-center">
 												<AlertCircle class="w-5 h-5 mx-auto mb-2 text-amber-500" />
-												<p class="text-xs font-medium text-amber-500">No shell available</p>
-												<p class="text-xs text-muted-foreground mt-1">This container has no shell installed.</p>
+												<p class="text-xs font-medium text-amber-500">{m_i18n.no_shell_available()}</p>
+												<p class="text-xs text-muted-foreground mt-1">{m_i18n.this_container_has_no_shell_installed()}</p>
 											</div>
 										{:else}
 											<div class="p-3 space-y-3">
 												<div class="space-y-1.5">
-													<Label class="text-xs">Mode</Label>
+													<Label class="text-xs">{m_i18n.mode()}</Label>
 													<Select.Root type="single" value={terminalMode} onValueChange={(value) => {
 														terminalMode = value as TerminalMode;
 														if (terminalMode === 'exec') detectContainerShells(container.id);
@@ -2417,27 +2419,27 @@
 														<Select.Trigger class="w-full h-8 text-xs">
 															{#if terminalMode === 'attach'}
 																<Unplug class="w-3 h-3 mr-1.5 text-muted-foreground" />
-																Attach to process
+																{m_i18n.attach_to_process()}
 															{:else}
 																<Shell class="w-3 h-3 mr-1.5 text-muted-foreground" />
-																Shell (exec)
+																{m_i18n.shell_exec()}
 															{/if}
 														</Select.Trigger>
 														<Select.Content>
-															<Select.Item value="exec" label="Shell (exec)">
+															<Select.Item value="exec" label={m_i18n.shell_exec()}>
 																<Shell class="w-3 h-3 mr-1.5 text-muted-foreground" />
-																Shell (exec)
+																{m_i18n.shell_exec()}
 															</Select.Item>
-															<Select.Item value="attach" label="Attach to process">
+															<Select.Item value="attach" label={m_i18n.attach_to_process()}>
 																<Unplug class="w-3 h-3 mr-1.5 text-muted-foreground" />
-																Attach to process
+																{m_i18n.attach_to_process()}
 															</Select.Item>
 														</Select.Content>
 													</Select.Root>
 													</div>
 													{#if terminalMode === 'exec'}
 														<div class="space-y-1.5">
-															<Label class="text-xs">Shell</Label>
+															<Label class="text-xs">{m_i18n.shell()}</Label>
 															<Select.Root type="single" bind:value={terminalShell}>
 																<Select.Trigger class="w-full h-8 text-xs">
 																	<Shell class="w-3 h-3 mr-1.5 text-muted-foreground" />
@@ -2451,7 +2453,7 @@
 																				<span class={option.available ? 'text-foreground' : 'text-muted-foreground/60'}>
 																					{option.label}
 																					{#if !option.available}
-																						<span class="text-xs ml-1">(unavailable)</span>
+																						<span class="text-xs ml-1">{m_i18n.unavailable()}</span>
 																					{/if}
 																				</span>
 																			</Select.Item>
@@ -2461,7 +2463,7 @@
 															</Select.Root>
 													</div>
 													<div class="space-y-1.5">
-														<Label class="text-xs">User</Label>
+														<Label class="text-xs">{m_i18n.user()}</Label>
 														<Select.Root type="single" bind:value={terminalUser}>
 															<Select.Trigger class="w-full h-8 text-xs">
 																<User class="w-3 h-3 mr-1.5 text-muted-foreground" />
@@ -2486,7 +2488,7 @@
 																				type="button"
 																				class="p-1 mr-1 opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
 																				onclick={(e) => { e.stopPropagation(); e.preventDefault(); removeCustomUser(cu); terminalCustomUsers = getCustomUsers(); if (terminalUser === cu) { terminalUser = 'root'; } }}
-																				title="Remove user"
+																				title={m_i18n.remove_user()}
 																			>
 																				<Trash2 class="w-3 h-3" />
 																			</button>
@@ -2497,7 +2499,7 @@
 																<div class="px-2 py-1">
 																	<Input
 																		class="h-7 text-xs"
-																		placeholder="Add user... (Enter)"
+																		placeholder={m_i18n.add_user_enter()}
 																		bind:value={terminalCustomUser}
 																		onkeydown={(e) => { e.stopPropagation(); if (e.key === 'Enter' && terminalCustomUser.trim()) { const u = terminalCustomUser.trim(); terminalUser = u; saveUserForContainer(container.id, u); terminalCustomUsers = getCustomUsers(); terminalCustomUser = ''; } }}
 																		onclick={(e) => e.stopPropagation()}
@@ -2509,7 +2511,7 @@
 												{/if}
 													<Button size="sm" class="w-full h-7 text-xs" onclick={() => startTerminal(container)}>
 													<Terminal class="w-3 h-3" />
-													Connect
+													{m_i18n.connect()}
 												</Button>
 											</div>
 										{/if}
@@ -2521,7 +2523,7 @@
 							<button
 								type="button"
 								onclick={() => browseFiles(container)}
-								title="Browse files"
+								title={m_i18n.browse_files()}
 								class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<FolderOpen class="grid-action-icon grid-action-info text-muted-foreground hover:text-foreground" />
@@ -2530,7 +2532,7 @@
 							<button
 								type="button"
 								onclick={() => inspectContainer(container)}
-								title="View details"
+								title={m_i18n.view_details()}
 								class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<Eye class="grid-action-icon grid-action-info text-muted-foreground hover:text-foreground" />
@@ -2539,7 +2541,7 @@
 							<button
 								type="button"
 								onclick={() => editContainer(container.id)}
-								title="Edit"
+								title={m_i18n.edit()}
 								class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 							>
 								<Pencil class="grid-action-icon grid-action-edit text-muted-foreground hover:text-foreground" />
@@ -2551,7 +2553,7 @@
 								<button
 									type="button"
 									onclick={() => unpauseContainer(container.id)}
-									title="Unpause"
+									title={m_i18n.unpause()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Play class="grid-action-icon grid-action-start text-muted-foreground hover:text-green-500" />
@@ -2562,7 +2564,7 @@
 								<button
 									type="button"
 									onclick={() => startContainer(container.id)}
-									title="Start"
+									title={m_i18n.start()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Play class="grid-action-icon grid-action-start text-muted-foreground hover:text-green-500" />
@@ -2575,7 +2577,7 @@
 								action="Restart"
 								itemType="container"
 								itemName={container.name}
-								title="Restart"
+								title={m_i18n.restart()}
 								variant="secondary"
 								onConfirm={() => restartContainer(container.id)}
 								onOpenChange={(open) => confirmRestartId = open ? container.id : null}
@@ -2590,7 +2592,7 @@
 								<button
 									type="button"
 									onclick={() => pauseContainer(container.id)}
-									title="Pause"
+									title={m_i18n.pause()}
 									class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100 cursor-pointer"
 								>
 									<Pause class="grid-action-icon grid-action-pause text-muted-foreground hover:text-yellow-500" />
@@ -2602,7 +2604,7 @@
 									action="Stop"
 									itemType="container"
 									itemName={container.name}
-									title="Stop"
+									title={m_i18n.stop()}
 									onConfirm={() => stopContainer(container.id)}
 									onOpenChange={(open) => confirmStopId = open ? container.id : null}
 								>
@@ -2619,7 +2621,7 @@
 								action="Delete"
 								itemType="container"
 								itemName={container.name}
-								title="Remove"
+								title={m_i18n.remove()}
 								onConfirm={() => removeContainer(container.id)}
 								onOpenChange={(open) => confirmDeleteId = open ? container.id : null}
 							>

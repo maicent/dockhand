@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -129,7 +131,7 @@
 				toast.error(err.error || 'Failed to rename label');
 			}
 		} catch {
-			toast.error('Failed to rename label');
+			toast.error(m.failed_to_rename_label());
 		} finally {
 			renaming = false;
 		}
@@ -160,7 +162,7 @@
 				toast.error(err.error || 'Failed to add label');
 			}
 		} catch {
-			toast.error('Failed to add label');
+			toast.error(m.failed_to_add_label());
 		} finally {
 			adding = false;
 		}
@@ -183,7 +185,7 @@
 				toast.error(err.error || 'Failed to delete label');
 			}
 		} catch {
-			toast.error('Failed to delete label');
+			toast.error(m.failed_to_delete_label());
 		}
 	}
 
@@ -206,7 +208,7 @@
 				toast.success(color ? `Color set for "${label}"` : `Color reset for "${label}"`);
 			}
 		} catch {
-			toast.error('Failed to set color');
+			toast.error(m.failed_to_set_color());
 		}
 	}
 
@@ -234,13 +236,13 @@
 				<div class="flex items-center gap-2">
 					<Tags class="w-5 h-5 text-muted-foreground" />
 					<div>
-						<Card.Title class="text-base">Environment labels</Card.Title>
-						<Card.Description>Manage labels across all environments. Renaming or deleting a label applies to every environment using it.</Card.Description>
+						<Card.Title class="text-base">{m.environment_labels()}</Card.Title>
+						<Card.Description>{m.manage_labels_across_all_environments_renaming_o()}</Card.Description>
 					</div>
 				</div>
 				<div class="flex items-center gap-2">
 					{#if !loading}
-						<Badge variant="secondary" class="text-xs">{labels.length} label{labels.length !== 1 ? 's' : ''}</Badge>
+						<Badge variant="secondary" class="text-xs">{m.length_label_arg2({ length: orEmpty(labels.length), arg2: orEmpty(labels.length !== 1 ? 's' : '') })}</Badge>
 					{/if}
 					<Button
 						size="sm"
@@ -250,7 +252,7 @@
 						class="h-7 text-xs"
 					>
 						<Plus class="w-3.5 h-3.5" />
-						Add label
+						{m.add_label_8076()}
 					</Button>
 				</div>
 			</div>
@@ -259,23 +261,23 @@
 			{#if loading}
 				<div class="flex items-center justify-center py-8 text-muted-foreground">
 					<Loader2 class="w-5 h-5 animate-spin mr-2" />
-					Loading labels...
+					{m.loading_labels()}
 				</div>
 			{:else if labels.length === 0}
 				<div class="flex flex-col items-center justify-center py-8 text-muted-foreground gap-2">
 					<Tags class="w-8 h-8 opacity-50" />
-					<p class="text-sm">No labels found</p>
-					<p class="text-xs">Click "Add label" to create one and assign it to environments</p>
+					<p class="text-sm">{m.no_labels_found()}</p>
+					<p class="text-xs">{m.click_add_label_to_create_one_and_assign_it_to_e()}</p>
 				</div>
 			{:else}
 				<Table.Root>
 					<Table.Header>
 						<Table.Row>
-							<Table.Head class="w-[200px]">Label</Table.Head>
-							<Table.Head class="w-[60px] text-center">Color</Table.Head>
-							<Table.Head class="w-[80px] text-center">Environments</Table.Head>
-							<Table.Head>Used by</Table.Head>
-							<Table.Head class="w-[100px] text-right">Actions</Table.Head>
+							<Table.Head class="w-[200px]">{m.label()}</Table.Head>
+							<Table.Head class="w-[60px] text-center">{m.color()}</Table.Head>
+							<Table.Head class="w-[80px] text-center">{m.environments()}</Table.Head>
+							<Table.Head>{m.used_by()}</Table.Head>
+							<Table.Head class="w-[100px] text-right">{m.actions()}</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -297,12 +299,12 @@
 												type="button"
 												class="w-5 h-5 rounded border border-border hover:ring-2 hover:ring-primary/30 transition-all"
 												style="background-color: {colors.color}"
-												title="Change color"
+												title={m.change_color()}
 											></button>
 										</Popover.Trigger>
 										<Popover.Content class="w-auto p-3" align="start">
 											<div class="space-y-2">
-												<p class="text-xs font-medium text-muted-foreground">Pick a color</p>
+												<p class="text-xs font-medium text-muted-foreground">{m.pick_a_color()}</p>
 												<div class="grid grid-cols-6 gap-1">
 													{#each COLOR_PALETTE as color}
 														<button
@@ -320,7 +322,7 @@
 														onclick={() => setColor(info.label, null)}
 													>
 														<RotateCcw class="w-3 h-3" />
-														Reset to default
+														{m.reset_to_default()}
 													</button>
 												{/if}
 											</div>
@@ -354,7 +356,7 @@
 													<Pencil class="w-3.5 h-3.5" />
 												</Button>
 											</Tooltip.Trigger>
-											<Tooltip.Content>Rename across all environments</Tooltip.Content>
+											<Tooltip.Content>{m.rename_across_all_environments()}</Tooltip.Content>
 										</Tooltip.Root>
 										<ConfirmPopover
 											open={confirmDeleteLabel === info.label}
@@ -388,10 +390,10 @@
 <Dialog.Root bind:open={showRenameDialog}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Rename label</Dialog.Title>
+			<Dialog.Title>{m.rename_label()}</Dialog.Title>
 			<Dialog.Description>
 				{#if renameTarget}
-					This will rename "{renameTarget.label}" across {renameTarget.count} environment{renameTarget.count !== 1 ? 's' : ''}.
+					{m.this_will_rename_label_across_count_environment({ label: orEmpty(renameTarget.label), count: orEmpty(renameTarget.count), arg3: orEmpty(renameTarget.count !== 1 ? 's' : '') })}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -399,7 +401,7 @@
 			{@const currentColors = getColors(renameTarget.label)}
 			<div class="space-y-4 py-2">
 				<div class="space-y-2">
-					<Label>Current name</Label>
+					<Label>{m.current_name()}</Label>
 					<span
 						class="inline-block px-2 py-0.5 text-xs rounded font-medium"
 						style="background-color: {currentColors.bgColor}; color: {currentColors.color}"
@@ -408,18 +410,18 @@
 					</span>
 				</div>
 				<div class="space-y-2">
-					<Label for="new-label-name">New name</Label>
+					<Label for="new-label-name">{m.new_name()}</Label>
 					<Input
 						id="new-label-name"
 						bind:value={newLabelName}
-						placeholder="Enter new label name"
+						placeholder={m.enter_new_label_name()}
 						onkeydown={(e) => { if (e.key === 'Enter' && newLabelName.trim()) handleRename(); }}
 					/>
 				</div>
 				{#if newLabelName.trim() && newLabelName.trim() !== renameTarget.label}
 					{@const newColors = getColors(newLabelName.trim())}
 					<div class="flex items-center gap-2 text-xs text-muted-foreground">
-						<span>Preview:</span>
+						<span>{m.preview()}</span>
 						<span
 							class="px-2 py-0.5 rounded font-medium"
 							style="background-color: {newColors.bgColor}; color: {newColors.color}"
@@ -431,13 +433,13 @@
 				{#if labels.some(l => l.label === newLabelName.trim() && l.label !== renameTarget?.label)}
 					<div class="flex items-center gap-1.5 text-xs text-amber-500">
 						<AlertTriangle class="w-3.5 h-3.5" />
-						<span>Label "{newLabelName.trim()}" already exists. Environments with both labels will be merged.</span>
+						<span>{m.label_arg1_already_exists_environments_with_both({ arg1: orEmpty(newLabelName.trim()) })}</span>
 					</div>
 				{/if}
 			</div>
 		{/if}
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showRenameDialog = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showRenameDialog = false}>{m.cancel()}</Button>
 			<Button
 				onclick={handleRename}
 				disabled={renaming || !newLabelName.trim() || newLabelName.trim() === renameTarget?.label}
@@ -445,7 +447,7 @@
 				{#if renaming}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				{/if}
-				Rename
+				{m.rename()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
@@ -455,22 +457,22 @@
 <Dialog.Root bind:open={showAddDialog}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Add label</Dialog.Title>
-			<Dialog.Description>Create a new label and assign it to one or more environments.</Dialog.Description>
+			<Dialog.Title>{m.add_label_8076()}</Dialog.Title>
+			<Dialog.Description>{m.create_a_new_label_and_assign_it_to_one_or_more()}</Dialog.Description>
 		</Dialog.Header>
 		<div class="space-y-4 py-2">
 			<div class="space-y-2">
-				<Label for="add-label-name">Label name</Label>
+				<Label for="add-label-name">{m.label_name()}</Label>
 				<Input
 					id="add-label-name"
 					bind:value={addLabelName}
-					placeholder="e.g. production, staging, critical"
+					placeholder={m.e_g_production_staging_critical()}
 					onkeydown={(e) => { if (e.key === 'Enter' && addLabelName.trim() && addSelectedEnvIds.length > 0) handleAdd(); }}
 				/>
 				{#if addLabelName.trim()}
 					{@const previewColors = getColors(addLabelName.trim())}
 					<div class="flex items-center gap-2 text-xs text-muted-foreground">
-						<span>Preview:</span>
+						<span>{m.preview()}</span>
 						<span
 							class="px-2 py-0.5 rounded font-medium"
 							style="background-color: {previewColors.bgColor}; color: {previewColors.color}"
@@ -482,16 +484,16 @@
 				{#if addLabelName.trim() && labels.some(l => l.label === addLabelName.trim())}
 					<div class="flex items-center gap-1.5 text-xs text-amber-500">
 						<AlertTriangle class="w-3.5 h-3.5" />
-						<span>This label already exists. It will be added to the selected environments that don't have it yet.</span>
+						<span>{m.this_label_already_exists_it_will_be_added_to_th()}</span>
 					</div>
 				{/if}
 			</div>
 			<div class="space-y-2">
 				<div class="flex items-center justify-between">
-					<Label>Environments</Label>
+					<Label>{m.environments()}</Label>
 					<div class="flex gap-2">
-						<button type="button" class="text-2xs text-primary hover:underline" onclick={selectAllEnvs}>Select all</button>
-						<button type="button" class="text-2xs text-muted-foreground hover:underline" onclick={deselectAllEnvs}>Clear</button>
+						<button type="button" class="text-2xs text-primary hover:underline" onclick={selectAllEnvs}>{m.select_all()}</button>
+						<button type="button" class="text-2xs text-muted-foreground hover:underline" onclick={deselectAllEnvs}>{m.clear()}</button>
 					</div>
 				</div>
 				<div class="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1">
@@ -506,14 +508,14 @@
 						</label>
 					{/each}
 					{#if addEnvOptions.length === 0}
-						<p class="text-xs text-muted-foreground text-center py-2">No environments available</p>
+						<p class="text-xs text-muted-foreground text-center py-2">{m.no_environments_available()}</p>
 					{/if}
 				</div>
 				<p class="text-xs text-muted-foreground h-4">{addSelectedEnvIds.length > 0 ? `${addSelectedEnvIds.length} environment${addSelectedEnvIds.length !== 1 ? 's' : ''} selected` : '\u00A0'}</p>
 			</div>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showAddDialog = false}>Cancel</Button>
+			<Button variant="outline" onclick={() => showAddDialog = false}>{m.cancel()}</Button>
 			<Button
 				onclick={handleAdd}
 				disabled={adding || !addLabelName.trim() || addSelectedEnvIds.length === 0}
@@ -521,7 +523,7 @@
 				{#if adding}
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				{/if}
-				Add label
+				{m.add_label_8076()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

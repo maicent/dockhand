@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { FolderOpen, Loader2 } from 'lucide-svelte';
 	import FileBrowserPanel from './FileBrowserPanel.svelte';
@@ -51,9 +52,9 @@
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
 	<Dialog.Content class="max-w-4xl h-[90vh] sm:h-[80vh] flex flex-col" onOpenAutoFocus={(e) => e.preventDefault()}>
 		<Dialog.Header>
-			<ModalHeader icon={FolderOpen} title="Browse files" name={containerName} iconImage={containerImage} iconName={containerName} />
+			<ModalHeader icon={FolderOpen} title={m.browse_files()} name={containerName} iconImage={containerImage} iconName={containerName} />
 			<Dialog.Description>
-				Browse, upload, and download files from the container filesystem.
+				{m.browse_upload_and_download_files_from_the_contai()}
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="flex-1 overflow-hidden border rounded-lg">

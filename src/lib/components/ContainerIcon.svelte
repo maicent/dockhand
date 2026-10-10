@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import type { Component } from 'svelte';
 	import { Box } from 'lucide-svelte';
 	import { appSettings } from '$lib/stores/settings';
@@ -105,7 +106,7 @@
 </script>
 
 {#if isSelf}
-	<img src="/dockhand-mark.svg" alt="Dockhand" class="{className} object-contain shrink-0" />
+	<img src="/dockhand-mark.svg" alt={m.dockhand()} class="{className} object-contain shrink-0" />
 {:else if activeSelfhst && resolvedSelfhst}
 	<img src={resolvedSelfhst} alt="" class="{className} object-contain shrink-0" />
 {:else if activeSelfhst && resolvedSelfhst === undefined}

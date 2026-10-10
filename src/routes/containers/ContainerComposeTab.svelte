@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	/**
 	 * "Compose" tab in the container inspect modal (#489): generates a docker-compose
 	 * service definition from the container's inspect and lets the user validate it, copy /
@@ -107,7 +109,7 @@
 			copied = true;
 			setTimeout(() => (copied = false), 1500);
 		} else {
-			toast.error('Failed to copy');
+			toast.error(m_i18n.failed_to_copy());
 		}
 	}
 
@@ -289,7 +291,7 @@
 <div class="flex flex-col h-full min-h-0 gap-3">
 	{#if loading}
 		<div class="flex items-center justify-center py-12 text-muted-foreground">
-			<Loader2 class="h-5 w-5 animate-spin mr-2" /> Generating compose...
+			<Loader2 class="h-5 w-5 animate-spin mr-2" /> {m_i18n.generating_compose()}
 		</div>
 	{:else if loadError}
 		<div class="text-sm text-red-500 py-4">{loadError}</div>
@@ -298,13 +300,13 @@
 		{#if stackProject}
 			<div class="flex items-center gap-2 text-xs rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2">
 				<Layers class="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-				<span>This container already belongs to stack <span class="font-semibold">{stackProject}</span>. The generated compose is a fresh definition you can save separately or merge elsewhere.</span>
+				<span>{m_i18n.this_container_already_belongs_to_stack()} <span class="font-semibold">{stackProject}</span>{m_i18n.the_generated_compose_is_a_fresh_definition_you()}</span>
 			</div>
 		{/if}
 
 		<!-- Toolbar -->
 		<div class="flex items-center gap-2 flex-wrap">
-			<span class="text-xs text-muted-foreground">Environment</span>
+			<span class="text-xs text-muted-foreground">{m_i18n.environment()}</span>
 			<ToggleSwitch
 				value={envMode}
 				leftValue="user"
@@ -316,29 +318,29 @@
 			<div class="flex-1"></div>
 			<Button variant="outline" size="sm" onclick={runValidate} disabled={validateLoading}>
 				{#if validateLoading}<Loader2 class="h-3.5 w-3.5 mr-1.5 animate-spin" />{:else}<ShieldCheck class="h-3.5 w-3.5 mr-1.5" />{/if}
-				Validate
+				{m_i18n.validate()}
 			</Button>
 			<Button variant="outline" size="sm" onclick={doCopy}>
 				{#if copied}<Check class="h-3.5 w-3.5 mr-1.5 text-green-500" />{:else}<Copy class="h-3.5 w-3.5 mr-1.5" />{/if}
-				Copy
+				{m_i18n.copy()}
 			</Button>
 			<Button variant="outline" size="sm" onclick={doDownload}>
-				<Download class="h-3.5 w-3.5 mr-1.5" /> Download
+				<Download class="h-3.5 w-3.5 mr-1.5" /> {m_i18n.download()}
 			</Button>
 			<Button size="sm" variant="outline" onclick={() => (stackModalOpen = true)}>
-				<FileCode class="h-3.5 w-3.5 mr-1.5" /> Save as new stack
+				<FileCode class="h-3.5 w-3.5 mr-1.5" /> {m_i18n.save_as_new_stack()}
 			</Button>
 			<DropdownMenu.Root bind:open={appendMenuOpen} onOpenChange={(o) => o && loadInternalStacks()}>
 				<DropdownMenu.Trigger>
 					<Button size="sm" variant="outline">
-						<ListPlus class="h-3.5 w-3.5 mr-1.5" /> Append to existing <ChevronDown class="h-3.5 w-3.5 ml-1" />
+						<ListPlus class="h-3.5 w-3.5 mr-1.5" /> {m_i18n.append_to_existing()} <ChevronDown class="h-3.5 w-3.5 ml-1" />
 					</Button>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" class="w-64 max-h-72 overflow-auto">
 					{#if loadingStacks}
-						<div class="flex items-center gap-2 px-2 py-2 text-xs text-muted-foreground"><Loader2 class="h-3.5 w-3.5 animate-spin" /> Loading...</div>
+						<div class="flex items-center gap-2 px-2 py-2 text-xs text-muted-foreground"><Loader2 class="h-3.5 w-3.5 animate-spin" /> {m_i18n.loading()}</div>
 					{:else if existingStacks.length === 0}
-						<div class="px-2 py-2 text-xs text-muted-foreground">No internal stacks</div>
+						<div class="px-2 py-2 text-xs text-muted-foreground">{m_i18n.no_internal_stacks()}</div>
 					{:else}
 						{#each existingStacks as s (s.name)}
 							<DropdownMenu.Item
@@ -359,11 +361,11 @@
 		{#if mergedIntoStack}
 			<div class="flex items-center gap-2 text-xs rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2">
 				<Info class="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-				<span class="flex-1">Reviewing merge into <span class="font-semibold">{mergedIntoStack}</span>. The highlighted service is what will be added.</span>
-				<Button variant="ghost" size="sm" onclick={cancelMerge} disabled={merging}>Cancel</Button>
+				<span class="flex-1">{m_i18n.reviewing_merge_into()} <span class="font-semibold">{mergedIntoStack}</span>{m_i18n.the_highlighted_service_is_what_will_be_added()}</span>
+				<Button variant="ghost" size="sm" onclick={cancelMerge} disabled={merging}>{m_i18n.cancel()}</Button>
 				<Button size="sm" onclick={saveToExisting} disabled={merging}>
 					{#if merging}<Loader2 class="h-3.5 w-3.5 mr-1.5 animate-spin" />{:else}<Save class="h-3.5 w-3.5 mr-1.5" />{/if}
-					Save to {mergedIntoStack}
+					{m_i18n.save_to_mergedintostack({ mergedIntoStack: orEmpty(mergedIntoStack) })}
 				</Button>
 			</div>
 		{/if}

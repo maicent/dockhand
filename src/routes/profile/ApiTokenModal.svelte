@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -139,7 +140,7 @@
 				<Alert.Root variant="destructive">
 					<TriangleAlert class="h-4 w-4" />
 					<Alert.Description>
-						Copy this token now. It will not be shown again.
+						{m.copy_this_token_now_it_will_not_be_shown_again()}
 					</Alert.Description>
 				</Alert.Root>
 
@@ -159,51 +160,51 @@
 				</div>
 
 				<div class="flex justify-end">
-					<Button onclick={handleClose}>Done</Button>
+					<Button onclick={handleClose}>{m.done()}</Button>
 				</div>
 			</div>
 		{:else}
 			<!-- Token creation form -->
 			<div class="space-y-4">
 				<div class="space-y-2">
-					<Label for="token-name">Name</Label>
+					<Label for="token-name">{m.name()}</Label>
 					<Input
 						id="token-name"
 						bind:value={name}
-						placeholder="e.g., CI/CD pipeline"
+						placeholder={m.e_g_ci_cd_pipeline()}
 						maxlength={255}
 					/>
 				</div>
 
 				{#if isLocalUser}
 					<div class="space-y-2">
-						<Label for="token-password">Password</Label>
+						<Label for="token-password">{m.password()}</Label>
 						<Input
 							id="token-password"
 							type="password"
 							bind:value={password}
-							placeholder="Confirm your password"
+							placeholder={m.confirm_your_password()}
 						/>
 					</div>
 				{/if}
 
 				<div class="space-y-2">
-					<Label>Expiration</Label>
+					<Label>{m.expiration()}</Label>
 					<Select.Root type="single" bind:value={expirationOption}>
 						<Select.Trigger class="w-full">
-							{#if expirationOption === 'none'}No expiration
-							{:else if expirationOption === '30d'}30 days
-							{:else if expirationOption === '90d'}90 days
-							{:else if expirationOption === '1y'}1 year
-							{:else if expirationOption === 'custom'}Custom date
+							{#if expirationOption === 'none'}{m.no_expiration()}
+							{:else if expirationOption === '30d'}{m.t_30_days()}
+							{:else if expirationOption === '90d'}{m.t_90_days()}
+							{:else if expirationOption === '1y'}{m.t_1_year()}
+							{:else if expirationOption === 'custom'}{m.custom_date()}
 							{/if}
 						</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="none">No expiration</Select.Item>
-							<Select.Item value="30d">30 days</Select.Item>
-							<Select.Item value="90d">90 days</Select.Item>
-							<Select.Item value="1y">1 year</Select.Item>
-							<Select.Item value="custom">Custom date</Select.Item>
+							<Select.Item value="none">{m.no_expiration()}</Select.Item>
+							<Select.Item value="30d">{m.t_30_days()}</Select.Item>
+							<Select.Item value="90d">{m.t_90_days()}</Select.Item>
+							<Select.Item value="1y">{m.t_1_year()}</Select.Item>
+							<Select.Item value="custom">{m.custom_date()}</Select.Item>
 						</Select.Content>
 					</Select.Root>
 
@@ -224,7 +225,7 @@
 				{/if}
 
 				<div class="flex justify-end gap-2">
-					<Button variant="outline" onclick={handleClose}>Cancel</Button>
+					<Button variant="outline" onclick={handleClose}>{m.cancel()}</Button>
 					<Button onclick={createToken} disabled={creating || !name.trim() || (isLocalUser && !password)}>
 						{creating ? 'Creating...' : 'Generate token'}
 					</Button>

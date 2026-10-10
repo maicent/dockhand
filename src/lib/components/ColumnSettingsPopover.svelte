@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Settings2, RotateCcw, ChevronUp, ChevronDown } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
@@ -73,7 +74,7 @@
 		{#snippet child({ props })}
 			<button
 				type="button"
-				title="Column settings"
+				title={m.column_settings()}
 				{...props}
 				class="inline-flex items-center justify-center p-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
 			>
@@ -84,16 +85,16 @@
 	<Popover.Content class="w-64 p-0" side="bottom" align="end" sideOffset={8}>
 		<div class="p-3 border-b">
 			<div class="flex items-center justify-between">
-				<span class="font-medium text-sm">Columns</span>
+				<span class="font-medium text-sm">{m.columns()}</span>
 				<Button
 					variant="ghost"
 					size="sm"
 					class="h-6 px-2 text-xs"
 					onclick={resetToDefaults}
-					title="Reset to defaults"
+					title={m.reset_to_defaults()}
 				>
 					<RotateCcw class="w-3 h-3" />
-					Reset
+					{m.reset()}
 				</Button>
 			</div>
 		</div>

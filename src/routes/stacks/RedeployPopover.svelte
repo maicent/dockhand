@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Checkbox } from '$lib/components/ui/checkbox';
@@ -142,7 +143,7 @@
 		<div class="space-y-3">
 			<p class="flex items-center gap-1.5 text-xs text-muted-foreground">
 				<StackIcon icon={stackIcon} {stackName} {envId} class="w-4 h-4 shrink-0" />
-				<span class="truncate">Redeploy stack <strong class="font-semibold text-foreground">{stackName}</strong></span>
+				<span class="truncate">{m.redeploy_stack()} <strong class="font-semibold text-foreground">{stackName}</strong></span>
 			</p>
 			{#if showPresets}
 			<div class="flex gap-1">
@@ -161,18 +162,18 @@
 			<div class="space-y-2">
 				<label class="flex items-center gap-2 cursor-pointer">
 					<Checkbox bind:checked={pull} disabled={deploying} />
-					<span class="text-xs">Pull images</span>
+					<span class="text-xs">{m.pull_images()}</span>
 				</label>
 				<label class="flex items-center gap-2 cursor-pointer">
 					<Checkbox bind:checked={build} disabled={deploying} />
-					<span class="text-xs">Build images</span>
+					<span class="text-xs">{m.build_images()}</span>
 				</label>
 				{#if reason}
 					<p class="text-2xs text-muted-foreground pl-6 -mt-1">{reason}</p>
 				{/if}
 				<label class="flex items-center gap-2 cursor-pointer">
 					<Checkbox bind:checked={forceRecreate} disabled={deploying} />
-					<span class="text-xs">Force recreate</span>
+					<span class="text-xs">{m.force_recreate()}</span>
 				</label>
 				{#if forceRecreateReason}
 					<p class="text-2xs text-muted-foreground pl-6 -mt-1">{forceRecreateReason}</p>
@@ -187,9 +188,9 @@
 			>
 				{#if deploying}
 					<Loader2 class="w-3 h-3 mr-1 animate-spin" />
-					Deploying...
+					{m.deploying()}
 				{:else}
-					Deploy
+					{m.deploy()}
 				{/if}
 			</Button>
 		</div>

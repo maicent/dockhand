@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { DataGrid } from '$lib/components/data-grid';
 	import { Badge } from '$lib/components/ui/badge';
 	import { appendEnvParam } from '$lib/stores/environment';
@@ -74,23 +75,23 @@
 <div class="flex-1 min-h-0 flex flex-col gap-2">
 	<!-- Summary row: scanned count + severity pills -->
 	<div class="shrink-0 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-		<span>Images scanned: <span class="font-medium text-foreground">{summary.imagesScanned}/{summary.totalImages}</span></span>
-		<span>Total: <span class="font-medium text-foreground">{summary.total}</span></span>
+		<span>{m.images_scanned()} <span class="font-medium text-foreground">{summary.imagesScanned}/{summary.totalImages}</span></span>
+		<span>{m.total_d8e7()} <span class="font-medium text-foreground">{summary.total}</span></span>
 		<SeveritySummaryPills counts={summary} />
 	</div>
 
 	{#if !scannerEnabled}
 		<div class="flex-1 min-h-0 flex flex-col items-center justify-center text-center gap-2 text-muted-foreground">
 			<ShieldAlert class="w-10 h-10 opacity-40" />
-			<p class="text-sm">No vulnerability scanner is configured for this environment.</p>
-			<a href="/settings?tab=environments" class="text-sm text-primary hover:underline">Configure a scanner in settings</a>
+			<p class="text-sm">{m.no_vulnerability_scanner_is_configured_for_this()}</p>
+			<a href="/settings?tab=environments" class="text-sm text-primary hover:underline">{m.configure_a_scanner_in_settings()}</a>
 		</div>
 	{:else}
 		{#if !loading && findings.length === 0}
 			<div class="flex-1 min-h-0 flex flex-col items-center justify-center text-center gap-2 text-muted-foreground">
 				<ShieldCheck class="w-10 h-10 opacity-40" />
-				<p class="text-sm">No vulnerabilities found.</p>
-				<p class="text-xs">Click "Scan all images" to populate this view.</p>
+				<p class="text-sm">{m.no_vulnerabilities_found()}</p>
+				<p class="text-xs">{m.click_scan_all_images_to_populate_this_view()}</p>
 			</div>
 		{:else}
 			<div class="flex-1 min-h-0 flex flex-col">
@@ -175,7 +176,7 @@
 							{#if finding.fixedVersion}
 								<span class="font-mono text-xs truncate" title={finding.fixedVersion}>{finding.fixedVersion}</span>
 							{:else}
-								<span class="text-xs text-muted-foreground">No fix</span>
+								<span class="text-xs text-muted-foreground">{m.no_fix()}</span>
 							{/if}
 						{:else if column.id === 'image'}
 							<span class="font-mono text-xs truncate" title={finding.imageName}>{finding.imageName}</span>

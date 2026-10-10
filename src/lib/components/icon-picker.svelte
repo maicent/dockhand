@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
@@ -41,7 +42,7 @@
 		<div class="space-y-3">
 			<Input
 				bind:value={searchQuery}
-				placeholder="Search icons..."
+				placeholder={m.search_icons()}
 				class="h-8"
 			/>
 			<div class="grid grid-cols-8 gap-1 max-h-48 overflow-y-auto">
@@ -58,7 +59,7 @@
 				{/each}
 			</div>
 			{#if filteredIcons.length === 0}
-				<p class="text-sm text-muted-foreground text-center py-2">No icons found</p>
+				<p class="text-sm text-muted-foreground text-center py-2">{m.no_icons_found()}</p>
 			{/if}
 		</div>
 	</Popover.Content>

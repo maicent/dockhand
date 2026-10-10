@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { tick } from 'svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -82,7 +83,7 @@
 				method: 'POST', headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ name, color: newColor, icon: newIcon })
 			});
-			if (!res.ok) { toast.error('Failed to create tag'); return; }
+			if (!res.ok) { toast.error(m.failed_to_create_tag()); return; }
 			newName = ''; newColor = 'blue'; newIcon = null;
 			await load();
 		} finally { creating = false; }
@@ -117,16 +118,16 @@
 			}
 			await load();
 			return true;
-		} catch { toast.error('Failed to update tag'); return false; }
+		} catch { toast.error(m.failed_to_update_tag()); return false; }
 	}
 
 	async function remove(tag: Tag) {
 		try {
 			const res = await fetch(`/api/tags/${tag.id}`, { method: 'DELETE' });
-			if (!res.ok) { toast.error('Failed to delete tag'); return; }
+			if (!res.ok) { toast.error(m.failed_to_delete_tag()); return; }
 			toast.success(`Deleted "${tag.name}"`);
 			await load();
-		} catch { toast.error('Failed to delete tag'); }
+		} catch { toast.error(m.failed_to_delete_tag()); }
 	}
 </script>
 
@@ -136,10 +137,10 @@
 			<div class="flex items-center gap-2">
 				<TagsIcon class="w-4 h-4 text-muted-foreground" />
 				<div>
-					<Card.Title class="text-base">Tags</Card.Title>
+					<Card.Title class="text-base">{m.tags()}</Card.Title>
 					<Card.Description>
-						Organize containers and stacks with your own tags. Tags are shared across all environments; which containers and stacks carry a tag is set per environment.
-						{#if !canEdit} Only an administrator can create or edit tags.{/if}
+						{m.organize_containers_and_stacks_with_your_own_tag()}
+						{#if !canEdit} {m.only_an_administrator_can_create_or_edit_tags()}{/if}
 					</Card.Description>
 				</div>
 			</div>
@@ -149,12 +150,12 @@
 		{#if canEdit}
 			<!-- Create -->
 			<div class="flex items-center gap-2">
-				<Input bind:value={newName} placeholder="New tag name" class="h-9 max-w-xs"
+				<Input bind:value={newName} placeholder={m.new_tag_name()} class="h-9 max-w-xs"
 					onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') create(); }} />
 				<Popover.Root>
 					<Popover.Trigger>
 						{#snippet child({ props })}
-							<button {...props} type="button" title="Pick colour"
+							<button {...props} type="button" title={m.pick_colour()}
 								class="h-9 w-9 shrink-0 rounded-md border flex items-center justify-center">
 								<span class="h-4 w-4 rounded-full" style="background-color: {tagHex(newColor)};"></span>
 							</button>
@@ -172,15 +173,15 @@
 				</Popover.Root>
 				<TagIconPicker icon={newIcon} hex={tagHex(newColor)} onSelect={(i) => (newIcon = i)} />
 				<Button size="sm" onclick={create} disabled={creating || !normalizeTag(newName)}>
-					<Plus class="w-4 h-4" /> Add tag
+					<Plus class="w-4 h-4" /> {m.add_tag()}
 				</Button>
 			</div>
 		{/if}
 
 		{#if loading}
-			<p class="text-sm text-muted-foreground">Loading...</p>
+			<p class="text-sm text-muted-foreground">{m.loading()}</p>
 		{:else if tags.length === 0}
-			<div class="py-6 text-center text-sm text-muted-foreground">No tags yet</div>
+			<div class="py-6 text-center text-sm text-muted-foreground">{m.no_tags_yet()}</div>
 		{:else}
 			<div
 				class="flex flex-wrap gap-2"
@@ -219,7 +220,7 @@
 								<Popover.Root open={colorPopoverId === tag.id} onOpenChange={(o) => colorPopoverId = o ? tag.id : null}>
 									<Popover.Trigger>
 										{#snippet child({ props })}
-											<button {...props} type="button" title="Change colour" class="text-muted-foreground hover:text-foreground">
+											<button {...props} type="button" title={m.change_colour()} class="text-muted-foreground hover:text-foreground">
 												<span class="h-3 w-3 rounded-full block" style="background-color: {hex};"></span>
 											</button>
 										{/snippet}
@@ -237,13 +238,13 @@
 								<!-- Change icon -->
 								<TagIconPicker icon={tag.icon ?? null} hex={hex} triggerClass="h-5 w-5 border-0"
 									onSelect={(i) => setIcon(tag, i)} />
-								<button type="button" title="Rename" class="text-muted-foreground hover:text-foreground"
+								<button type="button" title={m.rename()} class="text-muted-foreground hover:text-foreground"
 									onclick={() => startRename(tag)}><Pencil class="w-3 h-3" /></button>
 								<ConfirmPopover
 									action="Delete"
 									itemType="tag"
 									itemName={tag.name}
-									title="Delete this tag from every container and stack?"
+									title={m.delete_this_tag_from_every_container_and_stack()}
 									confirmText="Delete"
 									variant="destructive"
 									onConfirm={() => remove(tag)}
@@ -263,7 +264,7 @@
 						<button
 							type="button"
 							class="flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
-							title="List tags by name again"
+							title={m.list_tags_by_name_again()}
 							onclick={() => {
 								tagOrder.reset();
 								dragList = null;
@@ -271,7 +272,7 @@
 							}}
 						>
 							<RotateCcw class="h-3 w-3 shrink-0 text-red-400" />
-							Reset
+							{m.reset()}
 						</button>
 						<button
 							type="button"
@@ -279,17 +280,17 @@
 							onclick={() => (reorderMode = false)}
 						>
 							<Check class="h-3 w-3 shrink-0 text-emerald-500" />
-							Apply
+							{m.apply()}
 						</button>
 					{:else}
 						<button
 							type="button"
 							class="flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
-							title="Drag tags into the order you want them listed and grouped in"
+							title={m.drag_tags_into_the_order_you_want_them_listed_an()}
 							onclick={() => (reorderMode = true)}
 						>
 							<ArrowUpDown class="h-3 w-3 shrink-0" />
-							Reorder
+							{m.reorder()}
 						</button>
 					{/if}
 				</div>

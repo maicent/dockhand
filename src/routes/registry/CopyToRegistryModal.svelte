@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -262,7 +264,7 @@
 				{:else}
 					<Copy class="w-5 h-5" />
 				{/if}
-				Copy to registry
+				{m.copy_to_registry()}
 				<code class="text-sm font-normal bg-muted px-1.5 py-0.5 rounded ml-1">{imageName}</code>
 			</Dialog.Title>
 		</Dialog.Header>
@@ -275,7 +277,7 @@
 				disabled={isProcessing}
 			>
 				<Settings2 class="w-3.5 h-3.5 inline mr-1.5" />
-				Configure
+				{m.configure()}
 			</button>
 			<ArrowBigRight class="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
 			<button
@@ -284,7 +286,7 @@
 				disabled={isProcessing || pullStatus === 'idle'}
 			>
 				<Download class="w-3.5 h-3.5 inline mr-1.5" />
-				Pull
+				{m.pull()}
 				{#if pullStatus === 'complete'}
 					<CheckCircle2 class="w-3.5 h-3.5 inline ml-1 text-green-500" />
 				{:else if pullStatus === 'error'}
@@ -311,7 +313,7 @@
 					{:else}
 						<ShieldCheck class="w-3.5 h-3.5 inline mr-1.5" />
 					{/if}
-					Scan
+					{m.scan()}
 					{#if scanStatus === 'complete'}
 						<CheckCircle2 class="w-3.5 h-3.5 inline ml-1 text-green-500" />
 					{:else if scanStatus === 'error'}
@@ -328,7 +330,7 @@
 				disabled={isProcessing || pushStatus === 'idle'}
 			>
 				<Upload class="w-3.5 h-3.5 inline mr-1.5" />
-				Push
+				{m.push()}
 				{#if pushStatus === 'complete'}
 					<CheckCircle2 class="w-3.5 h-3.5 inline ml-1 text-green-500" />
 				{:else if pushStatus === 'error'}
@@ -343,14 +345,14 @@
 			<!-- Configuration Step -->
 			<div class="space-y-4 px-1" class:hidden={currentStep !== 'configure'}>
 					<div class="space-y-2">
-						<Label>Source image</Label>
+						<Label>{m.source_image()}</Label>
 						<div class="p-2 bg-muted rounded text-sm">
 							<code class="break-all">{imageName}:{sourceTag}</code>
 						</div>
 					</div>
 
 					<div class="space-y-2">
-						<Label>Target registry</Label>
+						<Label>{m.target_registry()}</Label>
 						<Select.Root type="single" value={targetRegistryId ? String(targetRegistryId) : undefined} onValueChange={(v) => targetRegistryId = Number(v)}>
 							<Select.Trigger class="w-full h-9 justify-start">
 								{#if targetRegistry}
@@ -361,7 +363,7 @@
 									{/if}
 									<span class="flex-1 text-left">{targetRegistry.name}{targetRegistry.hasCredentials ? ' (auth)' : ''}</span>
 								{:else}
-									<span class="text-muted-foreground">Select registry</span>
+									<span class="text-muted-foreground">{m.select_registry()}</span>
 								{/if}
 							</Select.Trigger>
 							<Select.Content>
@@ -374,38 +376,38 @@
 										{/if}
 										{registry.name}
 										{#if registry.hasCredentials}
-											<Badge variant="outline" class="ml-2 text-xs">auth</Badge>
+											<Badge variant="outline" class="ml-2 text-xs">{m.auth()}</Badge>
 										{/if}
 									</Select.Item>
 								{/each}
 							</Select.Content>
 						</Select.Root>
 						{#if pushableRegistries.length === 0}
-							<p class="text-xs text-muted-foreground">No target registries available. Add a private registry in Settings.</p>
+							<p class="text-xs text-muted-foreground">{m.no_target_registries_available_add_a_private_reg()}</p>
 						{/if}
 					</div>
 
 					<div class="space-y-2">
-						<Label>Image name/tag</Label>
+						<Label>{m.image_name_tag()}</Label>
 						<Input
 							bind:value={customTag}
-							placeholder="myimage:latest"
+							placeholder={m.myimage_latest()}
 						/>
 						<p class="text-xs text-muted-foreground flex items-center gap-1">
-							<span>Will be pushed as:</span>
+							<span>{m.will_be_pushed_as()}</span>
 							<code class="bg-muted px-1 py-0.5 rounded">{targetImageName()}</code>
 							<button
 								type="button"
 								onclick={copyTargetToClipboard}
 								class="p-0.5 rounded hover:bg-muted transition-colors cursor-pointer"
-								title="Copy to clipboard"
+								title={m.copy_to_clipboard()}
 							>
 								{#if copiedToClipboard === 'error'}
 									<Tooltip.Root open>
 										<Tooltip.Trigger>
 											<XCircle class="w-3 h-3 text-red-500" />
 										</Tooltip.Trigger>
-										<Tooltip.Content>Copy requires HTTPS</Tooltip.Content>
+										<Tooltip.Content>{m.copy_requires_https()}</Tooltip.Content>
 									</Tooltip.Root>
 								{:else if copiedToClipboard === 'ok'}
 									<Check class="w-3 h-3 text-green-500" />
@@ -467,15 +469,15 @@
 			<div>
 				{#if currentStep === 'pull' && pullStatus === 'error'}
 					<Button variant="outline" onclick={() => pullTabRef?.startPull()}>
-						Retry pull
+						{m.retry_pull()}
 					</Button>
 				{:else if currentStep === 'scan' && scanStatus === 'error'}
 					<Button variant="outline" onclick={() => scanTabRef?.startScan()}>
-						Retry scan
+						{m.retry_scan()}
 					</Button>
 				{:else if currentStep === 'push' && pushStatus === 'error'}
 					<Button variant="outline" onclick={() => pushTabRef?.startPush()}>
-						Retry push
+						{m.retry_push()}
 					</Button>
 				{/if}
 			</div>
@@ -493,18 +495,18 @@
 						disabled={!targetRegistryId || pushableRegistries.length === 0}
 					>
 						<Copy class="w-4 h-4" />
-						Start copy
+						{m.start_copy()}
 					</Button>
 				{:else if currentStep === 'scan' && scanStatus === 'complete'}
 					{#if hasCriticalOrHigh}
 						<div class="flex items-center gap-2 text-red-600 text-sm mr-2">
 							<ShieldX class="w-4 h-4" />
-							<span>Critical/high vulnerabilities found</span>
+							<span>{m.critical_high_vulnerabilities_found()}</span>
 						</div>
 					{:else if totalVulnerabilities > 0}
 						<div class="flex items-center gap-2 text-yellow-600 text-sm mr-2">
 							<ShieldAlert class="w-4 h-4" />
-							<span>{totalVulnerabilities} vulnerabilities found</span>
+							<span>{m.totalvulnerabilities_vulnerabilities_found({ totalVulnerabilities: orEmpty(totalVulnerabilities) })}</span>
 						</div>
 					{/if}
 					<Button onclick={proceedToPush} variant={hasCriticalOrHigh ? 'destructive' : 'default'}>

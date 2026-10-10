@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -42,7 +43,7 @@
 			repositories = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch git repositories:', error);
-			toast.error('Failed to fetch git repositories');
+			toast.error(m.failed_to_fetch_git_repositories());
 		} finally {
 			loading = false;
 		}
@@ -54,7 +55,7 @@
 			credentials = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch git credentials:', error);
-			toast.error('Failed to fetch git credentials');
+			toast.error(m.failed_to_fetch_git_credentials());
 		}
 	}
 
@@ -77,13 +78,13 @@
 			const response = await fetch(`/api/git/repositories/${id}`, { method: 'DELETE' });
 			if (response.ok) {
 				await fetchRepositories();
-				toast.success('Repository deleted');
+				toast.success(m.repository_deleted());
 			} else {
-				toast.error('Failed to delete repository');
+				toast.error(m.failed_to_delete_repository());
 			}
 		} catch (error) {
 			console.error('Failed to delete repository:', error);
-			toast.error('Failed to delete repository');
+			toast.error(m.failed_to_delete_repository());
 		}
 	}
 
@@ -99,7 +100,7 @@
 					success: true,
 					message: `Connected! Branch: ${data.branch}, Last commit: ${data.lastCommit}`
 				};
-				toast.success('Repository connection successful');
+				toast.success(m.repository_connection_successful());
 			} else {
 				testResult = {
 					id,
@@ -120,7 +121,7 @@
 				success: false,
 				message: 'Failed to test connection'
 			};
-			toast.error('Failed to test repository connection');
+			toast.error(m.failed_to_test_repository_connection());
 		} finally {
 			testingId = null;
 		}
@@ -135,26 +136,26 @@
 <div class="space-y-4">
 	<div class="flex justify-between items-center">
 		<div>
-			<h3 class="text-lg font-medium">Git repositories</h3>
-			<p class="text-sm text-muted-foreground">Manage Git repositories that can be used to deploy stacks</p>
+			<h3 class="text-lg font-medium">{m.git_repositories()}</h3>
+			<p class="text-sm text-muted-foreground">{m.manage_git_repositories_that_can_be_used_to_depl()}</p>
 		</div>
 		{#if $canAccess('settings', 'edit')}
 			<Button size="sm" onclick={() => openModal()}>
 				<Plus class="w-4 h-4" />
-				Add repository
+				{m.add_repository()}
 			</Button>
 		{/if}
 	</div>
 
 	{#if loading}
-		<p class="text-sm text-muted-foreground">Loading repositories...</p>
+		<p class="text-sm text-muted-foreground">{m.loading_repositories()}</p>
 	{:else if repositories.length === 0}
 		<Card.Root>
 			<Card.Content>
 				<EmptyState
 					icon={FolderGit2}
-					title="No Git repositories configured"
-					description="Add a repository to use it when deploying stacks from Git"
+					title={m.no_git_repositories_configured()}
+					description={m.add_a_repository_to_use_it_when_deploying_stacks()}
 				/>
 			</Card.Content>
 		</Card.Root>
@@ -169,7 +170,7 @@
 							<button
 								type="button"
 								class="font-medium text-sm truncate text-left hover:underline cursor-pointer"
-								title="Edit repository"
+								title={m.edit_repository()}
 								onclick={() => openModal(repo)}
 							>{repo.name}</button>
 						{:else}
@@ -194,9 +195,9 @@
 								<span class="hidden sm:inline">{repo.credentialName}</span>
 							</span>
 						{:else}
-							<span class="flex items-center gap-1 text-xs text-muted-foreground" title="Public repository">
+							<span class="flex items-center gap-1 text-xs text-muted-foreground" title={m.public_repository()}>
 								<Globe class="w-3 h-3" />
-								<span class="hidden sm:inline">Public</span>
+								<span class="hidden sm:inline">{m.public()}</span>
 							</span>
 						{/if}
 						<Badge variant="outline" class="text-xs flex items-center gap-1">
@@ -209,7 +210,7 @@
 							class="h-7 w-7"
 							onclick={() => testRepository(repo.id)}
 							disabled={testingId === repo.id}
-							title="Test connection"
+							title={m.test_connection()}
 						>
 							{#if testingId === repo.id}
 								<Loader2 class="w-3.5 h-3.5 animate-spin" />
@@ -218,7 +219,7 @@
 							{/if}
 						</Button>
 						{#if $canAccess('settings', 'edit')}
-							<Button variant="ghost" size="icon" class="h-7 w-7" onclick={() => openModal(repo)} title="Edit repository">
+							<Button variant="ghost" size="icon" class="h-7 w-7" onclick={() => openModal(repo)} title={m.edit_repository()}>
 								<Pencil class="w-3.5 h-3.5" />
 							</Button>
 							<ConfirmPopover
@@ -226,7 +227,7 @@
 								action="Delete"
 								itemType="repository"
 								itemName={repo.name}
-								title="Delete"
+								title={m.delete()}
 								onConfirm={() => deleteRepository(repo.id)}
 								onOpenChange={(open) => confirmDeleteId = open ? repo.id : null}
 							>

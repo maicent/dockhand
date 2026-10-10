@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { toast } from 'svelte-sonner';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -85,7 +87,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to connect container:', error);
-			toast.error('Failed to connect container');
+			toast.error(m.failed_to_connect_container());
 		} finally {
 			submitting = false;
 		}
@@ -104,10 +106,10 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Link class="w-4 h-4" />
-				Connect container to {network?.name}
+				{m.connect_container_to_arg1({ arg1: orEmpty(network?.name) })}
 			</Dialog.Title>
 			<Dialog.Description>
-				Select a container to connect to this network.
+				{m.select_a_container_to_connect_to_this_network()}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -119,12 +121,12 @@
 			{:else if availableContainers.length === 0}
 				<div class="text-center py-8 text-muted-foreground">
 					<Box class="w-8 h-8 mx-auto mb-2 opacity-50" />
-					<p class="text-sm">No containers available to connect.</p>
-					<p class="text-xs mt-1">All containers are already connected to this network.</p>
+					<p class="text-sm">{m.no_containers_available_to_connect()}</p>
+					<p class="text-xs mt-1">{m.all_containers_are_already_connected_to_this_net()}</p>
 				</div>
 			{:else}
 				<div class="space-y-2">
-					<Label for="container">Container</Label>
+					<Label for="container">{m.container_e644()}</Label>
 					<Select.Root type="single" bind:value={selectedContainer}>
 						<Select.Trigger id="container" class="w-full">
 							{#if selectedContainerInfo}
@@ -133,7 +135,7 @@
 									{selectedContainerInfo.name}
 								</span>
 							{:else}
-								<span class="text-muted-foreground">Select a container...</span>
+								<span class="text-muted-foreground">{m.select_a_container()}</span>
 							{/if}
 						</Select.Trigger>
 						<Select.Content>
@@ -154,7 +156,7 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => open = false} disabled={submitting}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button
 				onclick={handleConnect}
@@ -165,7 +167,7 @@
 				{:else}
 					<Link class="w-4 h-4" />
 				{/if}
-				Connect
+				{m.connect()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

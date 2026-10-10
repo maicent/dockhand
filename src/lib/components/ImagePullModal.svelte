@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -242,7 +243,7 @@
 				{:else}
 					<Download class="w-5 h-5" />
 				{/if}
-				<span>{title}{#if effectiveEnvName}&nbsp;to <span class="text-amber-500">{effectiveEnvName}</span>{/if}</span>
+				<span>{title}{#if effectiveEnvName}{m.to_4374()} <span class="text-amber-500">{effectiveEnvName}</span>{/if}</span>
 				{#if effectiveImageName}
 					<code class="text-sm font-normal bg-muted px-1.5 py-0.5 rounded ml-1">{effectiveImageName}</code>
 				{/if}
@@ -258,7 +259,7 @@
 					disabled={isProcessing}
 				>
 					<Settings2 class="w-3.5 h-3.5 inline mr-1.5" />
-					Configure
+					{m.configure()}
 				</button>
 				<ArrowBigRight class="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
 			{/if}
@@ -268,7 +269,7 @@
 				disabled={isProcessing || (needsConfigureStep && pullStatus === 'idle')}
 			>
 				<Download class="w-3.5 h-3.5 inline mr-1.5" />
-				Pull
+				{m.pull()}
 				{#if pullStatus === 'complete'}
 					<CheckCircle2 class="w-3.5 h-3.5 inline ml-1 text-green-500" />
 				{:else if pullStatus === 'error'}
@@ -295,7 +296,7 @@
 					{:else}
 						<ShieldCheck class="w-3.5 h-3.5 inline mr-1.5" />
 					{/if}
-					Scan
+					{m.scan()}
 					{#if scanStatus === 'complete'}
 						<CheckCircle2 class="w-3.5 h-3.5 inline ml-1 text-green-500" />
 					{:else if scanStatus === 'error'}
@@ -312,7 +313,7 @@
 			{#if needsConfigureStep}
 				<div class="space-y-4 px-1 overflow-auto" class:hidden={activeTab !== 'configure'}>
 					<div class="space-y-2">
-						<Label>Registry</Label>
+						<Label>{m.registry()}</Label>
 						<Select.Root
 							type="single"
 							value={selectedRegistryId === 'dockerhub' ? 'dockerhub' : selectedRegistryId ? String(selectedRegistryId) : undefined}
@@ -327,7 +328,7 @@
 									{/if}
 									<span class="flex-1 text-left">{selectedRegistry.name}</span>
 								{:else}
-									<span class="text-muted-foreground">Select registry</span>
+									<span class="text-muted-foreground">{m.select_registry()}</span>
 								{/if}
 							</Select.Trigger>
 							<Select.Content>
@@ -340,7 +341,7 @@
 										{/if}
 										{registry.name}
 										{#if registry.hasCredentials}
-											<Badge variant="outline" class="ml-2 text-xs">auth</Badge>
+											<Badge variant="outline" class="ml-2 text-xs">{m.auth()}</Badge>
 										{/if}
 									</Select.Item>
 								{/each}
@@ -349,7 +350,7 @@
 					</div>
 
 					<div class="space-y-2">
-						<Label>Image name</Label>
+						<Label>{m.image_name()}</Label>
 						<Input
 							bind:value={configImageName}
 							placeholder={selectedRegistryId === 'dockerhub' ? 'nginx:latest or library/nginx:1.25' : 'myimage:latest'}
@@ -360,13 +361,13 @@
 							}}
 						/>
 						<p class="text-xs text-muted-foreground">
-							Format: <code class="bg-muted px-1 py-0.5 rounded">image:tag</code> or <code class="bg-muted px-1 py-0.5 rounded">namespace/image:tag</code>
+							{m.format_d640()} <code class="bg-muted px-1 py-0.5 rounded">{m.image_tag()}</code> {m.or()} <code class="bg-muted px-1 py-0.5 rounded">{m.namespace_image_tag()}</code>
 						</p>
 					</div>
 
 					{#if configImageName.trim()}
 						<div class="space-y-2">
-							<Label class="text-muted-foreground">Full image reference</Label>
+							<Label class="text-muted-foreground">{m.full_image_reference()}</Label>
 							<div class="p-2 bg-muted rounded text-sm">
 								<code class="break-all">{fullImageReference}</code>
 							</div>
@@ -409,11 +410,11 @@
 			<div>
 				{#if activeTab === 'pull' && pullStatus === 'error'}
 					<Button variant="outline" onclick={() => pullTabRef?.startPull()}>
-						Retry
+						{m.retry()}
 					</Button>
 				{:else if activeTab === 'scan' && scanStatus === 'error'}
 					<Button variant="outline" onclick={() => scanTabRef?.startScan()}>
-						Retry scan
+						{m.retry_scan()}
 					</Button>
 				{/if}
 			</div>
@@ -427,10 +428,10 @@
 					>
 						{#if isDeleting}
 							<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-							Removing...
+							{m.removing()}
 						{:else}
 							<Trash2 class="w-4 h-4" />
-							Remove image
+							{m.remove_image()}
 						{/if}
 					</Button>
 					<Button
@@ -439,7 +440,7 @@
 						disabled={isDeleting}
 					>
 						<CheckCircle2 class="w-4 h-4" />
-						Keep image
+						{m.keep_image()}
 					</Button>
 				{:else if showDeleteButton && pullStatus === 'complete' && !envHasScanning}
 					<!-- Show Keep/Remove buttons after pull completes when no scanning (Images page) -->
@@ -450,10 +451,10 @@
 					>
 						{#if isDeleting}
 							<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-							Removing...
+							{m.removing()}
 						{:else}
 							<Trash2 class="w-4 h-4" />
-							Remove image
+							{m.remove_image()}
 						{/if}
 					</Button>
 					<Button
@@ -462,7 +463,7 @@
 						disabled={isDeleting}
 					>
 						<CheckCircle2 class="w-4 h-4" />
-						Keep image
+						{m.keep_image()}
 					</Button>
 				{:else}
 					<Button
@@ -478,7 +479,7 @@
 							disabled={!configImageName.trim()}
 						>
 							<Download class="w-4 h-4" />
-							Pull
+							{m.pull()}
 						</Button>
 					{:else if pullStatus === 'complete' || scanStatus === 'complete'}
 						<Button
@@ -486,7 +487,7 @@
 							onclick={handleClose}
 							disabled={isProcessing}
 						>
-							OK
+							{m.ok()}
 						</Button>
 					{/if}
 				{/if}

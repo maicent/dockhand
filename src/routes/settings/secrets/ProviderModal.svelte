@@ -135,6 +135,8 @@
 </script>
 
 <script lang='ts'>
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
@@ -300,7 +302,7 @@
 			}
 			const data = await response.json();
 			if (data.ok) {
-				toast.success('Connection works');
+				toast.success(m.connection_works());
 				clearTimeout(testOkTimer);
 				testOk = true;
 				testOkTimer = setTimeout(() => (testOk = false), 2000);
@@ -309,7 +311,7 @@
 				formError = data.error || 'Connection failed';
 			}
 		} catch {
-			toast.error('Connection test failed');
+			toast.error(m.connection_test_failed());
 		} finally {
 			formTesting = false;
 		}
@@ -394,7 +396,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<KeyRound class="w-5 h-5 text-muted-foreground" />
-				{isEditing ? "Edit" : "Add"} secret provider
+				{m.arg1_secret_provider({ arg1: orEmpty(isEditing ? "Edit" : "Add") })}
 			</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4">
@@ -404,15 +406,15 @@
 				</div>
 			{/if}
 			<div class="space-y-2">
-				<FieldLabel label="Name" forId="provider-name" required showOptional={false} />
+				<FieldLabel label={m.name()} forId="provider-name" required showOptional={false} />
 				<Input
 					id="provider-name"
 					bind:value={formName}
-					placeholder="Production secrets"
+					placeholder={m.production_secrets()}
 				/>
 			</div>
 			<div class="space-y-2">
-				<FieldLabel label="Provider" forId="provider-type" required showOptional={false} />
+				<FieldLabel label={m.provider()} forId="provider-type" required showOptional={false} />
 				<Select.Root
 					type="single"
 					value={formType}
@@ -468,38 +470,34 @@
 						<p class="flex items-start gap-2 text-xs text-muted-foreground">
 							<Info class="h-3.5 w-3.5 shrink-0 mt-0.5 text-amber-500" />
 							<span>
-								Bitwarden Secrets Manager requires an externally installed or mounted official
-								<code>bws</code> client at <code>/usr/local/bin/bws</code> (or an absolute
-								<code>DOCKHAND_BWS_PATH</code> process override).
+								{m.bitwarden_secrets_manager_requires_an_externally()}
+								<code>{m.bws()}</code> {m.client_at()} <code>{m.usr_local_bin_bws()}</code> {m.or_an_absolute()}
+								<code>{m.dockhand_bws_path()}</code> {m.process_override()}
 							</span>
 						</p>
 					{:else if formType === 'keepass'}
 						<p class="flex items-start gap-2 text-xs text-muted-foreground">
 							<Info class="h-3.5 w-3.5 shrink-0 mt-0.5 text-amber-500" />
 							<span>
-								KeePassXC requires the official <code>keepassxc-cli</code> client installed in the
-								container (or an absolute <code>DOCKHAND_KEEPASSXC_CLI_PATH</code> process override),
-								and the <code>.kdbx</code> database bind-mounted into the container read-only at the
-								path above. Supports both a bulk group pull and inline <code>keepass://</code>
-								references.
+								{m.keepassxc_requires_the_official()} <code>{m.keepassxc_cli()}</code> {m.client_installed_in_the_container_or_an_absolute()} <code>{m.dockhand_keepassxc_cli_path()}</code> {m.process_override_and_the()} <code>{m.kdbx()}</code> {m.database_bind_mounted_into_the_container_read_on()} <code>{m.keepass()}</code>
+								{m.references()}
 							</span>
 						</p>
 					{:else}
 						<p class="flex items-start gap-2 text-xs text-muted-foreground">
 							<Info class="h-3.5 w-3.5 shrink-0 mt-0.5 text-amber-500" />
 							<span>
-								Proton Pass requires an externally installed or mounted official
-								<code>pass-cli</code> client at <code>/usr/local/bin/pass-cli</code> (or an absolute
-								<code>DOCKHAND_PASS_CLI_PATH</code> process override). Supports both a bulk vault pull
-								and inline <code>pass://</code> references.
+								{m.proton_pass_requires_an_externally_installed_or()}
+								<code>{m.pass_cli()}</code> {m.client_at()} <code>{m.usr_local_bin_pass_cli()}</code> {m.or_an_absolute()}
+								<code>{m.dockhand_pass_cli_path()}</code> {m.process_override_supports_both_a_bulk_vault_pull()} <code>{m.pass()}</code> {m.references()}
 							</span>
 						</p>
 					{/if}
 				</div>
 			{/if}
 			<p class="text-xs text-muted-foreground">
-				Configuration is stored encrypted.{#if isEditing}
-					Leave secret fields blank to keep the existing values.{/if}
+				{m.configuration_is_stored_encrypted()}{#if isEditing}
+					{m.leave_secret_fields_blank_to_keep_the_existing_v()}{/if}
 			</p>
 		</div>
 		<Dialog.Footer>
@@ -520,10 +518,10 @@
 						<PlugZap class="w-4 h-4" />
 					{/if}
 				</span>
-				Test connection
+				{m.test_connection()}
 			</Button>
 			<div class="flex-1"></div>
-			<Button variant="outline" onclick={handleClose}>Cancel</Button>
+			<Button variant="outline" onclick={handleClose}>{m.cancel()}</Button>
 			<Button onclick={save} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />

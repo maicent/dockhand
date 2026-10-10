@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -10,8 +12,8 @@
 
 	// Auth type options with icons
 	const authTypeOptions = [
-		{ value: 'password', label: 'Password/Token', icon: Lock },
-		{ value: 'ssh', label: 'SSH Key', icon: KeyRound }
+		{ value: 'password', label: m.password_token(), icon: Lock },
+		{ value: 'ssh', label: m.ssh_key(), icon: KeyRound }
 	];
 
 	interface GitCredential {
@@ -144,7 +146,7 @@
 			toast.success(credential ? 'Credential updated' : 'Credential created');
 		} catch (error) {
 			formError = 'Failed to save credential';
-			toast.error('Failed to save credential');
+			toast.error(m.failed_to_save_credential());
 		} finally {
 			formSaving = false;
 		}
@@ -157,7 +159,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Key class="w-5 h-5" />
-				{isEditing ? 'Edit' : 'Add'} Git credential
+				{m.arg1_git_credential({ arg1: orEmpty(isEditing ? 'Edit' : 'Add') })}
 			</Dialog.Title>
 			<Dialog.Description>
 				{isEditing ? 'Update credential settings' : 'Create a new credential for accessing Git repositories'}
@@ -166,23 +168,23 @@
 
 		<form onsubmit={(e) => { e.preventDefault(); saveCredential(); }} class="space-y-4">
 			<div class="space-y-2">
-				<Label for="cred-name">Name</Label>
+				<Label for="cred-name">{m.name()}</Label>
 				<Input
 					id="cred-name"
 					bind:value={formName}
-					placeholder="e.g., GitHub Personal"
+					placeholder={m.e_g_github_personal()}
 					class={errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 					oninput={() => errors.name = undefined}
 				/>
 				{#if errors.name}
 					<p class="text-xs text-destructive">{errors.name}</p>
 				{:else if !isEditing}
-					<p class="text-xs text-muted-foreground">A friendly name to identify this credential</p>
+					<p class="text-xs text-muted-foreground">{m.a_friendly_name_to_identify_this_credential()}</p>
 				{/if}
 			</div>
 
 			<div class="space-y-2">
-				<Label>Authentication type</Label>
+				<Label>{m.authentication_type()}</Label>
 				<ToggleGroup
 					value={formAuthType}
 					options={authTypeOptions}
@@ -194,11 +196,11 @@
 			<div class="min-h-[220px] space-y-4">
 				{#if formAuthType === 'password'}
 					<div class="space-y-2">
-						<Label for="cred-username">Username</Label>
-						<Input id="cred-username" bind:value={formUsername} placeholder="Username or email" />
+						<Label for="cred-username">{m.username()}</Label>
+						<Input id="cred-username" bind:value={formUsername} placeholder={m.username_or_email()} />
 					</div>
 					<div class="space-y-2">
-						<Label for="cred-password">Password or token</Label>
+						<Label for="cred-password">{m.password_or_token()}</Label>
 						<Input
 							id="cred-password"
 							type="password"
@@ -210,28 +212,28 @@
 						{#if errors.password}
 							<p class="text-xs text-destructive">{errors.password}</p>
 						{:else if isEditing && credential?.hasPassword}
-							<p class="text-xs text-muted-foreground">Current password is set. Leave empty to keep it.</p>
+							<p class="text-xs text-muted-foreground">{m.current_password_is_set_leave_empty_to_keep_it()}</p>
 						{/if}
 					</div>
 				{:else if formAuthType === 'ssh'}
 					<div class="space-y-2">
-						<Label for="cred-ssh-key">SSH private key</Label>
+						<Label for="cred-ssh-key">{m.ssh_private_key()}</Label>
 						<textarea
 							id="cred-ssh-key"
 							bind:value={formSshKey}
 							class="w-full h-32 px-3 py-2 text-sm border rounded-md font-mono bg-background {errors.sshKey ? 'border-destructive focus-visible:ring-destructive' : ''}"
-							placeholder="-----BEGIN OPENSSH PRIVATE KEY-----&#10;...&#10;-----END OPENSSH PRIVATE KEY-----"
+							placeholder={m.begin_openssh_private_key_end_openssh_private_ke()}
 							oninput={() => errors.sshKey = undefined}
 						></textarea>
 						{#if errors.sshKey}
 							<p class="text-xs text-destructive">{errors.sshKey}</p>
 						{:else if isEditing && credential?.hasSshKey}
-							<p class="text-xs text-muted-foreground">Current SSH key is set. Leave empty to keep it.</p>
+							<p class="text-xs text-muted-foreground">{m.current_ssh_key_is_set_leave_empty_to_keep_it()}</p>
 						{/if}
 					</div>
 					<div class="space-y-2">
-						<Label for="cred-ssh-passphrase">SSH passphrase (optional)</Label>
-						<Input id="cred-ssh-passphrase" type="password" bind:value={formSshPassphrase} placeholder="Passphrase for encrypted key" />
+						<Label for="cred-ssh-passphrase">{m.ssh_passphrase_optional()}</Label>
+						<Input id="cred-ssh-passphrase" type="password" bind:value={formSshPassphrase} placeholder={m.passphrase_for_encrypted_key()} />
 					</div>
 				{/if}
 			</div>
@@ -241,7 +243,7 @@
 			{/if}
 
 			<Dialog.Footer>
-				<Button variant="outline" type="button" onclick={onClose}>Cancel</Button>
+				<Button variant="outline" type="button" onclick={onClose}>{m.cancel()}</Button>
 				<Button type="submit" disabled={formSaving}>
 					{formSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Add credential')}
 				</Button>

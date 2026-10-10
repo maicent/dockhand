@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { ChevronsUpDown, Check, Globe } from 'lucide-svelte';
 	import * as Command from '$lib/components/ui/command';
 	import * as Popover from '$lib/components/ui/popover';
@@ -156,11 +157,11 @@
 	</Popover.Trigger>
 	<Popover.Content class="w-[350px] p-0 z-[200]" align="start">
 		<Command.Root shouldFilter={false}>
-			<Command.Input bind:value={searchQuery} placeholder="Search timezone..." />
+			<Command.Input bind:value={searchQuery} placeholder={m.search_timezone()} />
 			<Command.List class="max-h-[300px]">
-				<Command.Empty>No timezone found.</Command.Empty>
+				<Command.Empty>{m.no_timezone_found()}</Command.Empty>
 				{#if filteredCommon.length > 0}
-					<Command.Group heading="Common">
+					<Command.Group heading={m.common()}>
 						{#each filteredCommon as tz}
 							<Command.Item value={tz} onSelect={() => selectTimezone(tz)}>
 								<Check class={cn('mr-2 h-4 w-4', value === tz ? 'opacity-100' : 'opacity-0')} />
@@ -170,7 +171,7 @@
 					</Command.Group>
 				{/if}
 				{#if filteredOther.length > 0}
-					<Command.Group heading="All timezones">
+					<Command.Group heading={m.all_timezones()}>
 						{#each filteredOther as tz}
 							<Command.Item value={tz} onSelect={() => selectTimezone(tz)}>
 								<Check class={cn('mr-2 h-4 w-4', value === tz ? 'opacity-100' : 'opacity-0')} />

@@ -1,8 +1,10 @@
 <svelte:head>
-	<title>Terminal - Dockhand</title>
+	<title>{m.terminal_dockhand()}</title>
 </svelte:head>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -277,14 +279,14 @@
 
 {#if $environments.length === 0 || !$currentEnvironment}
 	<div class="flex flex-col flex-1 min-h-0 h-full">
-		<PageHeader icon={TerminalIcon} title="Shell" class="h-9 mb-3" />
+		<PageHeader icon={TerminalIcon} title={m.shell()} class="h-9 mb-3" />
 		<NoEnvironment />
 	</div>
 {:else}
 <div class="flex flex-col flex-1 min-h-0 h-full gap-3">
 	<!-- Header with container selector -->
 	<div class="flex items-center gap-4 flex-wrap">
-		<PageHeader icon={TerminalIcon} title="Shell" />
+		<PageHeader icon={TerminalIcon} title={m.shell()} />
 		<div class="relative flex-1 max-w-md min-w-[200px]">
 			<!-- Search input - always visible, shows selected container or placeholder -->
 			<div class="relative">
@@ -319,7 +321,7 @@
 								<span class="font-medium truncate">{container.name}</span>
 								<span class="text-muted-foreground text-xs truncate">({container.image})</span>
 								{#if selectedContainer?.id === container.id}
-									<span class="ml-auto text-xs text-primary">connected</span>
+									<span class="ml-auto text-xs text-primary">{m.connected_c5e2()}</span>
 								{/if}
 							</button>
 						{/each}
@@ -328,25 +330,25 @@
 			{/if}
 		</div>
 		<div class="flex items-center gap-2">
-			<Label class="text-sm text-muted-foreground">Mode:</Label>
+			<Label class="text-sm text-muted-foreground">{m.mode_fbb6()}</Label>
 			<Select.Root type="single" value={terminalMode} onValueChange={(value) => terminalMode = value as TerminalMode}>
 				<Select.Trigger class="h-9 w-48">
 					{#if terminalMode === 'attach'}
 						<Unplug class="w-4 h-4 mr-2 text-muted-foreground" />
-						<span>Attach to process</span>
+						<span>{m.attach_to_process()}</span>
 					{:else}
 						<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
-						<span>Shell (exec)</span>
+						<span>{m.shell_exec()}</span>
 					{/if}
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="exec" label="Shell (exec)">
+					<Select.Item value="exec" label={m.shell_exec()}>
 						<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
-						Shell (exec)
+						{m.shell_exec()}
 					</Select.Item>
-					<Select.Item value="attach" label="Attach to process">
+					<Select.Item value="attach" label={m.attach_to_process()}>
 						<Unplug class="w-4 h-4 mr-2 text-muted-foreground" />
-						Attach to process
+						{m.attach_to_process()}
 					</Select.Item>
 				</Select.Content>
 			</Select.Root>
@@ -355,14 +357,14 @@
 		{#if selectedContainer}
 			<Button size="sm" variant="ghost" onclick={clearSelection} class="h-9 px-3 text-sm text-muted-foreground hover:text-foreground">
 				<Unplug class="w-4 h-4 mr-1.5" />
-				Disconnect
+				{m.disconnect()}
 			</Button>
 		{/if}
 
 		<!-- Shell selector - only used by exec mode -->
 		{#if terminalMode === 'exec'}
 		<div class="flex items-center gap-2">
-			<Label class="text-sm text-muted-foreground">Shell:</Label>
+			<Label class="text-sm text-muted-foreground">{m.shell_3ea1()}</Label>
 			{#if detectingShells}
 				<div class="h-9 w-36 flex items-center justify-center border rounded-md bg-muted/50">
 					<Loader2 class="w-4 h-4 animate-spin text-muted-foreground" />
@@ -391,27 +393,27 @@
 									<span class={option.available ? 'text-foreground' : 'text-muted-foreground/60'}>
 										{option.label}
 										{#if !option.available}
-											<span class="text-xs ml-1">(unavailable)</span>
+											<span class="text-xs ml-1">{m.unavailable()}</span>
 										{/if}
 									</span>
 								</Select.Item>
 							{/each}
 						{:else}
-							<Select.Item value="/bin/bash" label="Bash">
+							<Select.Item value="/bin/bash" label={m.bash()}>
 								<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
-								Bash
+								{m.bash()}
 							</Select.Item>
-							<Select.Item value="/bin/sh" label="Shell (sh)">
+							<Select.Item value="/bin/sh" label={m.shell_sh()}>
 								<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
-								Shell (sh)
+								{m.shell_sh()}
 							</Select.Item>
-							<Select.Item value="/bin/zsh" label="Zsh">
+							<Select.Item value="/bin/zsh" label={m.zsh()}>
 								<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
-								Zsh
+								{m.zsh()}
 							</Select.Item>
-							<Select.Item value="/bin/ash" label="Ash (Alpine)">
+							<Select.Item value="/bin/ash" label={m.ash_alpine()}>
 								<Shell class="w-4 h-4 mr-2 text-muted-foreground" />
-								Ash (Alpine)
+								{m.ash_alpine()}
 							</Select.Item>
 						{/if}
 					</Select.Content>
@@ -421,7 +423,7 @@
 
 		<!-- User selector - only used by exec mode -->
 		<div class="flex items-center gap-2">
-			<Label class="text-sm text-muted-foreground">User:</Label>
+			<Label class="text-sm text-muted-foreground">{m.user_3123()}</Label>
 			<Select.Root type="single" bind:value={selectedUser} onValueChange={onUserSelectChange}>
 				<Select.Trigger class="h-9 w-48">
 					<User class="w-4 h-4 mr-2 text-muted-foreground" />
@@ -446,7 +448,7 @@
 									type="button"
 									class="p-1 mr-1 opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
 									onclick={(e) => { e.stopPropagation(); e.preventDefault(); removeCustomUser(cu); customUsers = getCustomUsers(); if (selectedUser === cu) { selectedUser = 'root'; commitUser('root'); } }}
-									title="Remove user"
+									title={m.remove_user()}
 								>
 									<Trash2 class="w-3 h-3" />
 								</button>
@@ -458,7 +460,7 @@
 					<div class="px-2 py-1">
 						<Input
 							class="h-7 text-xs"
-							placeholder="Add user... (Enter)"
+							placeholder={m.add_user_enter()}
 							bind:value={customUserInput}
 							onkeydown={onCustomUserKeydown}
 							onclick={(e) => e.stopPropagation()}
@@ -476,24 +478,24 @@
 			<div class="flex items-center justify-center h-full text-muted-foreground">
 				<div class="text-center">
 					<TerminalIcon class="w-12 h-12 mx-auto mb-3 opacity-50" />
-					<p>Select a container to open shell</p>
+					<p>{m.select_a_container_to_open_shell()}</p>
 				</div>
 			</div>
 		{:else if terminalMode === 'exec' && detectingShells}
 			<div class="flex items-center justify-center h-full text-muted-foreground">
 				<div class="text-center">
 					<Loader2 class="w-12 h-12 mx-auto mb-3 opacity-50 animate-spin" />
-					<p>Detecting available shells...</p>
+					<p>{m.detecting_available_shells()}</p>
 				</div>
 			</div>
 		{:else if terminalMode === 'exec' && !anyShellAvailable}
 			<div class="flex items-center justify-center h-full text-muted-foreground">
 				<div class="text-center">
 					<AlertCircle class="w-12 h-12 mx-auto mb-3 opacity-50 text-amber-500" />
-					<p class="font-medium text-amber-500">No shell available in this container</p>
-					<p class="text-sm mt-2">This container may not have a shell installed.</p>
+					<p class="font-medium text-amber-500">{m.no_shell_available_in_this_container()}</p>
+					<p class="text-sm mt-2">{m.this_container_may_not_have_a_shell_installed()}</p>
 					<p class="text-xs mt-1 text-muted-foreground/70">
-						Containers built from scratch or distroless images often don't include shells.
+						{m.containers_built_from_scratch_or_distroless_imag()}
 					</p>
 				</div>
 			</div>
@@ -504,41 +506,41 @@
 					{#if connected}
 						<span class="inline-flex items-center gap-1 text-xs text-green-500">
 							<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-							Connected
+							{m.connected()}
 						</span>
 					{:else}
-						<span class="text-xs text-zinc-500">Disconnected</span>
+						<span class="text-xs text-zinc-500">{m.disconnected()}</span>
 					{/if}
 				</div>
 				<div class="flex items-center gap-3">
 					<Select.Root type="single" value={String(terminalFontSize)} onValueChange={(v) => changeFontSize(Number(v))}>
 						<Select.Trigger class="!h-5 !py-0 w-14 bg-zinc-800 border-zinc-700 text-xs text-zinc-300 px-1.5 [&_svg]:size-3">
-							<span>{terminalFontSize}px</span>
+							<span>{m.terminalfontsize_px({ terminalFontSize: orEmpty(terminalFontSize) })}</span>
 						</Select.Trigger>
 						<Select.Content>
 							{#each fontSizeOptions as size}
-								<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{size}px</Select.Item>
+								<Select.Item value={String(size)} label="{size}px" class="pe-2 [&>span:first-child]:hidden">{m.size_px({ size: orEmpty(size) })}</Select.Item>
 							{/each}
 						</Select.Content>
 					</Select.Root>
 					<button
 						onclick={() => terminalComponent?.copyOutput()}
 						class="p-1 rounded hover:bg-zinc-800 transition-colors"
-						title="Copy output"
+						title={m.copy_output()}
 					>
 						<Copy class="w-3 h-3 text-zinc-500 hover:text-zinc-300" />
 					</button>
 					<button
 						onclick={() => terminalComponent?.clear()}
 						class="p-1 rounded hover:bg-zinc-800 transition-colors"
-						title="Clear (Cmd+L)"
+						title={m.clear_cmd_l()}
 					>
 						<Trash2 class="w-3 h-3 text-zinc-500 hover:text-zinc-300" />
 					</button>
 					<button
 						onclick={() => terminalComponent?.reconnect()}
 						class="p-1 rounded hover:bg-zinc-800 transition-colors"
-						title="Reconnect"
+						title={m.reconnect()}
 					>
 						<RefreshCw class="w-3 h-3 text-zinc-500 hover:text-zinc-300" />
 					</button>

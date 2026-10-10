@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	let { class: className = 'w-4 h-4' }: { class?: string } = $props();
 </script>
 
@@ -8,7 +9,7 @@
 	xmlns="http://www.w3.org/2000/svg"
 	class={className}
 	fill="currentColor"
-	aria-label="Azure Key Vault"
+	aria-label={m.azure_key_vault()}
 >
 	<path
 		d="M9,.5A8.5,8.5,0,1,0,17.5,9,8.51,8.51,0,0,0,9,.5ZM9,16.34A7.34,7.34,0,1,1,16.34,9,7.34,7.34,0,0,1,9,16.34Z"

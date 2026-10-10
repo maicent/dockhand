@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Loader2, CheckCircle2, XCircle, Rocket } from 'lucide-svelte';
 	import StackIcon from '$lib/components/StackIcon.svelte';
 	import EnvironmentIcon from '$lib/components/EnvironmentIcon.svelte';
@@ -44,7 +45,7 @@
 		<span class="truncate font-medium">{stackName}</span>
 	{/if}
 	{#if env}
-		<span class="shrink-0 text-muted-foreground">on</span>
+		<span class="shrink-0 text-muted-foreground">{m.on()}</span>
 		<EnvironmentIcon icon={env.icon || 'server'} envId={env.id} class="{iconClass} shrink-0 text-muted-foreground" />
 		<span class="truncate font-medium text-amber-600 dark:text-amber-400">{env.name}</span>
 	{/if}

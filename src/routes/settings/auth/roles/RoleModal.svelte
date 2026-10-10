@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import { page } from '$app/stores'; // BETA GATE: backups feature flag
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -93,116 +95,116 @@
 	// Permission definitions - separated into system and environment categories
 	const systemPermissions = {
 		users: [
-			{ key: 'view', label: 'View users' },
-			{ key: 'create', label: 'Create users' },
-			{ key: 'edit', label: 'Edit users' },
-			{ key: 'delete', label: 'Delete users' }
+			{ key: 'view', label: m.view_users() },
+			{ key: 'create', label: m.create_users() },
+			{ key: 'edit', label: m.edit_users() },
+			{ key: 'delete', label: m.delete_users() }
 		],
 		settings: [
-			{ key: 'view', label: 'View settings' },
-			{ key: 'edit', label: 'Edit settings' }
+			{ key: 'view', label: m.view_settings() },
+			{ key: 'edit', label: m.edit_settings() }
 		],
 		environments: [
-			{ key: 'view', label: 'View environments' },
-			{ key: 'create', label: 'Create environments' },
-			{ key: 'edit', label: 'Edit environments' },
-			{ key: 'delete', label: 'Delete environments' }
+			{ key: 'view', label: m.view_environments() },
+			{ key: 'create', label: m.create_environments() },
+			{ key: 'edit', label: m.edit_environments() },
+			{ key: 'delete', label: m.delete_environments() }
 		],
 		registries: [
-			{ key: 'view', label: 'View registries' },
-			{ key: 'create', label: 'Create registries' },
-			{ key: 'edit', label: 'Edit registries' },
-			{ key: 'delete', label: 'Delete registries' }
+			{ key: 'view', label: m.view_registries() },
+			{ key: 'create', label: m.create_registries() },
+			{ key: 'edit', label: m.edit_registries() },
+			{ key: 'delete', label: m.delete_registries() }
 		],
 		notifications: [
-			{ key: 'view', label: 'View notifications' },
-			{ key: 'create', label: 'Create notifications' },
-			{ key: 'edit', label: 'Edit notifications' },
-			{ key: 'delete', label: 'Delete notifications' },
-			{ key: 'test', label: 'Test notifications' }
+			{ key: 'view', label: m.view_notifications() },
+			{ key: 'create', label: m.create_notifications() },
+			{ key: 'edit', label: m.edit_notifications() },
+			{ key: 'delete', label: m.delete_notifications() },
+			{ key: 'test', label: m.test_notifications() }
 		],
 		configsets: [
-			{ key: 'view', label: 'View config sets' },
-			{ key: 'create', label: 'Create config sets' },
-			{ key: 'edit', label: 'Edit config sets' },
-			{ key: 'delete', label: 'Delete config sets' }
+			{ key: 'view', label: m.view_config_sets() },
+			{ key: 'create', label: m.create_config_sets() },
+			{ key: 'edit', label: m.edit_config_sets() },
+			{ key: 'delete', label: m.delete_config_sets() }
 		],
 		git: [
-			{ key: 'view', label: 'View credentials & repos' },
-			{ key: 'create', label: 'Create credentials & repos' },
-			{ key: 'edit', label: 'Edit credentials & repos' },
-			{ key: 'delete', label: 'Delete credentials & repos' }
+			{ key: 'view', label: m.view_credentials_repos() },
+			{ key: 'create', label: m.create_credentials_repos() },
+			{ key: 'edit', label: m.edit_credentials_repos() },
+			{ key: 'delete', label: m.delete_credentials_repos() }
 		],
 		license: [
-			{ key: 'manage', label: 'Manage license' }
+			{ key: 'manage', label: m.manage_license() }
 		],
 		audit_logs: [
-			{ key: 'view', label: 'View audit logs' }
+			{ key: 'view', label: m.view_audit_logs() }
 		],
 		schedules: [
-			{ key: 'view', label: 'View schedules' },
-			{ key: 'edit', label: 'Edit schedules' },
-			{ key: 'run', label: 'Run schedules' }
+			{ key: 'view', label: m.view_schedules() },
+			{ key: 'edit', label: m.edit_schedules() },
+			{ key: 'run', label: m.run_schedules() }
 		],
 		secrets: [
-			{ key: 'view', label: 'View secrets' },
-			{ key: 'create', label: 'Create secrets' },
-			{ key: 'edit', label: 'Edit secrets' },
-			{ key: 'delete', label: 'Delete secrets' }
+			{ key: 'view', label: m.view_secrets() },
+			{ key: 'create', label: m.create_secrets() },
+			{ key: 'edit', label: m.edit_secrets() },
+			{ key: 'delete', label: m.delete_secrets() }
 		],
 		backups: [
-			{ key: 'view', label: 'View backups' },
-			{ key: 'run', label: 'Run backups' },
-			{ key: 'restore', label: 'Restore from backups' },
-			{ key: 'manage', label: 'Manage destinations' }
+			{ key: 'view', label: m.view_backups() },
+			{ key: 'run', label: m.run_backups() },
+			{ key: 'restore', label: m.restore_from_backups() },
+			{ key: 'manage', label: m.manage_destinations() }
 		]
 	};
 
 	const environmentPermissions = {
 		activity: [
-			{ key: 'view', label: 'View activity' }
+			{ key: 'view', label: m.view_activity() }
 		],
 		containers: [
-			{ key: 'view', label: 'View containers' },
-			{ key: 'create', label: 'Create containers' },
-			{ key: 'start', label: 'Start containers' },
-			{ key: 'stop', label: 'Stop containers' },
-			{ key: 'restart', label: 'Restart containers' },
-			{ key: 'remove', label: 'Remove containers' },
-			{ key: 'exec', label: 'Execute terminal' },
-			{ key: 'logs', label: 'View logs' },
-			{ key: 'inspect', label: 'Inspect containers' }
+			{ key: 'view', label: m.view_containers() },
+			{ key: 'create', label: m.create_containers() },
+			{ key: 'start', label: m.start_containers() },
+			{ key: 'stop', label: m.stop_containers() },
+			{ key: 'restart', label: m.restart_containers() },
+			{ key: 'remove', label: m.remove_containers() },
+			{ key: 'exec', label: m.execute_terminal() },
+			{ key: 'logs', label: m.view_logs() },
+			{ key: 'inspect', label: m.inspect_containers() }
 		],
 		images: [
-			{ key: 'view', label: 'View images' },
-			{ key: 'pull', label: 'Pull images' },
-			{ key: 'load', label: 'Load images from tar' },
-			{ key: 'push', label: 'Push images' },
-			{ key: 'remove', label: 'Remove images' },
-			{ key: 'build', label: 'Build images' },
-			{ key: 'inspect', label: 'Inspect images' }
+			{ key: 'view', label: m.view_images() },
+			{ key: 'pull', label: m.pull_images() },
+			{ key: 'load', label: m.load_images_from_tar() },
+			{ key: 'push', label: m.push_images() },
+			{ key: 'remove', label: m.remove_images() },
+			{ key: 'build', label: m.build_images() },
+			{ key: 'inspect', label: m.inspect_images() }
 		],
 		volumes: [
-			{ key: 'view', label: 'View volumes' },
-			{ key: 'create', label: 'Create volumes' },
-			{ key: 'remove', label: 'Remove volumes' },
-			{ key: 'inspect', label: 'Inspect volumes' }
+			{ key: 'view', label: m.view_volumes() },
+			{ key: 'create', label: m.create_volumes() },
+			{ key: 'remove', label: m.remove_volumes() },
+			{ key: 'inspect', label: m.inspect_volumes() }
 		],
 		networks: [
-			{ key: 'view', label: 'View networks' },
-			{ key: 'create', label: 'Create networks' },
-			{ key: 'remove', label: 'Remove networks' },
-			{ key: 'inspect', label: 'Inspect networks' },
-			{ key: 'connect', label: 'Connect containers' },
-			{ key: 'disconnect', label: 'Disconnect containers' }
+			{ key: 'view', label: m.view_networks() },
+			{ key: 'create', label: m.create_networks() },
+			{ key: 'remove', label: m.remove_networks() },
+			{ key: 'inspect', label: m.inspect_networks() },
+			{ key: 'connect', label: m.connect_containers() },
+			{ key: 'disconnect', label: m.disconnect_containers() }
 		],
 		stacks: [
-			{ key: 'view', label: 'View stacks' },
-			{ key: 'create', label: 'Create stacks' },
-			{ key: 'start', label: 'Start stacks' },
-			{ key: 'stop', label: 'Stop stacks' },
-			{ key: 'remove', label: 'Remove stacks' },
-			{ key: 'edit', label: 'Edit stacks' }
+			{ key: 'view', label: m.view_stacks() },
+			{ key: 'create', label: m.create_stacks() },
+			{ key: 'start', label: m.start_stacks() },
+			{ key: 'stop', label: m.stop_stacks() },
+			{ key: 'remove', label: m.remove_stacks() },
+			{ key: 'edit', label: m.edit_stacks() }
 		]
 	};
 
@@ -452,22 +454,22 @@
 			<Dialog.Title class="flex items-center gap-2">
 				{#if isEditing}
 					<Pencil class="w-5 h-5" />
-					Edit role
+					{m.edit_role()}
 				{:else if isCopying}
 					<Copy class="w-5 h-5" />
-					Copy role
+					{m.copy_role()}
 				{:else}
 					<Shield class="w-5 h-5" />
-					Create role
+					{m.create_role()}
 				{/if}
 			</Dialog.Title>
 			<Dialog.Description>
 				{#if isEditing}
-					Update role permissions
+					{m.update_role_permissions()}
 				{:else if isCopying}
-					Create a new role based on "{copyFrom?.name}"
+					{m.create_a_new_role_based_on_arg1({ arg1: orEmpty(copyFrom?.name) })}
 				{:else}
-					Define a new role with specific permissions
+					{m.define_a_new_role_with_specific_permissions()}
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
@@ -479,10 +481,10 @@
 		{/if}
 		<div class="flex-shrink-0 grid grid-cols-2 gap-4 py-4">
 			<div class="space-y-2">
-				<Label>Role name</Label>
+				<Label>{m.role_name()}</Label>
 				<Input
 					bind:value={formName}
-					placeholder="Developer"
+					placeholder={m.developer()}
 					class={formErrors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 					oninput={() => formErrors.name = undefined}
 				/>
@@ -491,10 +493,10 @@
 				{/if}
 			</div>
 			<div class="space-y-2">
-				<Label>Description (optional)</Label>
+				<Label>{m.description_optional()}</Label>
 				<Input
 					bind:value={formDescription}
-					placeholder="Access to development resources"
+					placeholder={m.access_to_development_resources()}
 				/>
 			</div>
 		</div>
@@ -506,8 +508,8 @@
 				<div class="px-4 py-3 border-b bg-muted/30">
 					<div class="flex items-center gap-2">
 						<Building2 class="w-4 h-4" />
-						<span class="font-medium text-sm">System permissions</span>
-						<span class="text-xs text-muted-foreground">(always global)</span>
+						<span class="font-medium text-sm">{m.system_permissions()}</span>
+						<span class="text-xs text-muted-foreground">{m.always_global()}</span>
 					</div>
 				</div>
 				<div class="p-3 grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -527,7 +529,7 @@
 									class="text-xs text-primary hover:underline"
 									onclick={() => toggleAllPermissions(category as keyof typeof formPermissions, true, permissions)}
 								>
-									All
+									{m.all()}
 								</button>
 								<span class="text-muted-foreground">|</span>
 								<button
@@ -535,7 +537,7 @@
 									class="text-xs text-muted-foreground hover:underline"
 									onclick={() => toggleAllPermissions(category as keyof typeof formPermissions, false, permissions)}
 								>
-									Clear
+									{m.clear()}
 								</button>
 							</div>
 							<div class="flex flex-col gap-1.5">
@@ -564,11 +566,11 @@
 					<div class="flex items-center justify-between">
 						<div class="flex items-center gap-2">
 							<Globe class="w-4 h-4" />
-							<span class="font-medium text-sm">Environment permissions</span>
+							<span class="font-medium text-sm">{m.environment_permissions()}</span>
 						</div>
 						{#if environments.length > 0}
 							<div class="flex items-center gap-2">
-								<span class="text-xs text-muted-foreground">All environments (incl. new)</span>
+								<span class="text-xs text-muted-foreground">{m.all_environments_incl_new()}</span>
 								<TogglePill bind:checked={formAllEnvironments} />
 							</div>
 						{/if}
@@ -589,13 +591,13 @@
 								{/each}
 							</div>
 							{#if formEnvironmentIds.length === 0}
-								<p class="text-xs text-amber-600 mt-2">Select at least one environment for these permissions to be effective.</p>
+								<p class="text-xs text-amber-600 mt-2">{m.select_at_least_one_environment_for_these_permis()}</p>
 							{/if}
 						{:else}
-							<p class="text-xs text-muted-foreground mt-1">Permissions apply to all environments, including future ones.</p>
+							<p class="text-xs text-muted-foreground mt-1">{m.permissions_apply_to_all_environments_including()}</p>
 						{/if}
 					{:else}
-						<p class="text-xs text-muted-foreground mt-1">Permissions apply to all environments.</p>
+						<p class="text-xs text-muted-foreground mt-1">{m.permissions_apply_to_all_environments()}</p>
 					{/if}
 				</div>
 				<div class="p-3 grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -614,7 +616,7 @@
 									class="text-xs text-primary hover:underline"
 									onclick={() => toggleAllPermissions(category as keyof typeof formPermissions, true, permissions)}
 								>
-									All
+									{m.all()}
 								</button>
 								<span class="text-muted-foreground">|</span>
 								<button
@@ -622,7 +624,7 @@
 									class="text-xs text-muted-foreground hover:underline"
 									onclick={() => toggleAllPermissions(category as keyof typeof formPermissions, false, permissions)}
 								>
-									Clear
+									{m.clear()}
 								</button>
 							</div>
 							<div class="flex flex-col gap-1.5">
@@ -647,7 +649,7 @@
 		</div>
 
 		<Dialog.Footer class="flex-shrink-0 pt-4">
-			<Button variant="outline" onclick={handleClose}>Cancel</Button>
+			<Button variant="outline" onclick={handleClose}>{m.cancel()}</Button>
 			<Button onclick={save} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />

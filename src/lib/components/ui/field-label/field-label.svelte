@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Label } from '$lib/components/ui/label';
 
 	// Form field label with a consistent required/optional marker: a red "*" glued to
@@ -16,5 +17,5 @@
 
 <Label for={forId}>
 	<span>{label}{#if required}<span class="text-destructive">&nbsp;*</span>{/if}</span>
-	{#if !required && showOptional}<span class="text-muted-foreground text-xs font-normal">(optional)</span>{/if}
+	{#if !required && showOptional}<span class="text-muted-foreground text-xs font-normal">{m.optional()}</span>{/if}
 </Label>

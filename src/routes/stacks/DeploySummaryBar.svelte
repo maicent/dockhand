@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { RefreshCw, Plus, Play, Download, Hammer } from 'lucide-svelte';
 	import ContainerIcon from '$lib/components/ContainerIcon.svelte';
 	import { summarize } from '$lib/utils/deploy-summary-core';
@@ -21,13 +23,13 @@
 {#if show}
 	<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-normal text-muted-foreground {className}">
 		{#if s.containersRecreated > 0}
-			<span class="inline-flex items-center gap-1"><RefreshCw class="h-3 w-3" />{s.containersRecreated} recreated</span>
+			<span class="inline-flex items-center gap-1"><RefreshCw class="h-3 w-3" />{m.containersrecreated_recreated({ containersRecreated: orEmpty(s.containersRecreated) })}</span>
 		{/if}
 		{#if s.containersCreated > 0}
-			<span class="inline-flex items-center gap-1"><Plus class="h-3 w-3" />{s.containersCreated} created</span>
+			<span class="inline-flex items-center gap-1"><Plus class="h-3 w-3" />{m.containerscreated_created({ containersCreated: orEmpty(s.containersCreated) })}</span>
 		{/if}
 		{#if s.containersStarted > 0}
-			<span class="inline-flex items-center gap-1"><Play class="h-3 w-3" />{s.containersStarted} started</span>
+			<span class="inline-flex items-center gap-1"><Play class="h-3 w-3" />{m.containersstarted_started({ containersStarted: orEmpty(s.containersStarted) })}</span>
 		{/if}
 		{#if s.imagesPulled.length > 0}
 			<span class="inline-flex items-center gap-1.5">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { TogglePill } from '$lib/components/ui/toggle-pill';
 	import {
 		Box,
@@ -49,85 +50,85 @@
 	const NOTIFICATION_EVENT_GROUPS: EventGroup[] = [
 		{
 			id: 'container',
-			label: 'Container events',
+			label: m.container_events(),
 			icon: Box,
 			events: [
-				{ id: 'container_started', label: 'Container started', description: 'When a container starts running' },
-				{ id: 'container_stopped', label: 'Container stopped', description: 'When a container is stopped' },
-				{ id: 'container_restarted', label: 'Container restarted', description: 'When a container restarts' },
-				{ id: 'container_exited', label: 'Container exited', description: 'When a container exits unexpectedly' },
-				{ id: 'container_unhealthy', label: 'Container unhealthy', description: 'When a container health check fails' },
-				{ id: 'container_healthy', label: 'Container healthy', description: 'When a container health check recovers' },
-				{ id: 'container_oom', label: 'Container OOM killed', description: 'When a container is killed due to out of memory' },
-				{ id: 'container_updated', label: 'Container updated', description: 'When a container image is updated' }
+				{ id: 'container_started', label: m.container_started(), description: m.when_a_container_starts_running() },
+				{ id: 'container_stopped', label: m.container_stopped(), description: m.when_a_container_is_stopped() },
+				{ id: 'container_restarted', label: m.container_restarted(), description: m.when_a_container_restarts() },
+				{ id: 'container_exited', label: m.container_exited(), description: m.when_a_container_exits_unexpectedly() },
+				{ id: 'container_unhealthy', label: m.container_unhealthy(), description: m.when_a_container_health_check_fails() },
+				{ id: 'container_healthy', label: m.container_healthy(), description: m.when_a_container_health_check_recovers() },
+				{ id: 'container_oom', label: m.container_oom_killed(), description: m.when_a_container_is_killed_due_to_out_of_memory() },
+				{ id: 'container_updated', label: m.container_updated(), description: m.when_a_container_image_is_updated() }
 			]
 		},
 		{
 			id: 'auto_update',
-			label: 'Auto-update events',
+			label: m.auto_update_events(),
 			icon: RefreshCw,
 			events: [
-				{ id: 'auto_update_success', label: 'Update succeeded', description: 'Container successfully updated to new image' },
-				{ id: 'auto_update_failed', label: 'Update failed', description: 'Container auto-update failed' },
-				{ id: 'auto_update_blocked', label: 'Update blocked', description: 'Update blocked due to vulnerability criteria' },
-				{ id: 'updates_detected', label: 'Updates detected', description: 'Container image updates are available' },
-				{ id: 'newer_version_available', label: 'Newer version tag', description: 'A newer version tag is published for a pinned image (semver, advisory)' },
-				{ id: 'batch_update_success', label: 'Batch update completed', description: 'Scheduled container updates completed' }
+				{ id: 'auto_update_success', label: m.update_succeeded(), description: m.container_successfully_updated_to_new_image() },
+				{ id: 'auto_update_failed', label: m.update_failed(), description: m.container_auto_update_failed() },
+				{ id: 'auto_update_blocked', label: m.update_blocked(), description: m.update_blocked_due_to_vulnerability_criteria() },
+				{ id: 'updates_detected', label: m.updates_detected(), description: m.container_image_updates_are_available() },
+				{ id: 'newer_version_available', label: m.newer_version_tag(), description: m.a_newer_version_tag_is_published_for_a_pinned_im() },
+				{ id: 'batch_update_success', label: m.batch_update_completed(), description: m.scheduled_container_updates_completed() }
 			]
 		},
 		{
 			id: 'git_stack',
-			label: 'Git stack events',
+			label: m.git_stack_events(),
 			icon: GitBranch,
 			events: [
-				{ id: 'git_sync_success', label: 'Git sync succeeded', description: 'Git stack synced and deployed successfully' },
-				{ id: 'git_sync_failed', label: 'Git sync failed', description: 'Git stack sync or deploy failed' },
-				{ id: 'git_sync_skipped', label: 'Git sync skipped', description: 'Git stack sync skipped (no changes)' }
+				{ id: 'git_sync_success', label: m.git_sync_succeeded(), description: m.git_stack_synced_and_deployed_successfully() },
+				{ id: 'git_sync_failed', label: m.git_sync_failed(), description: m.git_stack_sync_or_deploy_failed() },
+				{ id: 'git_sync_skipped', label: m.git_sync_skipped(), description: m.git_stack_sync_skipped_no_changes() }
 			]
 		},
 		{
 			id: 'stack',
-			label: 'Stack events',
+			label: m.stack_events(),
 			icon: Layers,
 			events: [
-				{ id: 'stack_started', label: 'Stack started', description: 'When a compose stack starts' },
-				{ id: 'stack_stopped', label: 'Stack stopped', description: 'When a compose stack stops' },
-				{ id: 'stack_deployed', label: 'Stack deployed', description: 'Stack deployed (new or update)' },
-				{ id: 'stack_deploy_failed', label: 'Stack deploy failed', description: 'Stack deployment failed' }
+				{ id: 'stack_started', label: m.stack_started(), description: m.when_a_compose_stack_starts() },
+				{ id: 'stack_stopped', label: m.stack_stopped(), description: m.when_a_compose_stack_stops() },
+				{ id: 'stack_deployed', label: m.stack_deployed(), description: m.stack_deployed_new_or_update() },
+				{ id: 'stack_deploy_failed', label: m.stack_deploy_failed(), description: m.stack_deployment_failed() }
 			]
 		},
 		{
 			id: 'security',
-			label: 'Security events',
+			label: m.security_events(),
 			icon: Shield,
 			events: [
-				{ id: 'vulnerability_critical', label: 'Critical vulns found', description: 'Critical vulnerabilities found in image scan' },
-				{ id: 'vulnerability_high', label: 'High vulns found', description: 'High severity vulnerabilities found' },
-				{ id: 'vulnerability_any', label: 'Any vulns found', description: 'Any vulnerabilities found (medium/low)' }
+				{ id: 'vulnerability_critical', label: m.critical_vulns_found(), description: m.critical_vulnerabilities_found_in_image_scan() },
+				{ id: 'vulnerability_high', label: m.high_vulns_found(), description: m.high_severity_vulnerabilities_found() },
+				{ id: 'vulnerability_any', label: m.any_vulns_found(), description: m.any_vulnerabilities_found_medium_low() }
 			]
 		},
 		{
 			id: 'backup',
-			label: 'Backup events',
+			label: m.backup_events(),
 			icon: Archive,
 			events: [
-				{ id: 'backup_success', label: 'Backup succeeded', description: 'Backup completed successfully' },
-				{ id: 'backup_failed', label: 'Backup failed', description: 'Backup failed' },
-				{ id: 'restore_success', label: 'Restore succeeded', description: 'Restore completed successfully' },
-				{ id: 'restore_failed', label: 'Restore failed', description: 'Restore failed' }
+				{ id: 'backup_success', label: m.backup_succeeded(), description: m.backup_completed_successfully() },
+				{ id: 'backup_failed', label: m.backup_failed(), description: m.backup_failed() },
+				{ id: 'restore_success', label: m.restore_succeeded(), description: m.restore_completed_successfully() },
+				{ id: 'restore_failed', label: m.restore_failed(), description: m.restore_failed() }
 			]
 		},
 		{
 			id: 'system',
-			label: 'System events',
+			label: m.system_events(),
 			icon: HardDrive,
 			events: [
-				{ id: 'image_pulled', label: 'Image pulled', description: 'When a new image is pulled' },
-				{ id: 'image_prune_success', label: 'Image prune completed', description: 'Scheduled image prune completed successfully' },
-				{ id: 'image_prune_failed', label: 'Image prune failed', description: 'Scheduled image prune failed' },
-				{ id: 'environment_offline', label: 'Environment offline', description: 'Environment became unreachable' },
-				{ id: 'environment_online', label: 'Environment online', description: 'Environment came back online' },
-				{ id: 'disk_space_warning', label: 'Disk space warning', description: 'Docker disk usage exceeds threshold' }
+				{ id: 'image_pulled', label: m.image_pulled(), description: m.when_a_new_image_is_pulled() },
+				{ id: 'image_prune_success', label: m.image_prune_completed(), description: m.scheduled_image_prune_completed_successfully() },
+				{ id: 'image_prune_failed', label: m.image_prune_failed(), description: m.scheduled_image_prune_failed() },
+				{ id: 'environment_offline', label: m.environment_offline(), description: m.environment_became_unreachable() },
+				{ id: 'environment_online', label: m.environment_online(), description: m.environment_came_back_online() },
+				{ id: 'disk_space_warning', label: m.disk_space_warning(), description: m.docker_disk_usage_exceeds_threshold() }
 			]
 		}
 	];

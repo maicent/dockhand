@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -130,7 +131,7 @@
 						await authStore.check(); // confirm with the server whether the session is actually gone
 						const auth = get(authStore);
 						if (auth.authEnabled && !auth.authenticated && window.location.pathname !== '/login') {
-							toast.error('Your session has expired. Please sign in again.');
+							toast.error(m.your_session_has_expired_please_sign_in_again());
 							goto('/login');
 						}
 					} finally {
@@ -189,7 +190,7 @@
 
 <svelte:head>
 	<link rel="icon" href="/logo_light.webp" />
-	<title>Dockhand - Docker Management</title>
+	<title>{m.dockhand_docker_management()}</title>
 </svelte:head>
 
 {#if noSidebar}
@@ -213,14 +214,14 @@
 						class="flex items-center gap-2 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground border rounded-md hover:bg-muted/50 transition-colors"
 					>
 						<Search class="w-3.5 h-3.5" />
-						<span class="hidden sm:inline">Search...</span>
+						<span class="hidden sm:inline">{m.search()}</span>
 						<kbd class="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-2xs font-medium text-muted-foreground">
 							{#if isMac}
 								<span class="text-xs">⌘</span>
 							{:else}
-								<span class="text-xs">Ctrl</span>
+								<span class="text-xs">{m.ctrl()}</span>
 							{/if}
-							K
+							{m.k()}
 						</kbd>
 					</button>
 					{#if $expiryMessage}

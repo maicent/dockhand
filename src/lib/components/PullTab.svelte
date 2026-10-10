@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { tick } from 'svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -304,12 +306,12 @@
 	<!-- Image Input -->
 	{#if showImageInput}
 		<div class="space-y-2 shrink-0">
-			<Label for="pull-image" class="text-sm font-medium">Image name</Label>
+			<Label for="pull-image" class="text-sm font-medium">{m.image_name()}</Label>
 			<div class="flex gap-2">
 				<Input
 					id="pull-image"
 					bind:value={image}
-					placeholder="nginx:latest, ubuntu:22.04, postgres:16"
+					placeholder={m.nginx_latest_ubuntu_22_04_postgres_16()}
 					class="flex-1 h-10"
 					disabled={isPulling}
 				/>
@@ -320,10 +322,10 @@
 				>
 					{#if isPulling}
 						<Download class="w-4 h-4 mr-2 animate-spin" />
-						Pulling...
+						{m.pulling()}
 					{:else}
 						<Download class="w-4 h-4" />
-						Pull
+						{m.pull()}
 					{/if}
 				</Button>
 			</div>
@@ -338,20 +340,20 @@
 				<div class="flex items-center gap-2">
 					{#if status === 'pulling'}
 						<Download class="w-4 h-4 animate-spin text-blue-600" />
-						<span class="text-sm">Pulling layers...</span>
+						<span class="text-sm">{m.pulling_layers()}</span>
 					{:else if status === 'complete'}
 						<CheckCircle2 class="w-4 h-4 text-green-600" />
-						<span class="text-sm text-green-600">Pull completed!</span>
+						<span class="text-sm text-green-600">{m.pull_completed()}</span>
 					{:else if status === 'error'}
 						<XCircle class="w-4 h-4 text-red-600" />
-						<span class="text-sm text-red-600">Failed</span>
+						<span class="text-sm text-red-600">{m.failed()}</span>
 					{/if}
 				</div>
 				<div class="flex items-center gap-3">
 					{#if status === 'pulling' || status === 'complete'}
 						<Badge variant="secondary" class="text-xs min-w-20 text-center">
 							{#if totalLayers > 0}
-								{completedLayers} / {totalLayers} layers
+								{m.completedlayers_totallayers_layers({ completedLayers: orEmpty(completedLayers), totalLayers: orEmpty(totalLayers) })}
 							{:else}
 								...
 							{/if}
@@ -369,7 +371,7 @@
 					<Progress value={overallProgress} class="h-2" />
 					<div class="text-xs text-muted-foreground h-4">
 						{#if downloadStats.totalBytes > 0}
-							Downloaded: {formatBytes(downloadStats.downloadedBytes)} / {formatBytes(downloadStats.totalBytes)}
+							{m.downloaded_arg1_arg2({ arg1: orEmpty(formatBytes(downloadStats.downloadedBytes)), arg2: orEmpty(formatBytes(downloadStats.totalBytes)) })}
 						{/if}
 					</div>
 				</div>
@@ -392,9 +394,9 @@
 				<table class="w-full text-xs">
 					<thead class="bg-muted sticky top-0">
 						<tr>
-							<th class="text-left py-1.5 px-3 font-medium w-28">Layer ID</th>
-							<th class="text-left py-1.5 px-3 font-medium">Status</th>
-							<th class="text-right py-1.5 px-3 font-medium w-24">Progress</th>
+							<th class="text-left py-1.5 px-3 font-medium w-28">{m.layer_id()}</th>
+							<th class="text-left py-1.5 px-3 font-medium">{m.status()}</th>
+							<th class="text-right py-1.5 px-3 font-medium w-24">{m.progress()}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -434,7 +436,7 @@
 											<span class="text-muted-foreground w-8">{percentage}%</span>
 										</div>
 									{:else if isComplete}
-										<span class="text-green-600">Done</span>
+										<span class="text-green-600">{m.done()}</span>
 									{:else}
 										<span class="text-muted-foreground">-</span>
 									{/if}
@@ -451,9 +453,9 @@
 			<div class="flex items-center justify-between text-xs text-muted-foreground mb-2 shrink-0">
 				<div class="flex items-center gap-2">
 					<Terminal class="w-3.5 h-3.5" />
-					<span>Output ({outputLines.length} lines)</span>
+					<span>{m.output_length_lines({ length: orEmpty(outputLines.length) })}</span>
 				</div>
-				<button type="button" onclick={toggleLogTheme} class="p-1 rounded hover:bg-muted transition-colors cursor-pointer" title="Toggle log theme">
+				<button type="button" onclick={toggleLogTheme} class="p-1 rounded hover:bg-muted transition-colors cursor-pointer" title={m.toggle_log_theme()}>
 					{#if logDarkMode}
 						<Sun class="w-3.5 h-3.5" />
 					{:else}
@@ -468,13 +470,13 @@
 				{#each outputLines as line}
 					<div class="whitespace-pre-wrap break-all leading-relaxed flex items-start gap-1.5">
 						{#if line.startsWith('[pull]')}
-							<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-blue-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">pull</span>
+							<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-blue-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.pull_c872()}</span>
 							<span>{line.slice(7)}</span>
 						{:else if line.startsWith('[layer]')}
-							<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-green-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">layer</span>
+							<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-green-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.layer()}</span>
 							<span>{line.slice(8)}</span>
 						{:else if line.startsWith('[error]')}
-							<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-red-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">error</span>
+							<span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-red-500 text-white shadow-[0_1px_1px_rgba(0,0,0,0.2)] shrink-0 mt-[3px]">{m.error_11f9()}</span>
 							<span class="text-red-400">{line.slice(8)}</span>
 						{:else}
 							<span>{line}</span>
@@ -488,7 +490,7 @@
 	<!-- Idle state -->
 	{#if status === 'idle' && !showImageInput}
 		<div class="flex-1 flex items-center justify-center text-muted-foreground">
-			<p class="text-sm">Enter an image name to start pulling</p>
+			<p class="text-sm">{m.enter_an_image_name_to_start_pulling()}</p>
 		</div>
 	{/if}
 </div>

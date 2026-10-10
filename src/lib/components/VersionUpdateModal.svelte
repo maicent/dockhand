@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Box, ArrowRight, ExternalLink, Copy, Check, RefreshCw, ChevronDown, BookOpen, ShieldCheck, Info } from 'lucide-svelte';
@@ -104,7 +106,7 @@
 		const ok = await copyToClipboard(`${repoBase}:${newerVersion.tag}`);
 		if (ok) {
 			copied = true;
-			toast.success('New image tag copied');
+			toast.success(m.new_image_tag_copied());
 			setTimeout(() => (copied = false), 1500);
 		}
 	}
@@ -116,7 +118,7 @@
 		const ok = await copyToClipboard(`${repoBase}:${newerVersion.tag}@${newerVersion.digest}`);
 		if (ok) {
 			copiedPinned = true;
-			toast.success('New tag with digest copied');
+			toast.success(m.new_tag_with_digest_copied());
 			setTimeout(() => (copiedPinned = false), 1500);
 		}
 	}
@@ -174,7 +176,7 @@
 							{newerVersion.bump}
 						</span>
 						{#if versionPath.length > 1}
-							<span class="text-xs font-normal text-muted-foreground">{versionPath.length} versions ahead</span>
+							<span class="text-xs font-normal text-muted-foreground">{m.length_versions_ahead({ length: orEmpty(versionPath.length) })}</span>
 						{/if}
 					</span>
 				</Dialog.Title>
@@ -201,7 +203,7 @@
 			<!-- Version path. A version with release notes is a link that opens + scrolls to them. -->
 			{#if versionPath.length > 1}
 				<div class="flex items-center gap-1.5 flex-wrap text-xs px-1">
-					<span class="text-muted-foreground">Path:</span>
+					<span class="text-muted-foreground">{m.path_df39()}</span>
 					<span class="font-mono text-muted-foreground">{currentTag}</span>
 					{#each versionPath as v, i}
 						{@const isTarget = i === versionPath.length - 1}
@@ -225,7 +227,7 @@
 				{#if loading}
 					<div class="flex items-center justify-center py-10 text-muted-foreground">
 						<RefreshCw class="w-5 h-5 animate-spin" />
-						<span class="ml-2 text-sm">Loading release notes...</span>
+						<span class="ml-2 text-sm">{m.loading_release_notes()}</span>
 					</div>
 				{:else if notes.length > 0}
 					{#each versionPath.slice().reverse() as version}
@@ -244,7 +246,7 @@
 										rel="noopener noreferrer"
 										onclick={(e) => e.stopPropagation()}
 										class="text-muted-foreground hover:text-foreground shrink-0 {note.publishedAt ? '' : 'ml-auto'}"
-										title="Open on GitHub"
+										title={m.open_on_github()}
 									>
 										<ExternalLink class="w-3.5 h-3.5" />
 									</a>
@@ -262,14 +264,13 @@
 							<div class="flex items-start gap-2.5">
 								<Info class="w-5 h-5 shrink-0 text-amber-500 mt-0.5" />
 								<p class="text-sm text-muted-foreground">
-									GitHub's rate limit was hit while fetching release notes. Set a
-									<code class="text-xs">DOCKHAND_GITHUB_TOKEN</code> (a personal access token, no scopes needed)
-									to raise the limit from 60 to 5000 requests/hour.
+									{m.githubs_rate_limit_was_hit_while_fetching_releas()}
+									<code class="text-xs">{m.dockhand_github_token()}</code> {m.a_personal_access_token_no_scopes_needed_to_rais()}
 								</p>
 							</div>
 							{#if changelogUrl}
 								<Button variant="outline" size="sm" href={changelogUrl} target="_blank" rel="noopener noreferrer">
-									<ExternalLink class="w-3.5 h-3.5 mr-1.5" /> View changelog
+									<ExternalLink class="w-3.5 h-3.5 mr-1.5" /> {m.view_changelog()}
 								</Button>
 							{/if}
 						</div>
@@ -278,15 +279,14 @@
 							<BookOpen class="w-8 h-8 text-muted-foreground/50" />
 							<p class="text-sm text-muted-foreground max-w-sm">
 								{#if changelogUrl}
-									Release notes for these versions aren't available inline.
+									{m.release_notes_for_these_versions_arent_available()}
 								{:else}
-									This image doesn't publish release notes Dockhand can read
-									(no <code class="text-xs">org.opencontainers.image.source</code> label pointing at a GitHub or Gitea/Forgejo repo).
+									{m.this_image_doesnt_publish_release_notes_dockhand()} <code class="text-xs">{m.org_opencontainers_image_source()}</code> {m.label_pointing_at_a_github_or_gitea_forgejo_repo()}
 								{/if}
 							</p>
 							{#if changelogUrl}
 								<Button variant="outline" size="sm" href={changelogUrl} target="_blank" rel="noopener noreferrer">
-									<ExternalLink class="w-3.5 h-3.5 mr-1.5" /> View changelog
+									<ExternalLink class="w-3.5 h-3.5 mr-1.5" /> {m.view_changelog()}
 								</Button>
 							{/if}
 						</div>
@@ -297,11 +297,11 @@
 			<Dialog.Footer class="flex-row items-center gap-2 sm:justify-between">
 				<div class="text-xs text-muted-foreground">
 					{#if source}
-						Notes from <code class="text-xs">{source}</code>
+						{m.notes_from()} <code class="text-xs">{source}</code>
 					{/if}
 				</div>
 				<div class="flex gap-2">
-					<Button variant="outline" size="sm" onclick={close}>Close</Button>
+					<Button variant="outline" size="sm" onclick={close}>{m.close()}</Button>
 				</div>
 			</Dialog.Footer>
 		{/if}

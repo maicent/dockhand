@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { onMount } from "svelte";
 	import * as Dialog from "$lib/components/ui/dialog";
 	import CodeEditor from "$lib/components/CodeEditor.svelte";
@@ -105,8 +106,8 @@
 							<Layers class="w-4 h-4 text-zinc-600 dark:text-zinc-300" />
 						</div>
 						<div>
-							<Dialog.Title class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">View network graph</Dialog.Title>
-							<Dialog.Description class="text-xs text-zinc-500 dark:text-zinc-400">View network connections between containers</Dialog.Description>
+							<Dialog.Title class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{m.view_network_graph()}</Dialog.Title>
+							<Dialog.Description class="text-xs text-zinc-500 dark:text-zinc-400">{m.view_network_connections_between_containers()}</Dialog.Description>
 						</div>
 					</div>
 				</div>

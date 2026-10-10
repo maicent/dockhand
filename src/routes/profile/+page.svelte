@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -437,13 +439,13 @@
 </script>
 
 <svelte:head>
-	<title>Profile - Dockhand</title>
+	<title>{m.profile_dockhand()}</title>
 </svelte:head>
 
 <div class="container mx-auto p-6">
 	<div class="flex items-center gap-3 mb-6">
-		<PageHeader icon={User} title="Profile" showConnection={false}>
-			<p class="text-muted-foreground text-sm">Manage your account settings</p>
+		<PageHeader icon={User} title={m.profile()} showConnection={false}>
+			<p class="text-muted-foreground text-sm">{m.manage_your_account_settings()}</p>
 		</PageHeader>
 	</div>
 
@@ -478,7 +480,7 @@
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<User class="w-5 h-5" />
-						Account information
+						{m.account_information()}
 					</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-4">
@@ -522,7 +524,7 @@
 										onclick={removeAvatar}
 										disabled={avatarSaving}
 										class="absolute -bottom-1 -right-1 p-1 rounded-full bg-background border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
-										title="Remove photo"
+										title={m.remove_photo()}
 									>
 										<Trash2 class="w-3.5 h-3.5" />
 									</button>
@@ -534,19 +536,19 @@
 						<div class="flex-1 space-y-4">
 							<div class="grid grid-cols-2 gap-4">
 								<div>
-									<Label class="text-muted-foreground text-xs">Username</Label>
+									<Label class="text-muted-foreground text-xs">{m.username()}</Label>
 									<p class="font-medium">{profile.username}</p>
 								</div>
 								<div>
-									<Label class="text-muted-foreground text-xs">Role</Label>
+									<Label class="text-muted-foreground text-xs">{m.role()}</Label>
 									<div class="flex items-center gap-2">
 										{#if profile.isAdmin}
 											<Badge variant="default" class="gap-1 rounded-sm">
 												<Crown class="w-3 h-3" />
-												Admin
+												{m.admin()}
 											</Badge>
 										{:else}
-											<Badge variant="secondary" class="rounded-sm">User</Badge>
+											<Badge variant="secondary" class="rounded-sm">{m.user()}</Badge>
 										{/if}
 									</div>
 								</div>
@@ -554,14 +556,14 @@
 
 							<div class="grid grid-cols-2 gap-4">
 								<div>
-									<Label class="text-muted-foreground text-xs">Created</Label>
+									<Label class="text-muted-foreground text-xs">{m.created()}</Label>
 									<p class="text-sm flex items-center gap-1">
 										<Calendar class="w-3.5 h-3.5" />
 										{formatProfileDate(profile.createdAt)}
 									</p>
 								</div>
 								<div>
-									<Label class="text-muted-foreground text-xs">Last login</Label>
+									<Label class="text-muted-foreground text-xs">{m.last_login()}</Label>
 									<p class="text-sm flex items-center gap-1">
 										<Clock class="w-3.5 h-3.5" />
 										{formatProfileDate(profile.lastLogin)}
@@ -578,7 +580,7 @@
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<Mail class="w-5 h-5" />
-						Profile details
+						{m.profile_details()}
 					</Card.Title>
 				</Card.Header>
 				<Card.Content class="flex-1 flex flex-col space-y-4">
@@ -591,18 +593,18 @@
 
 					<div class="space-y-4 flex-1">
 						<div class="space-y-2">
-							<Label>Display name</Label>
+							<Label>{m.display_name()}</Label>
 							<Input
 								bind:value={formDisplayName}
-								placeholder="Enter display name"
+								placeholder={m.enter_display_name()}
 							/>
 						</div>
 						<div class="space-y-2">
-							<Label>Email</Label>
+							<Label>{m.email()}</Label>
 							<Input
 								type="email"
 								bind:value={formEmail}
-								placeholder="Enter email"
+								placeholder={m.enter_email()}
 							/>
 						</div>
 					</div>
@@ -614,7 +616,7 @@
 							{:else}
 								<Check class="w-4 h-4" />
 							{/if}
-							Save changes
+							{m.save_changes()}
 						</Button>
 					</div>
 				</Card.Content>
@@ -630,7 +632,7 @@
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<Shield class="w-5 h-5" />
-						Security
+						{m.security()}
 					</Card.Title>
 				</Card.Header>
 				<Card.Content class="space-y-4">
@@ -640,12 +642,12 @@
 							<div class="flex items-center gap-3">
 								<Key class="w-5 h-5 text-muted-foreground" />
 								<div>
-									<p class="font-medium">Password</p>
-									<p class="text-sm text-muted-foreground">Change your password</p>
+									<p class="font-medium">{m.password()}</p>
+									<p class="text-sm text-muted-foreground">{m.change_your_password()}</p>
 								</div>
 							</div>
 							<Button variant="outline" onclick={() => showPasswordModal = true}>
-								Change password
+								{m.change_password()}
 							</Button>
 						</div>
 					{:else}
@@ -653,13 +655,13 @@
 							<div class="flex items-center gap-3">
 								<Key class="w-5 h-5 text-muted-foreground" />
 								<div>
-									<p class="font-medium">Password</p>
-									<p class="text-sm text-muted-foreground">Managed by your SSO provider</p>
+									<p class="font-medium">{m.password()}</p>
+									<p class="text-sm text-muted-foreground">{m.managed_by_your_sso_provider()}</p>
 								</div>
 							</div>
 							<Badge class="gap-1 rounded-sm bg-yellow-500/20 text-yellow-600 border-yellow-500/30 hover:bg-yellow-500/30">
 								<ShieldCheck class="w-3 h-3" />
-								SSO
+								{m.sso()}
 							</Badge>
 						</div>
 					{/if}
@@ -671,28 +673,28 @@
 								<Smartphone class="w-5 h-5 text-muted-foreground" />
 								<div>
 									<div class="flex items-center gap-2">
-										<p class="font-medium">Two-factor authentication</p>
+										<p class="font-medium">{m.two_factor_authentication()}</p>
 										{#if profile.mfaEnabled}
 											<Badge variant="default" class="bg-green-500 gap-1 rounded-sm">
 												<ShieldCheck class="w-3 h-3" />
-												Enabled
+												{m.enabled()}
 											</Badge>
 										{:else}
-											<Badge variant="secondary" class="rounded-sm">Disabled</Badge>
+											<Badge variant="secondary" class="rounded-sm">{m.disabled()}</Badge>
 										{/if}
 									</div>
 									<p class="text-sm text-muted-foreground">
 										{#if profile.mfaEnabled}
-											MFA is enabled for your account
+											{m.mfa_is_enabled_for_your_account()}
 										{:else}
-											Add an extra layer of security
+											{m.add_an_extra_layer_of_security()}
 										{/if}
 									</p>
 								</div>
 							</div>
 							{#if profile.mfaEnabled}
 								<Button variant="outline" onclick={() => showDisableMfaModal = true}>
-									Disable MFA
+									{m.disable_mfa()}
 								</Button>
 							{:else}
 								<Button onclick={setupMfa} disabled={mfaLoading}>
@@ -701,7 +703,7 @@
 									{:else}
 										<QrCode class="w-4 h-4" />
 									{/if}
-									Setup MFA
+									{m.setup_mfa()}
 								</Button>
 							{/if}
 						</div>
@@ -710,13 +712,13 @@
 							<div class="flex items-center gap-3">
 								<Smartphone class="w-5 h-5 text-muted-foreground" />
 								<div>
-									<p class="font-medium">Two-factor authentication</p>
-									<p class="text-sm text-muted-foreground">Managed by your SSO provider</p>
+									<p class="font-medium">{m.two_factor_authentication()}</p>
+									<p class="text-sm text-muted-foreground">{m.managed_by_your_sso_provider()}</p>
 								</div>
 							</div>
 							<Badge class="gap-1 rounded-sm bg-yellow-500/20 text-yellow-600 border-yellow-500/30 hover:bg-yellow-500/30">
 								<ShieldCheck class="w-3 h-3" />
-								SSO
+								{m.sso()}
 							</Badge>
 						</div>
 					{/if}
@@ -732,37 +734,36 @@
 						<div class="flex items-center gap-3">
 							<KeyRound class="w-5 h-5 text-muted-foreground" />
 							<div>
-								<p class="font-medium">Passkeys</p>
-								<p class="text-sm text-muted-foreground">Use a device-bound or synced passkey to sign in</p>
+								<p class="font-medium">{m.passkeys()}</p>
+								<p class="text-sm text-muted-foreground">{m.use_a_device_bound_or_synced_passkey_to_sign_in()}</p>
 							</div>
 						</div>
 
 						{#if !passkeysEnabled}
 							<p class="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
-								Passkey sign-in is switched off for this instance. Any passkeys below are
-								kept and work again if an administrator turns it back on.
+								{m.passkey_sign_in_is_switched_off_for_this_instanc()}
 							</p>
 						{:else}
 						<div class="space-y-2">
-							<Label for="passkey-name">Passkey name</Label>
+							<Label for="passkey-name">{m.passkey_name()}</Label>
 							<div class="flex flex-col sm:flex-row gap-2">
-							<Input id="passkey-name" bind:value={passkeyName} maxlength={64} placeholder="e.g. Token2 security key" />
+							<Input id="passkey-name" bind:value={passkeyName} maxlength={64} placeholder={m.e_g_token2_security_key()} />
 							<Button onclick={addPasskey} disabled={passkeyActionLoading || !passkeyName.trim()} class="shrink-0">
 								{#if passkeyActionLoading}
 									<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
 								{:else}
 									<Plus class="w-4 h-4 mr-1" />
 								{/if}
-								Add passkey
+								{m.add_passkey()}
 							</Button>
 							</div>
 						</div>
 						{/if}
 
 						{#if passkeysLoading}
-							<p class="text-sm text-muted-foreground">Loading passkeys...</p>
+							<p class="text-sm text-muted-foreground">{m.loading_passkeys()}</p>
 						{:else if passkeys.length === 0}
-							<p class="text-sm text-muted-foreground">No passkeys registered.</p>
+							<p class="text-sm text-muted-foreground">{m.no_passkeys_registered()}</p>
 						{:else}
 							<div class="divide-y rounded-md border">
 								{#each passkeys as passkey (passkey.id)}
@@ -770,8 +771,7 @@
 										<div class="min-w-0">
 											<p class="font-medium truncate">{passkey.name || 'Passkey'}</p>
 											<p class="text-xs text-muted-foreground mt-1">
-											{passkey.deviceType === 'multiDevice' ? 'Synced passkey' : 'Device-bound passkey'}
-											{passkey.backedUp ? ' · backed up' : ''} · added {formatDateTime(passkey.createdAt)}
+											{m.arg1_arg2_added_arg3({ arg1: orEmpty(passkey.deviceType === 'multiDevice' ? 'Synced passkey' : 'Device-bound passkey'), arg2: orEmpty(passkey.backedUp ? ' · backed up' : ''), arg3: orEmpty(formatDateTime(passkey.createdAt)) })}
 											</p>
 										</div>
 										<Button
@@ -783,7 +783,7 @@
 											title={`Delete passkey ${passkey.name || 'Passkey'}`}
 										>
 											<Trash2 class="w-4 h-4 mr-1" />
-											Delete
+											{m.delete()}
 										</Button>
 									</div>
 								{/each}
@@ -806,28 +806,28 @@
 					<Card.Title class="flex items-center gap-2 justify-between">
 						<span class="flex items-center gap-2">
 							<KeyRound class="w-5 h-5" />
-							API tokens
+							{m.api_tokens()}
 						</span>
 						<Button variant="outline" size="sm" onclick={() => showApiTokenModal = true}>
 							<Plus class="w-4 h-4 mr-1" />
-							Generate token
+							{m.generate_token()}
 						</Button>
 					</Card.Title>
-					<Card.Description>Create tokens for CI/CD pipelines and scripts</Card.Description>
+					<Card.Description>{m.create_tokens_for_ci_cd_pipelines_and_scripts()}</Card.Description>
 				</Card.Header>
 				<Card.Content>
 					{#if tokensLoading}
-						<p class="text-sm text-muted-foreground">Loading tokens...</p>
+						<p class="text-sm text-muted-foreground">{m.loading_tokens()}</p>
 					{:else if apiTokens.length === 0}
-						<p class="text-sm text-muted-foreground">No API tokens created yet.</p>
+						<p class="text-sm text-muted-foreground">{m.no_api_tokens_created_yet()}</p>
 					{:else}
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>
-									<Table.Head>Name</Table.Head>
-									<Table.Head>Prefix</Table.Head>
-									<Table.Head>Last used</Table.Head>
-									<Table.Head>Expires</Table.Head>
+									<Table.Head>{m.name()}</Table.Head>
+									<Table.Head>{m.prefix()}</Table.Head>
+									<Table.Head>{m.last_used()}</Table.Head>
+									<Table.Head>{m.expires()}</Table.Head>
 									<Table.Head class="w-[80px]"></Table.Head>
 								</Table.Row>
 							</Table.Header>
@@ -836,24 +836,24 @@
 									<Table.Row class={isTokenExpired(token.expiresAt) ? 'opacity-50' : ''}>
 										<Table.Cell class="font-medium">{token.name}</Table.Cell>
 										<Table.Cell>
-											<code class="text-xs bg-muted px-1.5 py-0.5 rounded">dh_{token.tokenPrefix}...</code>
+											<code class="text-xs bg-muted px-1.5 py-0.5 rounded">{m.dh_tokenprefix({ tokenPrefix: orEmpty(token.tokenPrefix) })}</code>
 										</Table.Cell>
 										<Table.Cell class="text-sm text-muted-foreground">
 											{token.lastUsed ? formatDateTime(token.lastUsed) : 'Never'}
 										</Table.Cell>
 										<Table.Cell class="text-sm">
 											{#if isTokenExpired(token.expiresAt)}
-												<Badge variant="destructive">Expired</Badge>
+												<Badge variant="destructive">{m.expired()}</Badge>
 											{:else if token.expiresAt}
 												{formatDateTime(token.expiresAt)}
 											{:else}
-												<span class="text-muted-foreground">Never</span>
+												<span class="text-muted-foreground">{m.never()}</span>
 											{/if}
 										</Table.Cell>
 										<Table.Cell>
 											<ConfirmPopover
-												title="Revoke token"
-												description="This token will stop working immediately."
+												title={m.revoke_token()}
+												description={m.this_token_will_stop_working_immediately()}
 												confirmText="Revoke"
 												onConfirm={() => revokeToken(token.id)}
 											>
@@ -880,9 +880,9 @@
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<Palette class="w-5 h-5" />
-						Appearance
+						{m.appearance()}
 					</Card.Title>
-					<Card.Description>Customize the look of the application</Card.Description>
+					<Card.Description>{m.customize_the_look_of_the_application()}</Card.Description>
 				</Card.Header>
 				<Card.Content class="space-y-4">
 					<ThemeSelector userId={profile.id} />
@@ -897,9 +897,9 @@
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<Compass class="w-5 h-5" />
-						Navigation
+						{m.navigation()}
 					</Card.Title>
-					<Card.Description>Your landing page and environment-click target. Leave on "Use global default" to follow the workspace setting.</Card.Description>
+					<Card.Description>{m.your_landing_page_and_environment_click_target_l()}</Card.Description>
 				</Card.Header>
 				<Card.Content>
 					<NavigationSelector scope="user" />
@@ -913,9 +913,9 @@
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<Palette class="w-5 h-5" />
-						Editor theme
+						{m.editor_theme()}
 					</Card.Title>
-					<Card.Description>Color theme for the code editor, with a live preview.</Card.Description>
+					<Card.Description>{m.color_theme_for_the_code_editor_with_a_live_prev()}</Card.Description>
 				</Card.Header>
 				<Card.Content>
 					<EditorThemeSelector userId={profile.id} />

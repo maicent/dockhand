@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { page } from '$app/stores';
 
 	let currentPath = $derived($page.url.pathname);
@@ -23,7 +24,7 @@
 						fill="currentColor"
 					/>
 				</svg>
-				<span>Dashboard</span>
+				<span>{m.dashboard()}</span>
 			</a>
 		</li>
 		<li>
@@ -41,7 +42,7 @@
 					<rect x="13" y="3" width="7" height="7" rx="1" fill="currentColor" />
 					<rect x="13" y="13" width="7" height="7" rx="1" fill="currentColor" />
 				</svg>
-				<span>Containers</span>
+				<span>{m.containers()}</span>
 			</a>
 		</li>
 		<li>
@@ -63,7 +64,7 @@
 					/>
 					<path d="M7 12l3 3 6-6" stroke="currentColor" stroke-width="2" fill="none" />
 				</svg>
-				<span>Compose stacks</span>
+				<span>{m.compose_stacks()}</span>
 			</a>
 		</li>
 		<li>
@@ -83,7 +84,7 @@
 						stroke-linecap="round"
 					/>
 				</svg>
-				<span>Images</span>
+				<span>{m.images()}</span>
 			</a>
 		</li>
 		<li>
@@ -99,7 +100,7 @@
 					<rect x="3" y="12" width="14" height="2" rx="1" fill="currentColor" opacity="0.5" />
 					<rect x="3" y="16" width="16" height="2" rx="1" fill="currentColor" />
 				</svg>
-				<span>Logs</span>
+				<span>{m.logs()}</span>
 			</a>
 		</li>
 	</ul>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Loader2, Layers, ChevronDown, ChevronRight } from 'lucide-svelte';
 	import { currentEnvironment, appendEnvParam } from '$lib/stores/environment';
@@ -138,13 +139,13 @@
 			{error}
 		</div>
 	{:else if history.length === 0}
-		<p class="text-muted-foreground text-sm text-center py-8">No layer history found</p>
+		<p class="text-muted-foreground text-sm text-center py-8">{m.no_layer_history_found()}</p>
 	{:else}
 		<!-- Summary -->
 		<div class="flex items-center justify-between p-3 bg-muted rounded-lg">
 			<div>
-				<p class="text-sm font-medium">Total layers: <span class="text-primary">{history.length}</span></p>
-				<p class="text-sm font-medium">Total size: <span class="text-primary">{formatSize(totalSize)}</span></p>
+				<p class="text-sm font-medium">{m.total_layers()} <span class="text-primary">{history.length}</span></p>
+				<p class="text-sm font-medium">{m.total_size()} <span class="text-primary">{formatSize(totalSize)}</span></p>
 			</div>
 			<Badge variant="secondary">
 				{imageId.startsWith('sha256:') ? imageId.slice(7, 19) : imageName || imageId}
@@ -155,7 +156,7 @@
 		<div class="space-y-1">
 			<h3 class="text-sm font-semibold mb-2 pb-2 flex items-center gap-2">
 				<Layers class="w-4 h-4" />
-				Layer stack (bottom to top) - click to expand
+				{m.layer_stack_bottom_to_top_click_to_expand()}
 			</h3>
 			<div class="space-y-1">
 				{#each history.slice().reverse() as layer, index}
@@ -213,18 +214,18 @@
 							<div class="px-4 pb-3 space-y-3 border-t border-border bg-muted/20">
 								<div class="grid grid-cols-2 gap-2 pt-3 text-sm">
 									<div>
-										<p class="text-xs text-muted-foreground">Created</p>
+										<p class="text-xs text-muted-foreground">{m.created()}</p>
 										<p class="text-xs">{formatDate(layer.Created)}</p>
 									</div>
 									<div>
-										<p class="text-xs text-muted-foreground">Size</p>
+										<p class="text-xs text-muted-foreground">{m.size()}</p>
 										<p class="text-xs font-mono">{formatSize(layer.Size)}</p>
 									</div>
 								</div>
 
 								{#if layer.CreatedBy}
 									<div class="space-y-1">
-										<p class="text-xs font-medium text-muted-foreground">Command</p>
+										<p class="text-xs font-medium text-muted-foreground">{m.command()}</p>
 										<code class="block text-xs bg-muted p-2 rounded overflow-x-auto whitespace-pre-wrap break-all">
 											{@html highlightCommand(layer.CreatedBy)}
 										</code>
@@ -233,14 +234,14 @@
 
 								{#if layer.Comment}
 									<div class="space-y-1">
-										<p class="text-xs font-medium text-muted-foreground">Comment</p>
+										<p class="text-xs font-medium text-muted-foreground">{m.comment()}</p>
 										<p class="text-xs">{layer.Comment}</p>
 									</div>
 								{/if}
 
 								{#if layer.Tags && layer.Tags.length > 0}
 									<div class="space-y-1">
-										<p class="text-xs font-medium text-muted-foreground">Tags</p>
+										<p class="text-xs font-medium text-muted-foreground">{m.tags()}</p>
 										<div class="flex flex-wrap gap-1">
 											{#each layer.Tags as tag}
 												<Badge variant="outline" class="text-xs">{tag}</Badge>

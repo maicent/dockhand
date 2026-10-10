@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Label } from '$lib/components/ui/label';
 	import { TogglePill } from '$lib/components/ui/toggle-pill';
 	import { themeStore } from '$lib/stores/theme';
@@ -31,8 +32,8 @@
 
 <div class="space-y-1">
 	<div class="flex items-center gap-3">
-		<Label>Colored grid buttons</Label>
+		<Label>{m.colored_grid_buttons()}</Label>
 		<TogglePill {checked} onchange={onToggle} />
 	</div>
-	<p class="text-xs text-muted-foreground">Use semantic colors instead of muted gray</p>
+	<p class="text-xs text-muted-foreground">{m.use_semantic_colors_instead_of_muted_gray()}</p>
 </div>

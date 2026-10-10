@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	/**
 	 * "Stack files on the host" — probes the target host at backup-config time, shows the
 	 * resolved HOST path of the stack folder, and lets the user pick which entries to back up.
@@ -91,12 +93,12 @@
 </script>
 
 <div class="space-y-2">
-	<div class="text-sm font-medium">Stack files on the host</div>
+	<div class="text-sm font-medium">{m.stack_files_on_the_host()}</div>
 
 	{#if loading}
 		<div class="flex items-center gap-2 rounded-md border bg-muted/30 p-2.5 text-xs text-muted-foreground">
 			<Loader2 class="h-4 w-4 shrink-0 animate-spin" />
-			Probing the host for the stack folder...
+			{m.probing_the_host_for_the_stack_folder()}
 		</div>
 	{:else if listing?.kind === 'listed'}
 			<!-- Resolved host path callout (copied from BackupPanel's stack-path candidate). -->
@@ -104,45 +106,40 @@
 				<FolderOpen class="mt-0.5 h-4 w-4 shrink-0 text-sky-500" />
 				<div class="min-w-0 flex-1">
 					<div class="flex items-center gap-1.5">
-						<span class="font-medium text-foreground">Captured from the host at</span>
+						<span class="font-medium text-foreground">{m.captured_from_the_host_at()}</span>
 						<Tooltip.Root>
 							<Tooltip.Trigger type="button" class="text-muted-foreground hover:text-foreground">
 								<HelpCircle class="h-3.5 w-3.5" />
 							</Tooltip.Trigger>
 							<Tooltip.Content class="w-80 z-[200]" side="right">
 								<div class="space-y-2">
-									<p class="font-medium">Where this path comes from</p>
+									<p class="font-medium">{m.where_this_path_comes_from()}</p>
 									{#if envKind === 'socket'}
 										<p class="flex items-center gap-1.5 text-muted-foreground">
 											{#if envIcon && envId != null}<EnvironmentIcon icon={envIcon} {envId} class="h-3.5 w-3.5 shrink-0" />{/if}
 											<Unplug class="h-3.5 w-3.5 shrink-0 text-cyan-500" />
-											<span><span class="font-medium text-foreground">{envLabel}</span> is a socket
-											environment. Backup reads the stack folder from Dockhand's own stack
-											directory on this host.</span>
+											<span><span class="font-medium text-foreground">{envLabel}</span> {m.is_a_socket_environment_backup_reads_the_stack_f()}</span>
 										</p>
 										<p class="text-muted-foreground">
-											If this path looks wrong, set <code class="bg-muted px-1 rounded">HOST_DATA_DIR</code>
-											when Dockhand runs in a container, so it points to where the data volume
-											lives on the host.
+											{m.if_this_path_looks_wrong_set()} <code class="bg-muted px-1 rounded">{m.host_data_dir()}</code>
+											{m.when_dockhand_runs_in_a_container_so_it_points_t()}
 										</p>
 									{:else if envKind === 'direct'}
 										<p class="flex items-center gap-1.5 text-muted-foreground">
 											{#if envIcon && envId != null}<EnvironmentIcon icon={envIcon} {envId} class="h-3.5 w-3.5 shrink-0" />{/if}
 											<Icon iconNode={whale} class="h-3.5 w-3.5 shrink-0 text-blue-500" />
-											<span><span class="font-medium text-foreground">{envLabel}</span> is a direct
-											environment. Backup reads the stack folder from this path on the remote
-											Docker host.</span>
+											<span><span class="font-medium text-foreground">{envLabel}</span> {m.is_a_direct_environment_backup_reads_the_stack_f()}</span>
 										</p>
 										{#if configuredStackPath}
 											<p class="text-muted-foreground">
-												Remote stack path set on this environment:
+												{m.remote_stack_path_set_on_this_environment()}
 												<code class="bg-muted px-1 rounded break-all">{configuredStackPath}</code>
 											</p>
 										{:else}
 											<p class="text-muted-foreground">
-												It is derived from the stack's bind mounts. To set it explicitly, use
-												<span class="font-medium text-foreground">Environments &gt; (edit) &gt; Remote stack path (for backup)</span>
-												and re-open this dialog.
+												{m.it_is_derived_from_the_stacks_bind_mounts_to_set()}
+												<span class="font-medium text-foreground">{m.environments_edit_remote_stack_path_for_backup()}</span>
+												{m.and_re_open_this_dialog()}
 											</p>
 										{/if}
 									{:else}
@@ -153,21 +150,17 @@
 											{:else}
 												<Route class="h-3.5 w-3.5 shrink-0 text-purple-500" />
 											{/if}
-											<span><span class="font-medium text-foreground">{envLabel}</span> is a Hawser
-											environment. Backup reads the stack folder from the Hawser agent's stack
-											directory on its host.</span>
+											<span><span class="font-medium text-foreground">{envLabel}</span> {m.is_a_hawser_environment_backup_reads_the_stack_f()}</span>
 										</p>
 										{#if configuredStackPath}
 											<p class="text-muted-foreground">
-												Remote stack path set on this environment:
+												{m.remote_stack_path_set_on_this_environment()}
 												<code class="bg-muted px-1 rounded break-all">{configuredStackPath}</code>
 											</p>
 										{:else}
 											<p class="text-muted-foreground">
-												It defaults to <code class="bg-muted px-1 rounded">/data/stacks</code>. If the
-												agent uses a custom <code class="bg-muted px-1 rounded">STACKS_DIR</code>, set it
-												under <span class="font-medium text-foreground">Environments &gt; (edit) &gt; Remote stack path (for backup)</span>
-												and re-open this dialog.
+												{m.it_defaults_to()} <code class="bg-muted px-1 rounded">{m.data_stacks()}</code>{m.if_the_agent_uses_a_custom()} <code class="bg-muted px-1 rounded">{m.stacks_dir()}</code>{m.set_it_under()} <span class="font-medium text-foreground">{m.environments_edit_remote_stack_path_for_backup()}</span>
+												{m.and_re_open_this_dialog()}
 											</p>
 										{/if}
 									{/if}
@@ -181,7 +174,7 @@
 
 		<div class="border rounded-md overflow-hidden">
 			<div class="flex items-center gap-3 px-3 py-2 bg-muted/30 border-b">
-				<Label class="text-xs">Backup all files ({selectable.length})</Label>
+				<Label class="text-xs">{m.backup_all_files_length({ length: orEmpty(selectable.length) })}</Label>
 				<TogglePill checked={allFiles} onLabel="Yes" offLabel="No" onchange={() => toggleAll(!allFiles)} />
 			</div>
 			<div class="divide-y max-h-40 overflow-y-auto">
@@ -201,9 +194,9 @@
 						{/if}
 						<span class="font-mono truncate">{entry.name}</span>
 						{#if entry.capturedAs}
-							<span class="text-muted-foreground ml-auto shrink-0 italic">captured as a {entry.capturedAs} below</span>
+							<span class="text-muted-foreground ml-auto shrink-0 italic">{m.captured_as_a_capturedas_below({ capturedAs: orEmpty(entry.capturedAs) })}</span>
 						{:else if isLoadBearing(entry.name)}
-							<span class="text-muted-foreground ml-auto shrink-0 italic">always kept</span>
+							<span class="text-muted-foreground ml-auto shrink-0 italic">{m.always_kept()}</span>
 						{:else if entry.type === 'file'}
 							<span class="text-muted-foreground ml-auto shrink-0">{fmtSize(entry.size)}</span>
 						{/if}
@@ -217,23 +210,23 @@
 		<div class="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-2.5 text-xs">
 			<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
 			<div class="min-w-0">
-				<div class="font-medium text-destructive">The backup helper can't run on this environment</div>
+				<div class="font-medium text-destructive">{m.the_backup_helper_cant_run_on_this_environment()}</div>
 				<div class="mt-0.5 break-all text-muted-foreground">{listing.reason}</div>
-				<div class="mt-1 text-muted-foreground">A backup can't be created until this is fixed - the same helper container captures the stack files.</div>
+				<div class="mt-1 text-muted-foreground">{m.a_backup_cant_be_created_until_this_is_fixed_the()}</div>
 			</div>
 		</div>
 	{:else if listing?.kind === 'unknown'}
 		<div class="flex items-start gap-2 rounded-md border bg-muted/30 p-2.5 text-xs">
 			<Info class="mt-0.5 h-4 w-4 shrink-0 text-sky-500" />
 			<div class="min-w-0">
-				<div class="font-medium text-foreground">No stack folder found on the host</div>
+				<div class="font-medium text-foreground">{m.no_stack_folder_found_on_the_host()}</div>
 				<div class="mt-0.5 text-muted-foreground">{listing.reason}</div>
 				{#if envKind === 'socket'}
-					<div class="mt-1 text-muted-foreground">On a socket environment this usually means <code class="bg-muted px-1 rounded">HOST_DATA_DIR</code> does not match where the data volume is mounted on the host. Fix it, then cancel and re-configure this backup.</div>
+					<div class="mt-1 text-muted-foreground">{m.on_a_socket_environment_this_usually_means()} <code class="bg-muted px-1 rounded">{m.host_data_dir()}</code> {m.does_not_match_where_the_data_volume_is_mounted()}</div>
 				{:else if envKind === 'direct'}
-					<div class="mt-1 text-muted-foreground">Set the environment's stack path (Environments &gt; edit &gt; Remote stack path for backup), then cancel and re-configure this backup.</div>
+					<div class="mt-1 text-muted-foreground">{m.set_the_environments_stack_path_environments_edi()}</div>
 				{:else}
-					<div class="mt-1 text-muted-foreground">On Hawser this usually means the agent uses a custom <code class="bg-muted px-1 rounded">STACKS_DIR</code> (not the default <code class="bg-muted px-1 rounded">/data/stacks</code>). Set the environment's stack path (Environments &gt; edit &gt; Remote stack path for backup), then cancel and re-configure this backup.</div>
+					<div class="mt-1 text-muted-foreground">{m.on_hawser_this_usually_means_the_agent_uses_a_cu()} <code class="bg-muted px-1 rounded">{m.stacks_dir()}</code> {m.not_the_default()} <code class="bg-muted px-1 rounded">{m.data_stacks()}</code>{m.set_the_environments_stack_path_environments_edi_baea()}</div>
 				{/if}
 			</div>
 		</div>

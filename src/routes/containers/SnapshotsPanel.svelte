@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Loader2, FolderOpen, RotateCcw, Trash2, ArrowLeftRight, HardDrive, Archive, RefreshCw } from 'lucide-svelte';
@@ -177,7 +179,7 @@
 			stats = statMap;
 		} catch {
 			snapshots = [];
-			toast.error('Failed to load snapshots');
+			toast.error(m_i18n.failed_to_load_snapshots());
 		} finally {
 			loading = false;
 			onLoadingChange?.(false);
@@ -201,7 +203,7 @@
 		if (diffPending) {
 			// Second selection → compare (older first). Both must share a destination.
 			if (diffPending._destinationId !== s._destinationId) {
-				toast.error('Compare needs two snapshots from the same repository');
+				toast.error(m_i18n.compare_needs_two_snapshots_from_the_same_reposi());
 				diffPending = null;
 				return;
 			}
@@ -221,14 +223,14 @@
 		try {
 			const res = await fetch(`/api/backup/snapshots/${s.id}?destinationId=${s._destinationId}`, { method: 'DELETE' });
 			if (res.ok) {
-				toast.success('Snapshot deleted');
+				toast.success(m_i18n.snapshot_deleted());
 				await loadSnapshots();
 			} else {
 				const data = await res.json();
 				toast.error(data.error || 'Failed to delete snapshot');
 			}
 		} catch {
-			toast.error('Failed to delete snapshot');
+			toast.error(m_i18n.failed_to_delete_snapshot());
 		} finally {
 			deletingSnapshot = null;
 			confirmDeleteSnapshot = null;
@@ -298,7 +300,7 @@
      (which has no header row) instead of sitting one row lower. -->
 {#if snapshots.length > 0}
 	<div class="mb-2 flex items-center justify-end">
-		<button type="button" class="flex items-center gap-1.5 rounded p-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50" onclick={() => refresh()} disabled={loading} title="Refresh snapshots">
+		<button type="button" class="flex items-center gap-1.5 rounded p-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50" onclick={() => refresh()} disabled={loading} title={m_i18n.refresh_snapshots()}>
 			<RefreshCw class="h-3.5 w-3.5" />
 		</button>
 	</div>
@@ -312,8 +314,8 @@
 {:else if snapshots.length === 0}
 	<div class="flex min-h-[60vh] flex-col items-center justify-center py-10 text-center">
 		<Archive class="mb-3 h-10 w-10 text-muted-foreground/40" />
-		<p class="text-sm text-muted-foreground">No snapshots yet for {targetName}.</p>
-		<p class="mt-1 text-xs text-muted-foreground">Run a backup from the Schedules tab to create one.</p>
+		<p class="text-sm text-muted-foreground">{m_i18n.no_snapshots_yet_for_targetname({ targetName: orEmpty(targetName) })}</p>
+		<p class="mt-1 text-xs text-muted-foreground">{m_i18n.run_a_backup_from_the_schedules_tab_to_create_on()}</p>
 	</div>
 {:else}
 	<!-- Repo filter chips (Option C) — only when the target spans more than one repo. -->
@@ -324,7 +326,7 @@
 				class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors {repoFilter == null ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'}"
 				onclick={() => (repoFilter = null)}
 			>
-				All repositories <span class="text-[10px] opacity-70">{snapshots.length}</span>
+				{m_i18n.all_repositories()} <span class="text-[10px] opacity-70">{snapshots.length}</span>
 			</button>
 			{#each repoGroups as g}
 				{@const GIcon = getRepoTypeIcon(g.repository)}
@@ -342,13 +344,13 @@
 	<div class="mb-2 flex items-center gap-2">
 		{#if selectedCount > 0}
 			<button type="button" class="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 px-2.5 py-1 text-xs text-destructive transition-colors hover:bg-destructive/10" onclick={() => openBulk('selected')}>
-				<Trash2 class="h-3 w-3" /> Delete selected ({selectedCount})
+				<Trash2 class="h-3 w-3" /> {m_i18n.delete_selected_selectedcount({ selectedCount: orEmpty(selectedCount) })}
 			</button>
-			<button type="button" class="text-xs text-muted-foreground hover:text-foreground" onclick={() => (selectedSnapshots = new Set())}>Clear</button>
+			<button type="button" class="text-xs text-muted-foreground hover:text-foreground" onclick={() => (selectedSnapshots = new Set())}>{m_i18n.clear()}</button>
 		{/if}
 		{#if visibleSnapshots.length > 0}
 			<button type="button" class="ml-auto inline-flex items-center gap-1.5 rounded-md border border-destructive/40 px-2.5 py-1 text-xs text-destructive transition-colors hover:bg-destructive/10" onclick={() => openBulk('all')}>
-				<Trash2 class="h-3 w-3" /> Delete all ({visibleSnapshots.length})
+				<Trash2 class="h-3 w-3" /> {m_i18n.delete_all_length({ length: orEmpty(visibleSnapshots.length) })}
 			</button>
 		{/if}
 	</div>
@@ -357,13 +359,13 @@
 			<thead>
 				<tr class="border-b text-left text-muted-foreground">
 					<th class="w-8 py-1.5 pl-2">
-						<Checkbox checked={allVisibleSelected} indeterminate={someVisibleSelected} onCheckedChange={toggleSelectAllVisible} aria-label="Select all snapshots" />
+						<Checkbox checked={allVisibleSelected} indeterminate={someVisibleSelected} onCheckedChange={toggleSelectAllVisible} aria-label={m_i18n.select_all_snapshots()} />
 					</th>
-					<th class="py-1.5 pl-2 font-medium">Snapshot</th>
-					<th class="py-1.5 pl-2 font-medium">Taken</th>
-					<th class="py-1.5 pl-2 font-medium">Added</th>
-					<th class="py-1.5 pl-2 font-medium">Repository</th>
-					<th class="py-1.5 pr-3 text-right font-medium">Actions</th>
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.snapshot()}</th>
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.taken_c66c()}</th>
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.added()}</th>
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.repository()}</th>
+					<th class="py-1.5 pr-3 text-right font-medium">{m_i18n.actions()}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -388,10 +390,10 @@
 										<ArrowLeftRight class="h-3 w-3 {isDiffPending ? 'text-primary' : 'text-muted-foreground'}" />
 									</button>
 								{/if}
-								<button type="button" class="rounded p-1 transition-colors hover:bg-muted" onclick={() => openBrowser(s)} title="Browse files">
+								<button type="button" class="rounded p-1 transition-colors hover:bg-muted" onclick={() => openBrowser(s)} title={m_i18n.browse_files()}>
 									<FolderOpen class="h-3 w-3 text-muted-foreground" />
 								</button>
-								<button type="button" class="rounded p-1 transition-colors hover:bg-muted" onclick={() => openRestore(s)} title="Restore">
+								<button type="button" class="rounded p-1 transition-colors hover:bg-muted" onclick={() => openRestore(s)} title={m_i18n.restore()}>
 									<RotateCcw class="h-3 w-3 text-muted-foreground" />
 								</button>
 								<ConfirmPopover
@@ -399,7 +401,7 @@
 									action="Delete"
 									itemType="snapshot"
 									itemName={s.shortId}
-									title="Delete snapshot"
+									title={m_i18n.delete_snapshot()}
 									position="left"
 									onConfirm={() => deleteSnapshot(s)}
 									onOpenChange={(open) => confirmDeleteSnapshot = open ? s.id : null}

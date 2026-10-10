@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { Cpu, MemoryStick, Box, Globe, ChevronDown, Check, HardDrive, Clock, Wifi, WifiOff, Route, UndoDot, Icon, AlertCircle, Loader2, Search, Server, X, GripVertical, RotateCcw, ArrowUpDown } from 'lucide-svelte';
 	import { whale } from '@lucide/lab';
@@ -438,11 +440,11 @@
 					<span class="font-medium text-foreground">{currentEnv.name}</span>
 				{:else}
 					<Globe class="{iconSizeLargeClass()} text-muted-foreground" />
-					<span class="font-medium text-foreground">Select environment</span>
+					<span class="font-medium text-foreground">{m.select_environment()}</span>
 				{/if}
 			{:else}
 				<Globe class="{iconSizeLargeClass()} text-muted-foreground" />
-				<span class="font-medium text-foreground">No environments</span>
+				<span class="font-medium text-foreground">{m.no_environments()}</span>
 			{/if}
 			<ChevronDown class="{iconSizeClass()}" />
 		</button>
@@ -457,7 +459,7 @@
 								bind:this={searchInputRef}
 								bind:value={searchTerm}
 								type="text"
-								placeholder="Search environments..."
+								placeholder={m.search_environments()}
 								class="w-full pl-7 pr-7 py-1 text-sm bg-transparent border rounded focus:outline-none focus:ring-1 focus:ring-ring"
 								onclick={(e) => e.stopPropagation()}
 								onkeydown={(e) => {
@@ -516,14 +518,14 @@
 							{/if}
 							<span class="flex-1 whitespace-nowrap" class:text-muted-foreground={isOffline}>{env.name}</span>
 							{#if isOffline && !isSwitching}
-								<span class="text-xs text-destructive">offline</span>
+								<span class="text-xs text-destructive">{m.offline_d1ff()}</span>
 							{:else if Number(env.id) === Number(currentEnvId)}
 								<Check class="{iconSizeLargeClass()} text-primary shrink-0" />
 							{/if}
 						</button>
 					{:else}
 						<div class="px-3 py-2 text-sm text-muted-foreground">
-							No matching environments
+							{m.no_matching_environments()}
 						</div>
 					{/each}
 				</div>
@@ -539,7 +541,7 @@
 							<button
 								type="button"
 								class="flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
-								title="List environments by name again"
+								title={m.list_environments_by_name_again()}
 								onclick={() => {
 									environmentOrder.reset();
 									dragList = null;
@@ -547,7 +549,7 @@
 								}}
 							>
 								<RotateCcw class="w-3 h-3 shrink-0 text-red-400" />
-								Reset
+								{m.reset()}
 							</button>
 							<button
 								type="button"
@@ -555,17 +557,17 @@
 								onclick={() => (reorderMode = false)}
 							>
 								<Check class="w-3 h-3 shrink-0 text-emerald-500" />
-								Apply
+								{m.apply()}
 							</button>
 						{:else}
 							<button
 								type="button"
 								class="flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
-								title="Drag environments into the order you want them listed in"
+								title={m.drag_environments_into_the_order_you_want_them_l()}
 								onclick={() => (reorderMode = true)}
 							>
 								<ArrowUpDown class="w-3 h-3 shrink-0" />
-								Reorder
+								{m.reorder()}
 							</button>
 						{/if}
 					</div>
@@ -580,7 +582,7 @@
 		<!-- Hostname / IP (#962) — first info segment after the env dropdown.
 		     Hidden on narrow viewports to keep the strip readable. -->
 		{#if hostLabel}
-			<div class="hidden xl:flex items-center gap-1" title="Daemon hostname / IP">
+			<div class="hidden xl:flex items-center gap-1" title={m.daemon_hostname_ip()}>
 				<Server class="{iconSizeClass()}" />
 				<span>{hostLabel}</span>
 			</div>
@@ -593,7 +595,7 @@
 		<span class="hidden md:inline text-border">|</span>
 
 		<!-- Docker version -->
-		<span class="hidden md:inline">Docker {hostInfo.dockerVersion}</span>
+		<span class="hidden md:inline">{m.docker_dockerversion({ dockerVersion: orEmpty(hostInfo.dockerVersion) })}</span>
 
 		<span class="hidden md:inline text-border">|</span>
 
@@ -601,13 +603,13 @@
 		<div class="hidden md:flex items-center gap-1">
 			{#if hostInfo.environment?.connectionType === 'hawser-standard'}
 				<Route class="{iconSizeClass()}" />
-				<span>Hawser (standard){hostInfo.environment.hawserVersion ? ` ${hostInfo.environment.hawserVersion}` : ''}</span>
+				<span>{m.hawser_standard_arg1({ arg1: orEmpty(hostInfo.environment.hawserVersion ? ` ${hostInfo.environment.hawserVersion}` : '') })}</span>
 			{:else if hostInfo.environment?.connectionType === 'hawser-edge'}
 				<UndoDot class="{iconSizeClass()}" />
-				<span>Hawser (edge){hostInfo.environment.hawserVersion ? ` ${hostInfo.environment.hawserVersion}` : ''}</span>
+				<span>{m.hawser_edge_arg1({ arg1: orEmpty(hostInfo.environment.hawserVersion ? ` ${hostInfo.environment.hawserVersion}` : '') })}</span>
 			{:else}
 				<Icon iconNode={whale} class="{iconSizeClass()}" />
-				<span>Socket</span>
+				<span>{m.socket()}</span>
 			{/if}
 		</div>
 
@@ -615,13 +617,13 @@
 
 		<!-- CPU cores -->
 		{#if hostInfo.cpus > 0}
-			<span class="hidden lg:inline">{hostInfo.cpus} cores</span>
+			<span class="hidden lg:inline">{m.cpus_cores({ cpus: orEmpty(hostInfo.cpus) })}</span>
 			<span class="hidden lg:inline text-border">|</span>
 		{/if}
 
 		<!-- Memory -->
 		{#if hostInfo.totalMemory > 0}
-			<span class="hidden lg:inline">{formatBytes(hostInfo.totalMemory)} RAM</span>
+			<span class="hidden lg:inline">{m.arg1_ram({ arg1: orEmpty(formatBytes(hostInfo.totalMemory)) })}</span>
 			<span class="hidden lg:inline text-border">|</span>
 		{/if}
 
@@ -654,7 +656,7 @@
 			>{formatClock(now, currentTimezone)}</span>
 			{#if isConnected}
 				<Wifi class="{iconSizeLargeClass()}" />
-				<span class="font-medium">Live</span>
+				<span class="font-medium">{m.live()}</span>
 			{:else}
 				<WifiOff class="{iconSizeLargeClass()}" />
 			{/if}

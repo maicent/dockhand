@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -42,11 +43,11 @@
 				<TitleIcon class="w-5 h-5 shrink-0" />
 				{title}
 				{#if status === 'running'}
-					<Badge variant="secondary" class="text-xs gap-1"><Loader2 class="w-3 h-3 animate-spin" />Running</Badge>
+					<Badge variant="secondary" class="text-xs gap-1"><Loader2 class="w-3 h-3 animate-spin" />{m.running()}</Badge>
 				{:else if status === 'success'}
-					<Badge variant="secondary" class="text-xs gap-1 text-green-500"><CheckCircle class="w-3 h-3" />Completed</Badge>
+					<Badge variant="secondary" class="text-xs gap-1 text-green-500"><CheckCircle class="w-3 h-3" />{m.completed()}</Badge>
 				{:else}
-					<Badge variant="destructive" class="text-xs gap-1"><XCircle class="w-3 h-3" />Failed</Badge>
+					<Badge variant="destructive" class="text-xs gap-1"><XCircle class="w-3 h-3" />{m.failed()}</Badge>
 				{/if}
 			</Dialog.Title>
 		</Dialog.Header>
@@ -63,7 +64,7 @@
 			<LogConsole lines={logs} class="flex-1 min-h-0" />
 			{#if status === 'running' && logs.length === 0}
 				<div class="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-					<Loader2 class="h-3 w-3 animate-spin" /><span>Waiting for output…</span>
+					<Loader2 class="h-3 w-3 animate-spin" /><span>{m.waiting_for_output()}</span>
 				</div>
 			{/if}
 			{#if error}<div class="mt-1 text-xs text-red-400">{error}</div>{/if}
@@ -73,7 +74,7 @@
 					type="button"
 					class="absolute top-8 right-3 rounded border bg-background/80 p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
 					onclick={copyLogs}
-					title="Copy log content"
+					title={m.copy_log_content()}
 				>
 					{#if copied}<Check class="w-3.5 h-3.5 text-green-500" />{:else}<Copy class="w-3.5 h-3.5" />{/if}
 				</button>
@@ -84,7 +85,7 @@
 			{#if status === 'running' && onStop}
 				<Button variant="destructive" onclick={onStop}>
 					<Square class="w-3.5 h-3.5 mr-1" />
-					Stop
+					{m.stop()}
 				</Button>
 			{/if}
 			<Button variant="outline" onclick={() => (open = false)}>

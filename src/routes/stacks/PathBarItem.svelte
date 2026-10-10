@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Copy, Check, XCircle, FolderOpen, FolderSync } from 'lucide-svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 
@@ -71,7 +72,7 @@
 		<button
 			onclick={onChangeLocation}
 			class="p-1 rounded transition-colors shrink-0 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-			title="Change location"
+			title={m.change_location()}
 		>
 			<FolderSync class="w-3.5 h-3.5" />
 		</button>
@@ -79,7 +80,7 @@
 	<button
 		onclick={onCopy}
 		class="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors shrink-0 {!path ? 'opacity-40 cursor-not-allowed' : ''}"
-		title="Copy path"
+		title={m.copy_path()}
 		disabled={!path}
 	>
 		{#if copied === 'error'}
@@ -87,7 +88,7 @@
 				<Tooltip.Trigger>
 					<XCircle class="w-3.5 h-3.5 text-red-500" />
 				</Tooltip.Trigger>
-				<Tooltip.Content>Copy requires HTTPS</Tooltip.Content>
+				<Tooltip.Content>{m.copy_requires_https()}</Tooltip.Content>
 			</Tooltip.Root>
 		{:else if copied === 'ok'}
 			<Check class="w-3.5 h-3.5 text-green-500" />

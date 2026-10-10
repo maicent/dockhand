@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
 	import * as Select from '$lib/components/ui/select';
 	import { Input } from '$lib/components/ui/input';
 	import { Calendar, CalendarDays, Clock } from 'lucide-svelte';
@@ -204,13 +205,13 @@
 	}));
 
 	const daysOfWeek = [
-		{ value: '1', label: 'Monday' },
-		{ value: '2', label: 'Tuesday' },
-		{ value: '3', label: 'Wednesday' },
-		{ value: '4', label: 'Thursday' },
-		{ value: '5', label: 'Friday' },
-		{ value: '6', label: 'Saturday' },
-		{ value: '0', label: 'Sunday' }
+		{ value: '1', label: m_i18n.monday() },
+		{ value: '2', label: m_i18n.tuesday() },
+		{ value: '3', label: m_i18n.wednesday() },
+		{ value: '4', label: m_i18n.thursday() },
+		{ value: '5', label: m_i18n.friday() },
+		{ value: '6', label: m_i18n.saturday() },
+		{ value: '0', label: m_i18n.sunday() }
 	];
 </script>
 
@@ -237,13 +238,13 @@
 			<div class="flex items-center gap-2">
 				{#if scheduleType === 'daily'}
 					<Calendar class="w-4 h-4" />
-					<span>Daily</span>
+					<span>{m_i18n.daily()}</span>
 				{:else if scheduleType === 'weekly'}
 					<CalendarDays class="w-4 h-4" />
-					<span>Weekly</span>
+					<span>{m_i18n.weekly()}</span>
 				{:else}
 					<Clock class="w-4 h-4" />
-					<span>Custom</span>
+					<span>{m_i18n.custom()}</span>
 				{/if}
 			</div>
 		</Select.Trigger>
@@ -251,19 +252,19 @@
 			<Select.Item value="daily">
 				<div class="flex items-center gap-2">
 					<Calendar class="w-4 h-4" />
-					<span>Daily</span>
+					<span>{m_i18n.daily()}</span>
 				</div>
 			</Select.Item>
 			<Select.Item value="weekly">
 				<div class="flex items-center gap-2">
 					<CalendarDays class="w-4 h-4" />
-					<span>Weekly</span>
+					<span>{m_i18n.weekly()}</span>
 				</div>
 			</Select.Item>
 			<Select.Item value="custom">
 				<div class="flex items-center gap-2">
 					<Clock class="w-4 h-4" />
-					<span>Custom</span>
+					<span>{m_i18n.custom()}</span>
 				</div>
 			</Select.Item>
 		</Select.Content>
@@ -271,7 +272,7 @@
 
 	{#if scheduleType === 'daily' || scheduleType === 'weekly'}
 		<!-- Time Selectors -->
-		<span class="text-sm text-muted-foreground">at</span>
+		<span class="text-sm text-muted-foreground">{m_i18n.at()}</span>
 		<Select.Root type="single" value={hour} onValueChange={handleHourChange} {disabled}>
 			<Select.Trigger class="w-[85px] h-9 flex-shrink-0">
 				<span>{hours.find((h: { value: string; label: string }) => h.value === hour)?.label || hour}</span>
@@ -294,7 +295,7 @@
 		</Select.Root>
 
 		{#if scheduleType === 'weekly'}
-			<span class="text-sm text-muted-foreground">on</span>
+			<span class="text-sm text-muted-foreground">{m_i18n.on()}</span>
 			<Select.Root type="single" value={dayOfWeek} onValueChange={handleDayOfWeekChange} {disabled}>
 				<Select.Trigger class="w-[100px] h-9 flex-shrink-0">
 					<span>{daysOfWeek.find(d => d.value === dayOfWeek)?.label || dayOfWeek}</span>

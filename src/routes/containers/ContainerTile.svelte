@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Box } from 'lucide-svelte';
 
 	interface Props {
@@ -25,19 +26,19 @@
 	<div class="text-xs space-y-1">
 		{#if ipv4Address}
 			<div>
-				<span class="text-muted-foreground">IPv4: </span>
+				<span class="text-muted-foreground">{m.ipv4_135c()} </span>
 				<code class="text-foreground">{ipv4Address}</code>
 			</div>
 		{/if}
 		{#if ipv6Address}
 			<div>
-				<span class="text-muted-foreground">IPv6: </span>
+				<span class="text-muted-foreground">{m.ipv6_3745()} </span>
 				<code class="text-foreground">{ipv6Address}</code>
 			</div>
 		{/if}
 		{#if macAddress}
 			<div>
-				<span class="text-muted-foreground">MAC: </span>
+				<span class="text-muted-foreground">{m.mac_eacc()} </span>
 				<code class="text-foreground">{macAddress}</code>
 			</div>
 		{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Sun, Moon } from 'lucide-svelte';
 	import { getTimeFormat } from '$lib/stores/settings';
 
@@ -31,13 +32,13 @@
 	function getTypeBadge(type: 'trivy' | 'grype' | 'error' | 'default'): { label: string; class: string } {
 		switch (type) {
 			case 'trivy':
-				return { label: 'trivy', class: 'bg-teal-500 text-white' };
+				return { label: m.trivy_6e35(), class: 'bg-teal-500 text-white' };
 			case 'grype':
-				return { label: 'grype', class: 'bg-violet-500 text-white' };
+				return { label: m.grype_cf91(), class: 'bg-violet-500 text-white' };
 			case 'error':
-				return { label: 'error', class: 'bg-red-500 text-white' };
+				return { label: m.error_11f9(), class: 'bg-red-500 text-white' };
 			default:
-				return { label: 'dockhand', class: 'bg-slate-500 text-white' };
+				return { label: m.dockhand_14cd(), class: 'bg-slate-500 text-white' };
 		}
 	}
 
@@ -60,13 +61,13 @@
 
 <div class="flex-1 flex flex-col min-h-0">
 	<div class="flex items-center justify-between text-xs text-muted-foreground mb-1 shrink-0">
-		<span>Logs</span>
+		<span>{m.logs()}</span>
 		{#if onToggleTheme}
 			<button
 				type="button"
 				onclick={onToggleTheme}
 				class="p-1 rounded hover:bg-muted transition-colors"
-				title="Toggle log theme"
+				title={m.toggle_log_theme()}
 			>
 				{#if darkMode}
 					<Sun class="w-3.5 h-3.5" />
@@ -98,7 +99,7 @@
 				</div>
 			{/each}
 		{:else}
-			<span class="text-muted-foreground">No logs available</span>
+			<span class="text-muted-foreground">{m.no_logs_available()}</span>
 		{/if}
 	</div>
 </div>

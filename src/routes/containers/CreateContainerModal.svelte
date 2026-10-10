@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { tick } from 'svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -481,7 +482,7 @@
 			if (result.imagePulled) {
 				toast.success(`Container created (image ${image.trim()} was pulled automatically)`);
 			} else {
-				toast.success('Container created successfully');
+				toast.success(m.container_created_successfully());
 			}
 
 			open = false;
@@ -583,9 +584,9 @@
 	<Dialog.Content class="max-w-4xl w-[calc(100%-2rem)] h-[85vh] p-0 flex flex-col overflow-hidden !zoom-in-0 !zoom-out-0" showCloseButton={false}>
 		<Dialog.Header class="px-5 py-4 border-b bg-muted/30 shrink-0 sticky top-0 z-10">
 			<Dialog.Title class="text-base font-semibold">
-				Create new container
+				{m.create_new_container()}
 				{#if $currentEnvironment}
-					<span class="font-semibold">on <span class="text-amber-600 dark:text-amber-400">{$currentEnvironment.name}</span></span>
+					<span class="font-semibold">{m.on()} <span class="text-amber-600 dark:text-amber-400">{$currentEnvironment.name}</span></span>
 				{/if}
 			</Dialog.Title>
 			<button
@@ -595,7 +596,7 @@
 				class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-30"
 			>
 				<X class="h-4 w-4" />
-				<span class="sr-only">Close</span>
+				<span class="sr-only">{m.close()}</span>
 			</button>
 		</Dialog.Header>
 
@@ -608,7 +609,7 @@
 				onclick={() => activeTab = 'pull'}
 			>
 				<Download class="w-4 h-4" />
-				Pull
+				{m.pull()}
 				{#if pullStatus === 'complete'}
 					<CheckCircle2 class="w-3.5 h-3.5 text-green-500" />
 				{:else if pullStatus === 'pulling'}
@@ -626,7 +627,7 @@
 					disabled={pullStatus === 'idle' || pullStatus === 'pulling'}
 				>
 					<Shield class="w-4 h-4" />
-					Scan
+					{m.scan()}
 					{#if scanStatus === 'complete' && scanResults.length > 0}
 						{#if hasCriticalOrHigh}
 							<ShieldX class="w-3.5 h-3.5 text-red-500" />
@@ -647,7 +648,7 @@
 				onclick={() => activeTab = 'container'}
 			>
 				<Settings2 class="w-4 h-4" />
-				Container
+				{m.container_e644()}
 			</button>
 		</div>
 		{/if}
@@ -685,8 +686,8 @@
 				<div class="flex-1 flex items-center justify-center">
 					<div class="text-center">
 						<Shield class="w-12 h-12 text-muted-foreground/50 mx-auto mb-2" />
-						<p class="text-sm text-muted-foreground">Vulnerability scanning is disabled for this environment.</p>
-						<p class="text-xs text-muted-foreground mt-1">Enable it in Settings -> Environments to scan images.</p>
+						<p class="text-sm text-muted-foreground">{m.vulnerability_scanning_is_disabled_for_this_envi()}</p>
+						<p class="text-xs text-muted-foreground mt-1">{m.enable_it_in_settings_environments_to_scan_image()}</p>
 					</div>
 				</div>
 			{/if}
@@ -762,21 +763,21 @@
 				{#if activeTab === 'container' && hasCriticalOrHigh}
 					<div class="flex items-center gap-2 text-amber-600 text-xs">
 						<AlertTriangle class="w-4 h-4" />
-						<span>Critical/high vulnerabilities found in image</span>
+						<span>{m.critical_high_vulnerabilities_found_in_image()}</span>
 					</div>
 				{/if}
 			</div>
 			<div class="flex gap-2">
 				<Button type="button" variant="outline" onclick={handleClose} disabled={loading || isPulling || isScanning}>
-					Cancel
+					{m.cancel()}
 				</Button>
 				<Button type="button" disabled={loading || isPulling || isScanning || activeTab !== 'container'} onclick={handleSubmit}>
 					{#if loading}
 						<Loader2 class="w-4 h-4 animate-spin" />
-						Creating...
+						{m.creating()}
 					{:else}
 						<Play class="w-4 h-4" />
-						Create container
+						{m.create_container()}
 					{/if}
 				</Button>
 			</div>

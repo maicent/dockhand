@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import {
 		ShieldCheck,
 		Activity,
@@ -110,19 +111,19 @@
 				<EnvironmentIcon {icon} envId={environmentId} class="w-4 h-4 {online ? 'text-primary' : 'text-muted-foreground'}" />
 			</div>
 			{#if connectionType === 'socket' || !connectionType}
-				<span title="Unix socket connection">
+				<span title={m.unix_socket_connection()}>
 					<Unplug class="w-4 h-4 text-cyan-500 glow-cyan" />
 				</span>
 			{:else if connectionType === 'direct'}
-				<span title="Direct Docker connection">
+				<span title={m.direct_docker_connection()}>
 					<Icon iconNode={whale} class="w-4 h-4 text-blue-500 glow-blue" />
 				</span>
 			{:else if connectionType === 'hawser-standard'}
-				<span title="Hawser agent (standard mode)">
+				<span title={m.hawser_agent_standard_mode()}>
 					<Route class="w-4 h-4 text-purple-500 glow-purple" />
 				</span>
 			{:else if connectionType === 'hawser-edge'}
-				<span title="Hawser agent (edge mode)">
+				<span title={m.hawser_agent_edge_mode()}>
 					<UndoDot class="w-4 h-4 text-green-500 glow-green" />
 				</span>
 			{/if}
@@ -152,17 +153,17 @@
 				</span>
 			{/if}
 			{#if scannerEnabled}
-				<span title="Vulnerability scanning enabled">
+				<span title={m.vulnerability_scanning_enabled()}>
 					<ShieldCheck class="w-4 h-4 text-green-500 glow-green" />
 				</span>
 			{/if}
 			{#if collectActivity}
-				<span title="Activity collection enabled">
+				<span title={m.activity_collection_enabled()}>
 					<Activity class="w-4 h-4 text-amber-500 glow-amber" />
 				</span>
 			{/if}
 			{#if collectMetrics}
-				<span title="Metrics collection enabled">
+				<span title={m.metrics_collection_enabled()}>
 					<Cpu class="w-4 h-4 text-sky-400 glow-sky" />
 				</span>
 			{/if}
@@ -171,7 +172,7 @@
 					onpointerdown={stopPointerPropagation}
 					onclick={openSettings}
 					class="p-0.5 rounded hover:bg-muted transition-colors"
-					title="Edit environment settings"
+					title={m.edit_environment_settings()}
 				>
 					<Settings class="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
 				</button>

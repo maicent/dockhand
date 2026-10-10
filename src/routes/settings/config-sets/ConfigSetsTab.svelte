@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
@@ -40,7 +42,7 @@
 			configSets = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch config sets:', error);
-			toast.error('Failed to fetch config sets');
+			toast.error(m.failed_to_fetch_config_sets());
 		} finally {
 			cfgLoading = false;
 		}
@@ -59,13 +61,13 @@
 
 			if (response.ok) {
 				await fetchConfigSets();
-				toast.success('Config set deleted');
+				toast.success(m.config_set_deleted());
 			} else {
 				const data = await response.json();
 				toast.error(data.error || 'Failed to delete config set');
 			}
 		} catch (error) {
-			toast.error('Failed to delete config set');
+			toast.error(m.failed_to_delete_config_set());
 		}
 	}
 
@@ -80,9 +82,9 @@
 			<div class="flex items-start gap-3">
 				<Layers class="w-5 h-5 text-muted-foreground mt-0.5" />
 				<div>
-					<p class="text-sm font-medium">What are config sets?</p>
+					<p class="text-sm font-medium">{m.what_are_config_sets()}</p>
 					<p class="text-xs text-muted-foreground mt-1">
-						Config sets are reusable templates for container configuration. Define common environment variables, labels, ports, and volumes once, then apply them when creating or editing containers. Values from config sets can be overwritten during container creation.
+						{m.config_sets_are_reusable_templates_for_container()}
 					</p>
 				</div>
 			</div>
@@ -91,26 +93,26 @@
 
 	<div class="flex justify-between items-center">
 		<div class="flex items-center gap-3">
-			<Badge variant="secondary" class="text-xs">{configSets.length} total</Badge>
+			<Badge variant="secondary" class="text-xs">{m.length_total({ length: orEmpty(configSets.length) })}</Badge>
 		</div>
 		<div class="flex gap-2">
 			{#if $canAccess('configsets', 'create')}
 				<Button size="sm" onclick={() => openCfgModal()}>
 					<Plus class="w-4 h-4" />
-					Add config set
+					{m.add_config_set()}
 				</Button>
 			{/if}
-			<Button size="sm" variant="outline" onclick={fetchConfigSets}>Refresh</Button>
+			<Button size="sm" variant="outline" onclick={fetchConfigSets}>{m.refresh()}</Button>
 		</div>
 	</div>
 
 	{#if cfgLoading && configSets.length === 0}
-		<p class="text-muted-foreground text-sm">Loading config sets...</p>
+		<p class="text-muted-foreground text-sm">{m.loading_config_sets()}</p>
 	{:else if configSets.length === 0}
 		<EmptyState
 			icon={Layers}
-			title="No config sets found"
-			description="Create a reusable config set to get started"
+			title={m.no_config_sets_found()}
+			description={m.create_a_reusable_config_set_to_get_started()}
 		/>
 	{:else}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -132,23 +134,23 @@
 
 						<div class="flex flex-wrap gap-1.5">
 							{#if cfg.envVars && cfg.envVars.length > 0}
-								<Badge variant="outline" class="text-xs">{cfg.envVars.length} env vars</Badge>
+								<Badge variant="outline" class="text-xs">{m.length_env_vars({ length: orEmpty(cfg.envVars.length) })}</Badge>
 							{/if}
 							{#if cfg.labels && cfg.labels.length > 0}
-								<Badge variant="outline" class="text-xs">{cfg.labels.length} labels</Badge>
+								<Badge variant="outline" class="text-xs">{m.length_labels({ length: orEmpty(cfg.labels.length) })}</Badge>
 							{/if}
 							{#if cfg.ports && cfg.ports.length > 0}
-								<Badge variant="outline" class="text-xs">{cfg.ports.length} ports</Badge>
+								<Badge variant="outline" class="text-xs">{m.length_ports({ length: orEmpty(cfg.ports.length) })}</Badge>
 							{/if}
 							{#if cfg.volumes && cfg.volumes.length > 0}
-								<Badge variant="outline" class="text-xs">{cfg.volumes.length} volumes</Badge>
+								<Badge variant="outline" class="text-xs">{m.length_volumes({ length: orEmpty(cfg.volumes.length) })}</Badge>
 							{/if}
 						</div>
 
 						<div class="text-xs text-muted-foreground">
-							<span>Network: {cfg.networkMode}</span>
+							<span>{m.network_networkmode({ networkMode: orEmpty(cfg.networkMode) })}</span>
 							<span class="mx-1">|</span>
-							<span>Restart: {cfg.restartPolicy}</span>
+							<span>{m.restart_restartpolicy({ restartPolicy: orEmpty(cfg.restartPolicy) })}</span>
 						</div>
 
 						<div class="flex gap-2 pt-2">
@@ -159,7 +161,7 @@
 									onclick={() => openCfgModal(cfg)}
 								>
 									<Pencil class="w-3 h-3" />
-									Edit
+									{m.edit()}
 								</Button>
 							{/if}
 							{#if $canAccess('configsets', 'delete')}
@@ -168,7 +170,7 @@
 									action="Delete"
 									itemType="config set"
 									itemName={cfg.name}
-									title="Remove"
+									title={m.remove()}
 									position="left"
 									onConfirm={() => deleteConfigSet(cfg.id)}
 									onOpenChange={(open) => confirmDeleteConfigSetId = open ? cfg.id : null}

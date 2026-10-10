@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Search, X } from 'lucide-svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { cn } from '$lib/utils.js';
@@ -45,7 +46,7 @@
 		<button
 			type="button"
 			tabindex={-1}
-			aria-label="Clear search"
+			aria-label={m.clear_search()}
 			onclick={() => (value = '')}
 			class="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-0.5 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 		>

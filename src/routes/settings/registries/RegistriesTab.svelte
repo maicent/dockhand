@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
@@ -48,7 +50,7 @@
 			registries = await response.json();
 		} catch (error) {
 			console.error('Failed to fetch registries:', error);
-			toast.error('Failed to fetch registries');
+			toast.error(m.failed_to_fetch_registries());
 		} finally {
 			regLoading = false;
 		}
@@ -67,13 +69,13 @@
 
 			if (response.ok) {
 				await fetchRegistries();
-				toast.success('Registry deleted');
+				toast.success(m.registry_deleted());
 			} else {
 				const data = await response.json();
 				toast.error(data.error || 'Failed to delete registry');
 			}
 		} catch (error) {
-			toast.error('Failed to delete registry');
+			toast.error(m.failed_to_delete_registry());
 		}
 	}
 
@@ -95,7 +97,7 @@
 			}
 		} catch {
 			testResults[id] = { success: false, message: 'Connection failed' };
-			toast.error('Connection test failed');
+			toast.error(m.connection_test_failed());
 		} finally {
 			testingRegistryId = null;
 		}
@@ -109,13 +111,13 @@
 
 			if (response.ok) {
 				await fetchRegistries();
-				toast.success('Default registry updated');
+				toast.success(m.default_registry_updated());
 			} else {
-				toast.error('Failed to set default registry');
+				toast.error(m.failed_to_set_default_registry());
 			}
 		} catch (error) {
 			console.error('Failed to set default registry:', error);
-			toast.error('Failed to set default registry');
+			toast.error(m.failed_to_set_default_registry());
 		}
 	}
 
@@ -127,26 +129,26 @@
 <div class="space-y-4">
 	<div class="flex justify-between items-center">
 		<div class="flex items-center gap-3">
-			<Badge variant="secondary" class="text-xs">{registries.length} total</Badge>
+			<Badge variant="secondary" class="text-xs">{m.length_total({ length: orEmpty(registries.length) })}</Badge>
 		</div>
 		<div class="flex gap-2">
 			{#if $canAccess('registries', 'create')}
 				<Button size="sm" onclick={() => openRegModal()}>
 					<Plus class="w-4 h-4" />
-					Add registry
+					{m.add_registry()}
 				</Button>
 			{/if}
-			<Button size="sm" variant="outline" onclick={fetchRegistries}>Refresh</Button>
+			<Button size="sm" variant="outline" onclick={fetchRegistries}>{m.refresh()}</Button>
 		</div>
 	</div>
 
 	{#if regLoading && registries.length === 0}
-		<p class="text-muted-foreground text-sm">Loading registries...</p>
+		<p class="text-muted-foreground text-sm">{m.loading_registries()}</p>
 	{:else if registries.length === 0}
 		<EmptyState
 			icon={Download}
-			title="No registries found"
-			description="Add a Docker registry to pull and push images"
+			title={m.no_registries_found()}
+			description={m.add_a_docker_registry_to_pull_and_push_images()}
 		/>
 	{:else}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -165,10 +167,10 @@
 							</div>
 							<div class="flex items-center gap-1">
 								{#if registry.isDefault}
-									<Badge variant="default" class="text-xs">Default</Badge>
+									<Badge variant="default" class="text-xs">{m.default_label_808d()}</Badge>
 								{/if}
 								{#if registry.hasCredentials}
-									<Badge variant="secondary" class="text-xs">Auth</Badge>
+									<Badge variant="secondary" class="text-xs">{m.auth_35d0()}</Badge>
 								{/if}
 							</div>
 						</div>
@@ -194,7 +196,7 @@
 									onclick={() => setRegDefault(registry.id)}
 								>
 									<Star class="w-3 h-3" />
-									Set default
+									{m.set_default()}
 								</Button>
 							{/if}
 							<Button
@@ -202,7 +204,7 @@
 								size="sm"
 								onclick={() => testRegistry(registry.id)}
 								disabled={testingRegistryId === registry.id}
-								title="Test connectivity"
+								title={m.test_connectivity()}
 							>
 								{#if testingRegistryId === registry.id}
 									<RefreshCw class="w-3 h-3 animate-spin" />
@@ -229,7 +231,7 @@
 									action="Delete"
 									itemType="registry"
 									itemName={registry.name}
-									title="Remove"
+									title={m.remove()}
 									position="left"
 									onConfirm={() => deleteRegistry(registry.id)}
 									onOpenChange={(open) => confirmDeleteRegistryId = open ? registry.id : null}

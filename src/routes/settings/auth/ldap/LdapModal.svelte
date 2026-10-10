@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -228,10 +230,10 @@
 			<Dialog.Title class="flex items-center gap-2">
 				{#if isEditing}
 					<Pencil class="w-5 h-5" />
-					Edit LDAP configuration
+					{m_i18n.edit_ldap_configuration()}
 				{:else}
 					<Network class="w-5 h-5" />
-					Add LDAP configuration
+					{m_i18n.add_ldap_configuration()}
 				{/if}
 			</Dialog.Title>
 		</Dialog.Header>
@@ -245,20 +247,20 @@
 
 			<Tabs.Root bind:value={formModalTab}>
 				<Tabs.List class="grid w-full grid-cols-2 mb-4">
-					<Tabs.Trigger value="connection">Connection</Tabs.Trigger>
-					<Tabs.Trigger value="groups">Group settings</Tabs.Trigger>
+					<Tabs.Trigger value="connection">{m_i18n.connection()}</Tabs.Trigger>
+					<Tabs.Trigger value="groups">{m_i18n.group_settings()}</Tabs.Trigger>
 				</Tabs.List>
 
 				<Tabs.Content value="connection" class="space-y-4">
 					<!-- Basic Settings -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">Basic settings</h4>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.basic_settings()}</h4>
 						<div class="grid grid-cols-2 gap-4">
 							<div class="space-y-2">
-								<Label>Name <span class="text-destructive">*</span></Label>
+								<Label>{m_i18n.name()} <span class="text-destructive">*</span></Label>
 								<Input
 									bind:value={formName}
-									placeholder="Corporate LDAP"
+									placeholder={m_i18n.corporate_ldap()}
 									class={formErrors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 									oninput={() => formErrors.name = undefined}
 								/>
@@ -267,10 +269,10 @@
 								{/if}
 							</div>
 							<div class="space-y-2">
-								<Label>Server URL <span class="text-destructive">*</span></Label>
+								<Label>{m_i18n.server_url()} <span class="text-destructive">*</span></Label>
 								<Input
 									bind:value={formServerUrl}
-									placeholder="ldap://ldap.example.com:389"
+									placeholder={m_i18n.ldap_ldap_example_com_389()}
 									class={formErrors.serverUrl ? 'border-destructive focus-visible:ring-destructive' : ''}
 									oninput={() => formErrors.serverUrl = undefined}
 								/>
@@ -285,25 +287,25 @@
 								onCheckedChange={(checked) => formEnabled = checked === true}
 							/>
 							<Label class="text-sm font-normal cursor-pointer" onclick={() => formEnabled = !formEnabled}>
-								Enable this LDAP configuration
+								{m_i18n.enable_this_ldap_configuration()}
 							</Label>
 						</div>
 					</div>
 
 					<!-- Bind Credentials -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">Bind credentials (optional)</h4>
-						<p class="text-xs text-muted-foreground">Service account used to search for users. Leave empty for anonymous bind.</p>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.bind_credentials_optional()}</h4>
+						<p class="text-xs text-muted-foreground">{m_i18n.service_account_used_to_search_for_users_leave_e()}</p>
 						<div class="grid grid-cols-2 gap-4">
 							<div class="space-y-2">
-								<Label>Bind DN</Label>
+								<Label>{m_i18n.bind_dn()}</Label>
 								<Input
 									bind:value={formBindDn}
-									placeholder="cn=admin,dc=example,dc=com"
+									placeholder={m_i18n.cn_admin_dc_example_dc_com()}
 								/>
 							</div>
 							<div class="space-y-2">
-								<Label>Bind password</Label>
+								<Label>{m_i18n.bind_password()}</Label>
 								<Input
 									type="password"
 									bind:value={formBindPassword}
@@ -315,57 +317,57 @@
 
 					<!-- Search Settings -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">User search settings</h4>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.user_search_settings()}</h4>
 						<div class="space-y-2">
-							<Label>Base DN <span class="text-destructive">*</span></Label>
+							<Label>{m_i18n.base_dn()} <span class="text-destructive">*</span></Label>
 							<Input
 								bind:value={formBaseDn}
-								placeholder="dc=example,dc=com"
+								placeholder={m_i18n.dc_example_dc_com()}
 								class={formErrors.baseDn ? 'border-destructive focus-visible:ring-destructive' : ''}
 								oninput={() => formErrors.baseDn = undefined}
 							/>
 							{#if formErrors.baseDn}
 								<p class="text-xs text-destructive">{formErrors.baseDn}</p>
 							{:else}
-								<p class="text-xs text-muted-foreground">The base DN to search for users.</p>
+								<p class="text-xs text-muted-foreground">{m_i18n.the_base_dn_to_search_for_users()}</p>
 							{/if}
 						</div>
 						<div class="space-y-2">
-							<Label>User filter</Label>
+							<Label>{m_i18n.user_filter()}</Label>
 							<Input
 								bind:value={formUserFilter}
 								placeholder={`(uid={{username}})`}
 							/>
 							<p class="text-xs text-muted-foreground">
-								LDAP filter to find users. Use <code class="text-xs bg-muted px-1 rounded">{`{{username}}`}</code> as placeholder.<br />
-								<span class="text-muted-foreground/70">OpenLDAP: <code class="text-xs bg-muted px-1 rounded">(uid={`{{username}}`})</code> &bull; AD: <code class="text-xs bg-muted px-1 rounded">(sAMAccountName={`{{username}}`})</code></span>
+								{m_i18n.ldap_filter_to_find_users_use()} <code class="text-xs bg-muted px-1 rounded">{`{{username}}`}</code> {m_i18n.as_placeholder()}<br />
+								<span class="text-muted-foreground/70">{m_i18n.openldap()} <code class="text-xs bg-muted px-1 rounded">{m_i18n.uid_arg1({ arg1: orEmpty(`{{username}}`) })}</code> {m_i18n.ad()} <code class="text-xs bg-muted px-1 rounded">{m_i18n.samaccountname_arg1({ arg1: orEmpty(`{{username}}`) })}</code></span>
 							</p>
 						</div>
 					</div>
 
 					<!-- Attribute Mapping -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">Attribute mapping</h4>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.attribute_mapping()}</h4>
 						<div class="grid grid-cols-3 gap-4">
 							<div class="space-y-2">
-								<Label>Username attribute</Label>
+								<Label>{m_i18n.username_attribute()}</Label>
 								<Input
 									bind:value={formUsernameAttr}
-									placeholder="uid"
+									placeholder={m_i18n.uid()}
 								/>
 							</div>
 							<div class="space-y-2">
-								<Label>Email attribute</Label>
+								<Label>{m_i18n.email_attribute()}</Label>
 								<Input
 									bind:value={formEmailAttr}
-									placeholder="mail"
+									placeholder={m_i18n.mail()}
 								/>
 							</div>
 							<div class="space-y-2">
-								<Label>Display name attribute</Label>
+								<Label>{m_i18n.display_name_attribute()}</Label>
 								<Input
 									bind:value={formDisplayNameAttr}
-									placeholder="cn"
+									placeholder={m_i18n.cn()}
 								/>
 							</div>
 						</div>
@@ -373,23 +375,23 @@
 
 					<!-- TLS Settings -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">TLS settings</h4>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.tls_settings()}</h4>
 						<div class="flex items-center gap-2">
 							<Checkbox
 								checked={formTlsEnabled}
 								onCheckedChange={(checked) => formTlsEnabled = checked === true}
 							/>
 							<Label class="text-sm font-normal cursor-pointer" onclick={() => formTlsEnabled = !formTlsEnabled}>
-								Enable TLS (LDAPS or StartTLS)
+								{m_i18n.enable_tls_ldaps_or_starttls()}
 							</Label>
 						</div>
 						{#if formTlsEnabled}
 							<div class="space-y-2">
-								<Label>CA certificate (optional)</Label>
+								<Label>{m_i18n.ca_certificate_optional()}</Label>
 								<textarea
 									bind:value={formTlsCa}
 									class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
-									placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
+									placeholder={m_i18n.begin_certificate_end_certificate()}
 								></textarea>
 							</div>
 						{/if}
@@ -399,34 +401,34 @@
 				<Tabs.Content value="groups" class="space-y-4">
 					<!-- Group Settings -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">Group settings</h4>
-						<p class="text-xs text-muted-foreground">Configure group-based access control. These settings are optional.</p>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.group_settings()}</h4>
+						<p class="text-xs text-muted-foreground">{m_i18n.configure_group_based_access_control_these_setti()}</p>
 						<div class="grid grid-cols-2 gap-4">
 							<div class="space-y-2">
-								<Label>Group base DN</Label>
+								<Label>{m_i18n.group_base_dn()}</Label>
 								<Input
 									bind:value={formGroupBaseDn}
-									placeholder="ou=groups,dc=example,dc=com"
+									placeholder={m_i18n.ou_groups_dc_example_dc_com()}
 								/>
-								<p class="text-xs text-muted-foreground">The base DN to search for groups.</p>
+								<p class="text-xs text-muted-foreground">{m_i18n.the_base_dn_to_search_for_groups()}</p>
 							</div>
 							<div class="space-y-2">
-								<Label>Admin group</Label>
+								<Label>{m_i18n.admin_group()}</Label>
 								<Input
 									bind:value={formAdminGroup}
-									placeholder="cn=admins,ou=groups,dc=example,dc=com"
+									placeholder={m_i18n.cn_admins_ou_groups_dc_example_dc_com()}
 								/>
-								<p class="text-xs text-muted-foreground">Members of this group will be admins.</p>
+								<p class="text-xs text-muted-foreground">{m_i18n.members_of_this_group_will_be_admins()}</p>
 							</div>
 						</div>
 						<div class="space-y-2">
-							<Label>Member filter</Label>
+							<Label>{m_i18n.member_filter()}</Label>
 							<Input
 								bind:value={formGroupFilter}
 								placeholder={'(&(objectClass=groupOfNames)(member={{user_dn}}))'}
 							/>
 							<p class="text-xs text-muted-foreground">
-								Filter to find groups the user belongs to. Use <code class="text-xs bg-muted px-1 rounded">{'{{user_dn}}'}</code> as placeholder.
+								{m_i18n.filter_to_find_groups_the_user_belongs_to_use()} <code class="text-xs bg-muted px-1 rounded">{'{{user_dn}}'}</code> {m_i18n.as_placeholder()}
 							</p>
 						</div>
 					</div>
@@ -435,10 +437,10 @@
 					{#if isEnterprise}
 						<div class="space-y-4">
 							<div class="flex items-center gap-2">
-								<h4 class="text-sm font-medium text-muted-foreground">Group to role mappings</h4>
+								<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.group_to_role_mappings()}</h4>
 								<Star class="w-3.5 h-3.5 text-amber-500" />
 							</div>
-							<p class="text-xs text-muted-foreground">Map LDAP groups to Dockhand roles. Users in these groups will be assigned the corresponding role.</p>
+							<p class="text-xs text-muted-foreground">{m_i18n.map_ldap_groups_to_dockhand_roles_users_in_these()}</p>
 
 							{#if formRoleMappings.length > 0}
 								<div class="space-y-2">
@@ -446,7 +448,7 @@
 										<div class="flex items-center gap-2">
 											<Input
 												value={mapping.groupDn}
-												placeholder="cn=developers,ou=groups,dc=example,dc=com"
+												placeholder={m_i18n.cn_developers_ou_groups_dc_example_dc_com()}
 												class="flex-1"
 												oninput={(e) => updateRoleMappingGroupDn(index, e.currentTarget.value)}
 											/>
@@ -460,7 +462,7 @@
 														{@const role = roles.find(r => r.id === mapping.roleId)}
 														{role?.name || 'Select role'}
 													{:else}
-														Select role
+														{m_i18n.select_role()}
 													{/if}
 												</Select.Trigger>
 												<Select.Content>
@@ -484,7 +486,7 @@
 
 							<Button variant="outline" size="sm" onclick={addRoleMapping}>
 								<Plus class="w-4 h-4" />
-								Add mapping
+								{m_i18n.add_mapping()}
 							</Button>
 						</div>
 					{/if}
@@ -492,7 +494,7 @@
 			</Tabs.Root>
 		</div>
 		<Dialog.Footer class="flex-shrink-0 border-t pt-4">
-			<Button variant="outline" onclick={handleClose}>Cancel</Button>
+			<Button variant="outline" onclick={handleClose}>{m_i18n.cancel()}</Button>
 			<Button onclick={save} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />

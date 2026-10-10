@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { releasedEntries } from '$lib/utils/changelog-filter';
 	import { Button } from '$lib/components/ui/button';
@@ -58,19 +60,19 @@
 
 	const ALL_STEPS = [
 		// Preparation (from SSE)
-		{ id: 'pulling_image', label: 'Pulling new image' },
-		{ id: 'building_config', label: 'Building container config' },
-		{ id: 'pulling_updater', label: 'Pulling updater' },
-		{ id: 'creating_container', label: 'Creating new container' },
-		{ id: 'launching_updater', label: 'Launching updater' },
+		{ id: 'pulling_image', label: m.pulling_new_image() },
+		{ id: 'building_config', label: m.building_container_config() },
+		{ id: 'pulling_updater', label: m.pulling_updater() },
+		{ id: 'creating_container', label: m.creating_new_container() },
+		{ id: 'launching_updater', label: m.launching_updater() },
 		// Update (from updater container logs)
-		{ id: 'stopping', label: 'Stopping Dockhand' },
-		{ id: 'removing', label: 'Removing old container' },
-		{ id: 'renaming', label: 'Renaming container' },
-		{ id: 'connecting', label: 'Connecting networks' },
-		{ id: 'starting', label: 'Starting Dockhand' },
+		{ id: 'stopping', label: m.stopping_dockhand() },
+		{ id: 'removing', label: m.removing_old_container() },
+		{ id: 'renaming', label: m.renaming_container() },
+		{ id: 'connecting', label: m.connecting_networks() },
+		{ id: 'starting', label: m.starting_dockhand() },
 		// Reconnect
-		{ id: 'reconnecting', label: 'Waiting for Dockhand' }
+		{ id: 'reconnecting', label: m.waiting_for_dockhand() }
 	] as const;
 
 	// Updater log markers → step id mapping
@@ -486,9 +488,9 @@
 			<Dialog.Title class="flex items-center gap-2">
 				<CircleArrowUp class="w-5 h-5 text-amber-500" />
 				{#if phase === 'confirm'}
-					Update Dockhand
+					{m.update_dockhand()}
 				{:else}
-					Updating Dockhand
+					{m.updating_dockhand()}
 				{/if}
 			</Dialog.Title>
 			{#if phase !== 'confirm'}
@@ -497,11 +499,11 @@
 						<span class="text-primary font-medium">{activeStep.label}...</span>
 						<span class="text-muted-foreground ml-2">({completedCount}/{ALL_STEPS.length})</span>
 					{:else if phase === 'completed'}
-						Update complete
+						{m.update_complete()}
 					{:else if phase === 'error'}
-						Update failed
+						{m.update_failed()}
 					{:else}
-						Preparing...
+						{m.preparing()}
 					{/if}
 				</Dialog.Description>
 			{/if}
@@ -512,7 +514,7 @@
 			<div class="space-y-4 py-2 overflow-y-auto min-h-0 flex-1">
 				<div class="space-y-2">
 					<div class="flex items-center justify-between text-sm">
-						<span class="text-muted-foreground">Container</span>
+						<span class="text-muted-foreground">{m.container_e644()}</span>
 						<span class="font-medium flex items-center gap-1.5">
 							<Ship class="w-3.5 h-3.5" />
 							{containerName}
@@ -520,25 +522,25 @@
 					</div>
 					{#if isVersionUpdate}
 						<div class="flex items-center justify-between text-sm">
-							<span class="text-muted-foreground">Current image</span>
+							<span class="text-muted-foreground">{m.current_image()}</span>
 							<Badge variant="secondary" class="font-mono text-xs">{currentImage}</Badge>
 						</div>
 						<div class="flex items-center justify-between text-sm">
-							<span class="text-muted-foreground">New image</span>
+							<span class="text-muted-foreground">{m.new_image()}</span>
 							<Badge variant="default" class="font-mono text-xs">{newImage}</Badge>
 						</div>
 					{:else}
 						<div class="flex items-center justify-between text-sm">
-							<span class="text-muted-foreground">Image</span>
+							<span class="text-muted-foreground">{m.image()}</span>
 							<Badge variant="secondary" class="font-mono text-xs">{currentImage}</Badge>
 						</div>
 						{#if currentDigest || newDigest}
 							<div class="flex items-center justify-between text-sm">
-								<span class="text-muted-foreground">Current digest</span>
+								<span class="text-muted-foreground">{m.current_digest()}</span>
 								<span class="font-mono text-xs text-muted-foreground">{currentDigest ? currentDigest.replace('sha256:', '').slice(0, 12) : 'unknown'}</span>
 							</div>
 							<div class="flex items-center justify-between text-sm">
-								<span class="text-muted-foreground">New digest</span>
+								<span class="text-muted-foreground">{m.new_digest()}</span>
 								<span class="font-mono text-xs text-amber-500">{newDigest ? newDigest.replace('sha256:', '').slice(0, 12) : 'unknown'}</span>
 							</div>
 						{/if}
@@ -548,18 +550,18 @@
 				{#if loadingNotes}
 					<div class="flex items-center gap-2 text-sm text-muted-foreground py-2">
 						<Loader2 class="w-4 h-4 animate-spin" />
-						Loading release notes...
+						{m.loading_release_notes()}
 					</div>
 				{:else if releaseNotes.length > 0}
 					<div class="border rounded-md overflow-hidden">
 						<div class="bg-muted/50 px-3 py-2 border-b">
-							<p class="text-sm font-medium">What's new</p>
+							<p class="text-sm font-medium">{m.whats_new()}</p>
 						</div>
 						<div class="p-3 space-y-3 overflow-y-auto">
 							{#each releaseNotes as entry}
 								<div class="space-y-1.5">
 									<div class="flex items-center gap-2">
-										<Badge variant="outline" class="text-2xs font-mono">v{entry.version}</Badge>
+										<Badge variant="outline" class="text-2xs font-mono">{m.v_version({ version: orEmpty(entry.version) })}</Badge>
 										<span class="text-2xs text-muted-foreground">{entry.date}</span>
 									</div>
 									<ul class="space-y-1">
@@ -580,7 +582,7 @@
 				{#if isComposeManaged}
 					<div class="rounded-md border border-blue-500/30 bg-blue-500/5 p-3">
 						<p class="text-xs text-muted-foreground">
-							<span class="font-medium text-blue-400">Note:</span> This container is managed by Docker Compose. After update it will continue to work but may lose Compose tracking. Use <code class="text-2xs">docker compose pull && docker compose up -d</code> for Compose-aware updates.
+							<span class="font-medium text-blue-400">{m.note()}</span> {m.this_container_is_managed_by_docker_compose_afte()} <code class="text-2xs">{m.docker_compose_pull_docker_compose_up_d()}</code> {m.for_compose_aware_updates()}
 						</p>
 					</div>
 				{/if}
@@ -588,11 +590,11 @@
 
 			<Dialog.Footer>
 				<Button variant="outline" onclick={handleClose}>
-					Cancel
+					{m.cancel()}
 				</Button>
 				<Button onclick={startUpdate}>
 					<CircleArrowUp class="w-4 h-4 mr-2" />
-					Update now
+					{m.update_now()}
 				</Button>
 			</Dialog.Footer>
 
@@ -602,7 +604,7 @@
 				<!-- Progress bar -->
 				<div class="space-y-2 shrink-0">
 					<div class="flex items-center justify-between text-sm">
-						<span class="text-muted-foreground">Progress</span>
+						<span class="text-muted-foreground">{m.progress()}</span>
 						<Badge variant="secondary">{completedCount}/{ALL_STEPS.length}</Badge>
 					</div>
 					<Progress value={progressPercentage} class="h-2" />
@@ -654,16 +656,16 @@
 				{#if phase === 'completed'}
 					<Button onclick={() => window.location.reload()}>
 						<RotateCcw class="w-4 h-4 mr-2" />
-						Reload
+						{m.reload()}
 					</Button>
 				{:else if phase === 'error'}
 					<Button variant="outline" onclick={handleClose}>
-						Close
+						{m.close()}
 					</Button>
 				{:else}
 					<Button variant="outline" disabled>
 						<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-						Updating...
+						{m.updating()}
 					</Button>
 				{/if}
 			</Dialog.Footer>

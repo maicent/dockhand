@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
@@ -164,38 +166,38 @@
 	let showExportMenu = $state(false);
 
 	const entityTypes = [
-		{ value: 'container', label: 'Containers' },
-		{ value: 'image', label: 'Images' },
-		{ value: 'volume', label: 'Volumes' },
-		{ value: 'network', label: 'Networks' },
-		{ value: 'stack', label: 'Stacks' },
-		{ value: 'environment', label: 'Environments' },
-		{ value: 'registry', label: 'Registries' },
-		{ value: 'user', label: 'Users' },
-		{ value: 'role', label: 'Roles' },
-		{ value: 'settings', label: 'Settings' },
-		{ value: 'git_repository', label: 'Git repositories' },
-		{ value: 'git_credential', label: 'Git credentials' }
+		{ value: 'container', label: m_i18n.containers() },
+		{ value: 'image', label: m_i18n.images() },
+		{ value: 'volume', label: m_i18n.volumes() },
+		{ value: 'network', label: m_i18n.networks() },
+		{ value: 'stack', label: m_i18n.stacks() },
+		{ value: 'environment', label: m_i18n.environments() },
+		{ value: 'registry', label: m_i18n.registries() },
+		{ value: 'user', label: m_i18n.users() },
+		{ value: 'role', label: m_i18n.roles() },
+		{ value: 'settings', label: m_i18n.settings() },
+		{ value: 'git_repository', label: m_i18n.git_repositories() },
+		{ value: 'git_credential', label: m_i18n.git_credentials() }
 	];
 
 	const actionTypes = [
-		{ value: 'create', label: 'Create' },
-		{ value: 'update', label: 'Update' },
-		{ value: 'delete', label: 'Delete' },
-		{ value: 'start', label: 'Start' },
-		{ value: 'stop', label: 'Stop' },
-		{ value: 'restart', label: 'Restart' },
-		{ value: 'pause', label: 'Pause' },
-		{ value: 'unpause', label: 'Unpause' },
-		{ value: 'pull', label: 'Pull' },
-		{ value: 'push', label: 'Push' },
-		{ value: 'prune', label: 'Prune' },
-		{ value: 'exec', label: 'Exec' },
-		{ value: 'connect', label: 'Connect' },
-		{ value: 'disconnect', label: 'Disconnect' },
-		{ value: 'login', label: 'Login' },
-		{ value: 'logout', label: 'Logout' },
-		{ value: 'sync', label: 'Sync' }
+		{ value: 'create', label: m_i18n.create() },
+		{ value: 'update', label: m_i18n.update() },
+		{ value: 'delete', label: m_i18n.delete() },
+		{ value: 'start', label: m_i18n.start() },
+		{ value: 'stop', label: m_i18n.stop() },
+		{ value: 'restart', label: m_i18n.restart() },
+		{ value: 'pause', label: m_i18n.pause() },
+		{ value: 'unpause', label: m_i18n.unpause() },
+		{ value: 'pull', label: m_i18n.pull() },
+		{ value: 'push', label: m_i18n.push() },
+		{ value: 'prune', label: m_i18n.prune() },
+		{ value: 'exec', label: m_i18n.exec() },
+		{ value: 'connect', label: m_i18n.connect() },
+		{ value: 'disconnect', label: m_i18n.disconnect() },
+		{ value: 'login', label: m_i18n.login() },
+		{ value: 'logout', label: m_i18n.logout() },
+		{ value: 'sync', label: m_i18n.sync() }
 	];
 
 	// Date filter preset
@@ -208,12 +210,12 @@
 	);
 
 	const datePresets = [
-		{ value: 'today', label: 'Today' },
-		{ value: 'yesterday', label: 'Yesterday' },
-		{ value: 'last7days', label: 'Last 7 days' },
-		{ value: 'last30days', label: 'Last 30 days' },
-		{ value: 'thisMonth', label: 'This month' },
-		{ value: 'lastMonth', label: 'Last month' }
+		{ value: 'today', label: m_i18n.today() },
+		{ value: 'yesterday', label: m_i18n.yesterday() },
+		{ value: 'last7days', label: m_i18n.last_7_days() },
+		{ value: 'last30days', label: m_i18n.last_30_days() },
+		{ value: 'thisMonth', label: m_i18n.this_month() },
+		{ value: 'lastMonth', label: m_i18n.last_month() }
 	];
 
 	// Filter dates are calendar days in the configured display timezone (#1269).
@@ -596,14 +598,14 @@
 </script>
 
 <svelte:head>
-	<title>Audit log - Dockhand</title>
+	<title>{m_i18n.audit_log_dockhand()}</title>
 </svelte:head>
 
 <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
 	<!-- Header -->
 	<div class="shrink-0 flex flex-wrap justify-between items-center gap-3 min-h-8">
 		<div class="flex items-center gap-3">
-			<PageHeader icon={Crown} title="Audit log" iconClass="text-amber-500" count={visibleEnd > 0 ? `${visibleStart}-${visibleEnd}` : undefined} total={total > 0 ? total : undefined} countClass="min-w-32" />
+			<PageHeader icon={Crown} title={m_i18n.audit_log()} iconClass="text-amber-500" count={visibleEnd > 0 ? `${visibleStart}-${visibleEnd}` : undefined} total={total > 0 ? total : undefined} countClass="min-w-32" />
 		</div>
 		{#if $licenseStore.isEnterprise}
 			<div class="flex flex-wrap items-center gap-2">
@@ -613,11 +615,11 @@
 						<User class="w-3.5 h-3.5 mr-1.5 text-muted-foreground shrink-0" />
 						<span class="truncate">
 							{#if filterUsernames.length === 0}
-								User
+								{m_i18n.user()}
 							{:else if filterUsernames.length === 1}
 								{filterUsernames[0]}
 							{:else}
-								{filterUsernames.length} users
+								{m_i18n.length_users({ length: orEmpty(filterUsernames.length) })}
 							{/if}
 						</span>
 					</Select.Trigger>
@@ -628,7 +630,7 @@
 								class="w-full px-2 py-1 text-xs text-left text-muted-foreground/60 hover:text-muted-foreground"
 								onclick={() => filterUsernames = []}
 							>
-								Clear
+								{m_i18n.clear()}
 							</button>
 						{/if}
 						{#each users as user}
@@ -646,11 +648,11 @@
 						<Box class="w-3.5 h-3.5 mr-1.5 text-muted-foreground shrink-0" />
 						<span class="truncate">
 							{#if filterEntityTypes.length === 0}
-								Entity
+								{m_i18n.entity()}
 							{:else if filterEntityTypes.length === 1}
 								{entityTypes.find(e => e.value === filterEntityTypes[0])?.label || filterEntityTypes[0]}
 							{:else}
-								{filterEntityTypes.length} entities
+								{m_i18n.length_entities({ length: orEmpty(filterEntityTypes.length) })}
 							{/if}
 						</span>
 					</Select.Trigger>
@@ -661,7 +663,7 @@
 								class="w-full px-2 py-1 text-xs text-left text-muted-foreground/60 hover:text-muted-foreground"
 								onclick={() => filterEntityTypes = []}
 							>
-								Clear
+								{m_i18n.clear()}
 							</button>
 						{/if}
 						{#each entityTypes as type}
@@ -679,11 +681,11 @@
 						<Activity class="w-3.5 h-3.5 mr-1.5 text-muted-foreground shrink-0" />
 						<span class="truncate">
 							{#if filterActions.length === 0}
-								Action
+								{m_i18n.action()}
 							{:else if filterActions.length === 1}
 								{actionTypes.find(a => a.value === filterActions[0])?.label || filterActions[0]}
 							{:else}
-								{filterActions.length} actions
+								{m_i18n.length_actions({ length: orEmpty(filterActions.length) })}
 							{/if}
 						</span>
 					</Select.Trigger>
@@ -694,7 +696,7 @@
 								class="w-full px-2 py-1 text-xs text-left text-muted-foreground/60 hover:text-muted-foreground"
 								onclick={() => filterActions = []}
 							>
-								Clear
+								{m_i18n.clear()}
 							</button>
 						{/if}
 						{#each actionTypes as action}
@@ -722,7 +724,7 @@
 							{/if}
 							<span class="truncate">
 								{#if filterEnvironmentId === null}
-									Environment
+									{m_i18n.environment()}
 								{:else}
 									{selectedEnv?.name || 'Environment'}
 								{/if}
@@ -731,7 +733,7 @@
 						<Select.Content>
 							<Select.Item value="">
 								<Server class="w-4 h-4 mr-2 text-muted-foreground" />
-								All environments
+								{m_i18n.all_environments()}
 							</Select.Item>
 							{#each environments as env}
 								<Select.Item value={String(env.id)}>
@@ -758,27 +760,27 @@
 						<Calendar class="w-3.5 h-3.5 mr-1.5 text-muted-foreground shrink-0" />
 						<span class="truncate">
 							{#if selectedDatePreset === 'custom'}
-								Custom
+								{m_i18n.custom()}
 							{:else if selectedDatePreset}
 								{datePresets.find(d => d.value === selectedDatePreset)?.label || 'All time'}
 							{:else}
-								All time
+								{m_i18n.all_time()}
 							{/if}
 						</span>
 					</Select.Trigger>
 					<Select.Content>
-						<Select.Item value="">All time</Select.Item>
+						<Select.Item value="">{m_i18n.all_time()}</Select.Item>
 						{#each datePresets as preset}
 							<Select.Item value={preset.value}>{preset.label}</Select.Item>
 						{/each}
-						<Select.Item value="custom">Custom range...</Select.Item>
+						<Select.Item value="custom">{m_i18n.custom_range()}</Select.Item>
 					</Select.Content>
 				</Select.Root>
 
 				<!-- Custom date inputs -->
 				{#if selectedDatePreset === 'custom'}
-					<DatePicker bind:value={filterFromDate} placeholder="From" class="h-8 w-28" />
-					<DatePicker bind:value={filterToDate} placeholder="To" class="h-8 w-28" />
+					<DatePicker bind:value={filterFromDate} placeholder={m_i18n.from()} class="h-8 w-28" />
+					<DatePicker bind:value={filterToDate} placeholder={m_i18n.to()} class="h-8 w-28" />
 				{/if}
 
 				<!-- Clear filters -->
@@ -788,7 +790,7 @@
 					class="h-8 px-2"
 					onclick={clearFilters}
 					disabled={!hasActiveFilters}
-					title="Clear all filters"
+					title={m_i18n.clear_all_filters()}
 				>
 					<X class="w-3.5 h-3.5" />
 				</Button>
@@ -817,7 +819,7 @@
 								onclick={() => exportLogs('json')}
 							>
 								<FileJson class="w-4 h-4" />
-								JSON
+								{m_i18n.json()}
 							</button>
 							<button
 								type="button"
@@ -825,7 +827,7 @@
 								onclick={() => exportLogs('csv')}
 							>
 								<FileSpreadsheet class="w-4 h-4" />
-								CSV
+								{m_i18n.csv()}
 							</button>
 							<button
 								type="button"
@@ -833,7 +835,7 @@
 								onclick={() => exportLogs('md')}
 							>
 								<FileText class="w-4 h-4" />
-								Markdown
+								{m_i18n.markdown()}
 							</button>
 						</div>
 					{/if}
@@ -845,20 +847,20 @@
 	{#if $licenseStore.loading}
 		<div class="flex flex-col items-center justify-center py-16 text-center">
 			<Loader2 class="w-8 h-8 animate-spin text-muted-foreground mb-4" />
-			<p class="text-muted-foreground">Loading...</p>
+			<p class="text-muted-foreground">{m_i18n.loading()}</p>
 		</div>
 	{:else if !$licenseStore.isEnterprise}
 		<div class="flex flex-col items-center justify-center py-16 text-center">
 			<div class="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
 				<Crown class="w-8 h-8 text-amber-500" />
 			</div>
-			<h2 class="text-xl font-semibold mb-2">Enterprise feature</h2>
+			<h2 class="text-xl font-semibold mb-2">{m_i18n.enterprise_feature()}</h2>
 			<p class="text-muted-foreground max-w-md mb-6">
-				Audit logging is an enterprise feature that tracks all user actions for compliance and security monitoring.
+				{m_i18n.audit_logging_is_an_enterprise_feature_that_trac()}
 			</p>
 			<Button variant="outline" href="/settings?tab=license">
 				<Key class="w-4 h-4" />
-				Activate license
+				{m_i18n.activate_license()}
 			</Button>
 		</div>
 	{:else}
@@ -923,14 +925,14 @@
 			{#snippet emptyState()}
 				<div class="flex flex-col items-center justify-center py-16 text-muted-foreground">
 					<FileX class="w-10 h-10 mb-3 opacity-40" />
-					<p>No audit log entries found</p>
+					<p>{m_i18n.no_audit_log_entries_found()}</p>
 				</div>
 			{/snippet}
 
 			{#snippet loadingState()}
 				<div class="flex items-center justify-center py-16 text-muted-foreground">
 					<RefreshCw class="w-5 h-5 animate-spin mr-2" />
-					Loading...
+					{m_i18n.loading()}
 				</div>
 			{/snippet}
 
@@ -938,11 +940,11 @@
 				{#if loadingMore}
 					<div class="flex items-center justify-center py-2 text-muted-foreground">
 						<Loader2 class="w-4 h-4 animate-spin mr-2" />
-						Loading more...
+						{m_i18n.loading_more()}
 					</div>
 				{:else if !hasMore && logs.length > 0}
 					<div class="text-center py-2 text-sm text-muted-foreground">
-						End of results ({total.toLocaleString()} entries)
+						{m_i18n.end_of_results_arg1_entries({ arg1: orEmpty(total.toLocaleString()) })}
 					</div>
 				{/if}
 			{/snippet}
@@ -954,24 +956,24 @@
 <Dialog.Root bind:open={showDetailDialog}>
 	<Dialog.Content class="max-w-2xl">
 		<Dialog.Header>
-			<Dialog.Title>Audit log details</Dialog.Title>
+			<Dialog.Title>{m_i18n.audit_log_details()}</Dialog.Title>
 		</Dialog.Header>
 		{#if selectedLog}
 			<div class="space-y-4">
 				<div class="grid grid-cols-2 gap-4">
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">Timestamp</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.timestamp()}</label>
 						<p class="font-mono text-sm">{formatTimestamp(selectedLog.createdAt)}</p>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">User</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.user()}</label>
 						<p class="flex items-center gap-1">
 							<User class="w-4 h-4 text-muted-foreground" />
 							{selectedLog.username}
 						</p>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">Action</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.action()}</label>
 						<p>
 							<Badge class="{getActionColor(selectedLog.action)} gap-1">
 								<svelte:component this={getActionIcon(selectedLog.action)} class="w-3 h-3" />
@@ -980,7 +982,7 @@
 						</p>
 					</div>
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">Entity type</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.entity_type()}</label>
 						<p class="flex items-center gap-1">
 							<svelte:component this={getEntityIcon(selectedLog.entityType)} class="w-4 h-4 text-muted-foreground" />
 							{selectedLog.entityType}
@@ -988,25 +990,25 @@
 					</div>
 					{#if selectedLog.entityName}
 						<div>
-							<label class="text-sm font-medium text-muted-foreground">Entity name</label>
+							<label class="text-sm font-medium text-muted-foreground">{m_i18n.entity_name()}</label>
 							<p>{selectedLog.entityName}</p>
 						</div>
 					{/if}
 					{#if selectedLog.entityId}
 						<div>
-							<label class="text-sm font-medium text-muted-foreground">Entity ID</label>
+							<label class="text-sm font-medium text-muted-foreground">{m_i18n.entity_id()}</label>
 							<p class="font-mono text-sm break-all">{selectedLog.entityId}</p>
 						</div>
 					{/if}
 					{#if selectedLog.environmentId}
 						<div>
-							<label class="text-sm font-medium text-muted-foreground">Environment ID</label>
+							<label class="text-sm font-medium text-muted-foreground">{m_i18n.environment_id()}</label>
 							<p>{selectedLog.environmentId}</p>
 						</div>
 					{/if}
 					{#if selectedLog.ipAddress}
 						<div>
-							<label class="text-sm font-medium text-muted-foreground">IP address</label>
+							<label class="text-sm font-medium text-muted-foreground">{m_i18n.ip_address()}</label>
 							<p class="font-mono text-sm">{selectedLog.ipAddress}</p>
 						</div>
 					{/if}
@@ -1014,33 +1016,33 @@
 
 				{#if selectedLog.description}
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">Description</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.description()}</label>
 						<p>{selectedLog.description}</p>
 					</div>
 				{/if}
 
 				{#if selectedLog.userAgent}
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">User agent</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.user_agent()}</label>
 						<p class="text-xs text-muted-foreground break-all">{selectedLog.userAgent}</p>
 					</div>
 				{/if}
 
 				{#if selectedLog.details?.changes}
 					<div>
-						<label class="text-sm font-medium text-muted-foreground mb-2 block">Changes</label>
+						<label class="text-sm font-medium text-muted-foreground mb-2 block">{m_i18n.changes()}</label>
 						<DiffViewer diff={selectedLog.details as AuditDiff} />
 					</div>
 				{:else if selectedLog.details}
 					<div>
-						<label class="text-sm font-medium text-muted-foreground">Details</label>
+						<label class="text-sm font-medium text-muted-foreground">{m_i18n.details()}</label>
 						<pre class="mt-1 p-3 bg-muted rounded-md text-xs overflow-auto max-h-[200px]">{JSON.stringify(selectedLog.details, null, 2)}</pre>
 					</div>
 				{/if}
 			</div>
 		{/if}
 		<Dialog.Footer>
-			<Button variant="outline" onclick={() => showDetailDialog = false}>Close</Button>
+			<Button variant="outline" onclick={() => showDetailDialog = false}>{m_i18n.close()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
@@ -1051,6 +1053,6 @@
 		type="button"
 		class="fixed inset-0 z-40"
 		onclick={() => showExportMenu = false}
-		aria-label="Close menu"
+		aria-label={m_i18n.close_menu()}
 	></button>
 {/if}

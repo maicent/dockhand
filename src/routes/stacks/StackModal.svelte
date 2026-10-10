@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount, onDestroy, tick, untrack } from 'svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -611,7 +613,7 @@
 
 	function openEnvBrowser() {
 		fileBrowserConfig = {
-			title: 'Select environment file or directory',
+			title: m.select_environment_file_or_directory(),
 			selectFilter: /\.env($|\.)/,  // matches .env, .env.local, app.env, etc.
 			selectMode: 'file_or_directory',
 			onSelect: handleEnvSelect
@@ -827,7 +829,7 @@
 
 		} catch (e: any) {
 			operationError = {
-				title: 'Failed to move files',
+				title: m.failed_to_move_files(),
 				message: e.message || 'An error occurred while moving files'
 			};
 		} finally {
@@ -1730,7 +1732,7 @@
 			// output panel exists to show.
 			if (start && outputRunning) finishOutput(undefined, false);
 			operationError = {
-				title: 'Failed to create stack',
+				title: m.failed_to_create_stack(),
 				message: e.message || 'An error occurred while creating the stack',
 				details: e.details
 			};
@@ -2229,7 +2231,7 @@
 						     repo content, so it stays editable even for a read-only git stack. -->
 						<button
 							type="button"
-							title="Change stack icon"
+							title={m.change_stack_icon()}
 							onclick={() => (showIconPicker = true)}
 							class="p-1.5 rounded-md bg-zinc-200 dark:bg-zinc-700 hover:ring-2 hover:ring-primary transition-shadow"
 						>
@@ -2244,21 +2246,21 @@
 						<div>
 							<Dialog.Title class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
 								{#if mode === 'create'}
-									Create compose stack
+									{m.create_compose_stack()}
 								{:else}
 									{stackName}
 								{/if}
 								{#if $currentEnvironment}
-									<span class="font-semibold">on <span class="text-amber-600 dark:text-amber-400">{$currentEnvironment.name}</span></span>
+									<span class="font-semibold">{m.on()} <span class="text-amber-600 dark:text-amber-400">{$currentEnvironment.name}</span></span>
 								{/if}
 							</Dialog.Title>
 							<Dialog.Description class="text-xs text-zinc-500 dark:text-zinc-400">
 								{#if mode === 'create'}
-									Create a new Docker Compose stack
+									{m.create_a_new_docker_compose_stack()}
 								{:else if readonly}
-									View compose file and dependency graph
+									{m.view_compose_file_and_dependency_graph()}
 								{:else}
-									Edit compose file and environment variables
+									{m.edit_compose_file_and_environment_variables()}
 								{/if}
 							</Dialog.Description>
 						</div>
@@ -2283,14 +2285,14 @@
 				class="relative -mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm transition-colors {activeTab === 'editor' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
 				onclick={() => activeTab = 'editor'}
 			>
-				<Code class="h-3.5 w-3.5" /> Editor
+				<Code class="h-3.5 w-3.5" /> {m.editor()}
 			</button>
 			<button
 				type="button"
 				class="relative -mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm transition-colors {activeTab === 'graph' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
 				onclick={() => activeTab = 'graph'}
 			>
-				<GitGraph class="h-3.5 w-3.5" /> Graph
+				<GitGraph class="h-3.5 w-3.5" /> {m.graph()}
 			</button>
 			<!-- BETA GATE: Backups tab hidden unless FEAT_BACKUPS_ENABLED (see features.ts).
 			     Also hidden for UNTRACKED stacks: with no known compose file the backup
@@ -2302,7 +2304,7 @@
 					class="relative -mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm transition-colors {activeTab === 'backups' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
 					onclick={() => activeTab = 'backups'}
 				>
-					<Archive class="h-3.5 w-3.5" /> Backups
+					<Archive class="h-3.5 w-3.5" /> {m.backups()}
 					{#if backupCount > 0}<span class="bg-primary/15 text-primary text-[10px] px-1.5 rounded-full font-medium">{backupCount}</span>{/if}
 					{#if backupTally.ok > 0}<span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-1.5 text-[10px] font-medium text-emerald-500"><Check class="w-2.5 h-2.5" />{backupTally.ok}</span>{/if}
 					{#if backupTally.failed > 0}<span class="inline-flex items-center gap-0.5 rounded-full bg-red-500/15 px-1.5 text-[10px] font-semibold text-red-500"><X class="w-2.5 h-2.5" />{backupTally.failed}</span>{/if}
@@ -2319,7 +2321,7 @@
 					class="relative -mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm transition-colors {activeTab === 'deploys' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}"
 					onclick={() => activeTab = 'deploys'}
 				>
-					<History class="h-3.5 w-3.5" /> Deploys
+					<History class="h-3.5 w-3.5" /> {m.deploys()}
 					{#if deploysTally.ok > 0}
 						<span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-1.5 text-[10px] font-medium text-emerald-500"><Check class="h-2.5 w-2.5" />{deploysTally.ok}</span>
 					{/if}
@@ -2352,14 +2354,14 @@
 				<div class="flex-1 flex items-center justify-center">
 					<div class="flex items-center gap-3 text-zinc-400 dark:text-zinc-500">
 						<Loader2 class="w-5 h-5 animate-spin" />
-						<span>Loading compose file...</span>
+						<span>{m.loading_compose_file()}</span>
 					</div>
 				</div>
 			{:else}
 				<!-- Tags (edit mode: stack has a stable name+env key) -->
 				{#if mode === 'edit' && stackName}
 					<div class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-700 flex items-center gap-2 flex-wrap">
-						<Label class="text-xs text-zinc-500 dark:text-zinc-400">Tags</Label>
+						<Label class="text-xs text-zinc-500 dark:text-zinc-400">{m.tags()}</Label>
 						<StackTagsSection {stackName} envId={$currentEnvironment?.id ?? null} />
 					</div>
 				{/if}
@@ -2369,11 +2371,11 @@
 					<div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
 						<div class="flex gap-4 items-start">
 							<div class="flex-1 max-w-xs space-y-1">
-								<Label for="stack-name">Stack name</Label>
+								<Label for="stack-name">{m.stack_name()}</Label>
 								<Input
 									id="stack-name"
 									bind:value={newStackName}
-									placeholder="my-stack"
+									placeholder={m.my_stack()}
 									class={errors.stackName ? 'border-destructive focus-visible:ring-destructive' : ''}
 									oninput={() => errors.stackName = undefined}
 								/>
@@ -2392,11 +2394,11 @@
 							<AlertCircle class="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
 							<div class="flex-1 min-w-0">
 								<p class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
-									<span class="font-medium text-amber-800 dark:text-amber-300">Untracked stack</span> — this stack is running in Docker but Dockhand doesn't know where its compose file is stored on disk. Browse to locate the file to start editing and managing it.
+									<span class="font-medium text-amber-800 dark:text-amber-300">{m.untracked_stack()}</span> {m.this_stack_is_running_in_docker_but_dockhand_doe()}
 								</p>
 								{#if stackContainers.length > 0}
 									<div class="text-xs text-zinc-500 dark:text-zinc-400">
-										<span class="font-medium text-zinc-700 dark:text-zinc-300">Running containers:</span>
+										<span class="font-medium text-zinc-700 dark:text-zinc-300">{m.running_containers_b594()}</span>
 										<div class="mt-1.5 flex flex-wrap gap-1.5">
 											{#each stackContainers as container}
 												<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs {container.state === 'running' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'}">
@@ -2418,8 +2420,8 @@
 						<!-- Path bars row -->
 						<div class="flex items-center border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/30">
 							{#if readonly}
-								<span class="ml-4 flex shrink-0 items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-2xs font-medium text-purple-600 dark:text-purple-400" title="This is a Git-managed stack — Dockhand shows its compose read-only; edit it in the repository.">
-									<GitBranch class="h-3 w-3" /> Git · read-only
+								<span class="ml-4 flex shrink-0 items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-2xs font-medium text-purple-600 dark:text-purple-400" title={m.this_is_a_git_managed_stack_dockhand_shows_its_c()}>
+									<GitBranch class="h-3 w-3" /> {m.git_read_only()}
 								</span>
 								{#if gitInfo && (gitInfo.commit || gitInfo.url || gitInfo.branch)}
 									<div class="ml-3 flex min-w-0 items-center gap-3 text-2xs text-muted-foreground">
@@ -2427,7 +2429,7 @@
 											<span class="flex shrink-0 items-center gap-1">
 												<GitCommitHorizontal class="h-3.5 w-3.5 shrink-0 opacity-70" />
 												<code class="font-mono">{gitInfo.commit}</code>
-												<button type="button" class="rounded p-0.5 hover:bg-muted transition-colors" title="Copy commit hash" onclick={() => copyText(gitInfo.commit ?? null, (v) => gitCommitCopied = v)}>
+												<button type="button" class="rounded p-0.5 hover:bg-muted transition-colors" title={m.copy_commit_hash()} onclick={() => copyText(gitInfo.commit ?? null, (v) => gitCommitCopied = v)}>
 													{#if gitCommitCopied === 'ok'}<Check class="h-3 w-3 text-green-500" />{:else}<Copy class="h-3 w-3" />{/if}
 												</button>
 											</span>
@@ -2436,7 +2438,7 @@
 											<span class="flex min-w-0 items-center gap-1">
 												<Github class="h-3.5 w-3.5 shrink-0 opacity-70" />
 												<span class="truncate">{gitInfo.url}</span>
-												<button type="button" class="rounded p-0.5 hover:bg-muted transition-colors shrink-0" title="Copy repository URL" onclick={() => copyText(gitInfo.url ?? null, (v) => gitUrlCopied = v)}>
+												<button type="button" class="rounded p-0.5 hover:bg-muted transition-colors shrink-0" title={m.copy_repository_url()} onclick={() => copyText(gitInfo.url ?? null, (v) => gitUrlCopied = v)}>
 													{#if gitUrlCopied === 'ok'}<Check class="h-3 w-3 text-green-500" />{:else}<Copy class="h-3 w-3" />{/if}
 												</button>
 											</span>
@@ -2453,9 +2455,9 @@
 							<!-- Compose path -->
 							<div class="flex-shrink-0 px-4 py-2" style="width: {splitRatio}%">
 								<PathBarItem
-									label="Compose file"
+									label={m.compose_file()}
 									path={workingComposePath || null}
-									placeholder="/path/to/compose.yaml"
+									placeholder={m.path_to_compose_yaml()}
 									copied={composePathCopied}
 									onCopy={() => copyText(workingComposePath, (v) => composePathCopied = v)}
 									onBrowse={readonly ? undefined : openComposeBrowser}
@@ -2469,10 +2471,10 @@
 							<!-- Env path -->
 							<div class="flex-1 min-w-0 px-4 py-2 bg-zinc-100/50 dark:bg-zinc-800/50">
 								<PathBarItem
-									label="Env file"
+									label={m.env_file()}
 									path={displayEnvPath || null}
 									selectedPath={workingEnvPath || suggestedEnvPath || ''}
-									placeholder="/path/to/.env (optional)"
+									placeholder={m.path_to_env_optional()}
 									copied={envPathCopied}
 									onCopy={() => copyText(displayEnvPath, (v) => envPathCopied = v)}
 									onBrowse={readonly ? undefined : openEnvBrowser}
@@ -2510,18 +2512,18 @@
 										{#if readonly && needsFileLocation && !composeContent}
 											<div class="h-full rounded-md border border-dashed border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800/30 flex flex-col items-center justify-center text-center px-8">
 												<GitGraph class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-4" />
-												<h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Compose file not available</h3>
+												<h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">{m.compose_file_not_available()}</h3>
 												<p class="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
-													Deploy or sync this Git stack first so Dockhand has a local copy of its compose file.
+													{m.deploy_or_sync_this_git_stack_first_so_dockhand()}
 												</p>
 											</div>
 										{:else if needsFileLocation && !composeContent}
 											<!-- Empty state for untracked stacks -->
 											<div class="h-full overflow-y-auto rounded-md border border-dashed border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800/30 flex flex-col items-center text-center px-4 py-6 sm:px-8">
 												<FolderOpen class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-4" />
-												<h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">No compose file selected</h3>
+												<h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">{m.no_compose_file_selected()}</h3>
 												<p class="text-xs text-zinc-500 dark:text-zinc-400 mb-4 max-w-sm">
-													Browse to locate the compose file for this stack. The editor will load the file contents once selected.
+													{m.browse_to_locate_the_compose_file_for_this_stack()}
 												</p>
 												{#if mode === 'edit' && pathHintEnvId && $canAccess('stacks', 'edit')}
 													<DetectedComposeFile
@@ -2533,12 +2535,12 @@
 												{/if}
 												<Button variant="outline" size="sm" onclick={openComposeBrowser}>
 													<FolderOpen class="w-4 h-4" />
-													Browse for compose file
+													{m.browse_for_compose_file()}
 												</Button>
 												<!-- Info box explaining what happens -->
 												<div class="mt-6 max-w-md flex items-start gap-2.5 text-xs bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2.5 text-left">
 													<Info class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-													<span><span class="font-medium text-amber-600 dark:text-amber-400">What happens when you select a file:</span> <span class="text-zinc-600 dark:text-zinc-400">Dockhand will track this compose file, letting you edit, start, and stop the stack from the UI. Your files stay in their current location.</span></span>
+													<span><span class="font-medium text-amber-600 dark:text-amber-400">{m.what_happens_when_you_select_a_file()}</span> <span class="text-zinc-600 dark:text-zinc-400">{m.dockhand_will_track_this_compose_file_letting_yo()}</span></span>
 												</div>
 											</div>
 										{:else}
@@ -2551,14 +2553,14 @@
 														class="h-6 px-2 text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
 														onclick={runComposeValidate}
 														disabled={!composeContent}
-														title="Check this compose for problems before deploy"
+														title={m.check_this_compose_for_problems_before_deploy()}
 													>
 														{#if validateLoading}
 															<Loader2 class="w-3 h-3 animate-spin" />
 														{:else}
 															<ListChecks class="w-3 h-3" />
 														{/if}
-														Validate
+														{m.validate()}
 													</Button>
 													<Button
 														variant="ghost"
@@ -2572,15 +2574,15 @@
 																<Tooltip.Trigger>
 																	<XCircle class="w-3 h-3 text-red-500" />
 																</Tooltip.Trigger>
-																<Tooltip.Content>Copy requires HTTPS</Tooltip.Content>
+																<Tooltip.Content>{m.copy_requires_https()}</Tooltip.Content>
 															</Tooltip.Root>
-															Failed
+															{m.failed()}
 														{:else if composeContentCopied === 'ok'}
 															<Check class="w-3 h-3 text-green-500" />
-															Copied
+															{m.copied()}
 														{:else}
 															<Copy class="w-3 h-3" />
-															Copy
+															{m.copy()}
 														{/if}
 													</Button>
 												</div>
@@ -2733,7 +2735,7 @@
 						<button
 							type="button"
 							onclick={closeOutput}
-							title="Close output"
+							title={m.close_output()}
 							class="ml-auto p-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
 						>
 							<X class="w-3.5 h-3.5" />
@@ -2756,20 +2758,20 @@
 		<div class="px-5 py-2.5 border-t border-zinc-200 dark:border-zinc-700 flex items-center justify-between flex-shrink-0">
 			<div class="text-xs text-zinc-500 dark:text-zinc-400">
 				{#if readonly}
-					Read-only
+					{m.read_only_9b19()}
 				{:else if isDirty}
-					<span class="text-amber-600 dark:text-amber-500">Unsaved changes</span>
+					<span class="text-amber-600 dark:text-amber-500">{m.unsaved_changes()}</span>
 				{:else}
-					No changes
+					{m.no_changes()}
 				{/if}
 			</div>
 
 			<div class="flex items-center gap-2">
 				{#if readonly}
-					<Button onclick={tryClose}>Close</Button>
+					<Button onclick={tryClose}>{m.close()}</Button>
 				{:else}
 					<Button variant="outline" onclick={tryClose} disabled={saving}>
-						Cancel
+						{m.cancel()}
 					</Button>
 				{/if}
 
@@ -2778,10 +2780,10 @@
 					<Button variant="outline" onclick={() => handleCreate(false)} disabled={saving}>
 						{#if saving}
 							<Loader2 class="w-4 h-4 animate-spin" />
-							Creating...
+							{m.creating()}
 						{:else}
 							<Save class="w-4 h-4" />
-							Create
+							{m.create()}
 						{/if}
 					</Button>
 					<!-- Split button: the label itself stays a direct, one-click action (the
@@ -2797,10 +2799,10 @@
 						>
 							{#if saving}
 								<Loader2 class="w-4 h-4 animate-spin" />
-								Starting...
+								{m.starting()}
 							{:else}
 								<Play class="w-4 h-4" />
-								Create & Start
+								{m.create_start()}
 							{/if}
 						</Button>
 						<RedeployPopover
@@ -2825,10 +2827,10 @@
 					<Button variant="outline" class="w-24" onclick={() => handleSave(false)} disabled={saving || loading || (needsFileLocation && !workingComposePath.trim())}>
 						{#if saving && !savingWithRestart}
 							<Loader2 class="w-4 h-4 animate-spin" />
-							Saving...
+							{m.saving()}
 						{:else}
 							<Save class="w-4 h-4" />
-							Save
+							{m.save()}
 						{/if}
 					</Button>
 					<!-- Same split-button shape as Create & Start above. -->
@@ -2840,10 +2842,10 @@
 						>
 							{#if saving && savingWithRestart}
 								<Loader2 class="w-4 h-4 animate-spin" />
-								Deploying...
+								{m.deploying()}
 							{:else}
 								<Play class="w-4 h-4" />
-								Save & redeploy
+								{m.save_redeploy()}
 							{/if}
 						</Button>
 						<RedeployPopover
@@ -2872,23 +2874,23 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-<IconPickerModal bind:open={showIconPicker} value={formIcon} onselect={onIconSelect} title="Choose a stack icon" />
+<IconPickerModal bind:open={showIconPicker} value={formIcon} onselect={onIconSelect} title={m.choose_a_stack_icon()} />
 
 <!-- Unsaved changes confirmation dialog -->
 <Dialog.Root bind:open={showConfirmClose}>
 	<Dialog.Content class="max-w-sm">
 		<Dialog.Header>
-			<Dialog.Title>Unsaved changes</Dialog.Title>
+			<Dialog.Title>{m.unsaved_changes()}</Dialog.Title>
 			<Dialog.Description>
-				You have unsaved changes. Are you sure you want to close without saving?
+				{m.you_have_unsaved_changes_are_you_sure_you_want_t()}
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="flex justify-end gap-1.5 mt-4">
 			<Button variant="outline" size="sm" onclick={() => showConfirmClose = false}>
-				Continue editing
+				{m.continue_editing()}
 			</Button>
 			<Button variant="destructive" size="sm" onclick={discardAndClose}>
-				Discard changes
+				{m.discard_changes()}
 			</Button>
 		</div>
 	</Dialog.Content>
@@ -2898,9 +2900,9 @@
 <Dialog.Root bind:open={showPathChangeConfirm}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Move stack files?</Dialog.Title>
+			<Dialog.Title>{m.move_stack_files()}</Dialog.Title>
 			<Dialog.Description>
-				You've changed the stack location. There {pathChangeFileCount === 1 ? 'is' : 'are'} {pathChangeFileCount} file{pathChangeFileCount === 1 ? '' : 's'} in the old location that can be moved to the new location.
+				{m.youve_changed_the_stack_location_there_arg1_path({ arg1: orEmpty(pathChangeFileCount === 1 ? 'is' : 'are'), pathChangeFileCount: orEmpty(pathChangeFileCount), arg3: orEmpty(pathChangeFileCount === 1 ? '' : 's') })}
 			</Dialog.Description>
 		</Dialog.Header>
 		{#if pathChangeOldDir}
@@ -2912,18 +2914,18 @@
 			</div>
 		{/if}
 		<p class="text-sm text-muted-foreground">
-			Would you like to move all files to the new location, or leave them in place?
+			{m.would_you_like_to_move_all_files_to_the_new_loca()}
 		</p>
 		<div class="flex justify-end gap-1.5 mt-4">
 			<Button variant="outline" size="sm" onclick={() => showPathChangeConfirm = false}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button variant="secondary" size="sm" onclick={confirmPathChangeKeepFiles}>
-				Leave files
+				{m.leave_files()}
 			</Button>
 			<Button variant="default" size="sm" onclick={confirmPathChangeAndMove}>
 				<ArrowRight class="w-3.5 h-3.5" />
-				Move files
+				{m.move_files()}
 			</Button>
 		</div>
 	</Dialog.Content>
@@ -2933,21 +2935,21 @@
 <Dialog.Root bind:open={showBrowseConfirm}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
-			<Dialog.Title>Replace editor content?</Dialog.Title>
+			<Dialog.Title>{m.replace_editor_content()}</Dialog.Title>
 			<Dialog.Description>
-				Loading a different compose file will replace the current editor content.
+				{m.loading_a_different_compose_file_will_replace_th()}
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="my-3 space-y-2 text-sm">
 			<div class="flex items-start gap-2 text-muted-foreground">
-				<span class="text-xs font-medium text-zinc-500 shrink-0 pt-0.5">Current:</span>
+				<span class="text-xs font-medium text-zinc-500 shrink-0 pt-0.5">{m.current_1988()}</span>
 				<code class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded break-all">
 					{workingComposePath || '(unsaved)'}
 				</code>
 			</div>
 			<div class="flex items-start gap-2">
 				<ArrowRight class="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-				<span class="text-xs font-medium text-zinc-500 shrink-0 pt-0.5">New:</span>
+				<span class="text-xs font-medium text-zinc-500 shrink-0 pt-0.5">{m.new_3627()}</span>
 				<code class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded break-all">
 					{pendingBrowsePath}
 				</code>
@@ -2955,10 +2957,10 @@
 		</div>
 		<div class="flex justify-end gap-1.5 mt-4">
 			<Button variant="outline" size="sm" onclick={cancelBrowseConfirm}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button variant="default" size="sm" onclick={confirmBrowseAndLoad}>
-				Replace content
+				{m.replace_content()}
 			</Button>
 		</div>
 	</Dialog.Content>
@@ -2970,7 +2972,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<TriangleAlert class="w-5 h-5 text-amber-500 shrink-0" />
-				This location isn't persisted
+				{m.this_location_isnt_persisted()}
 			</Dialog.Title>
 		</Dialog.Header>
 		<p class="text-sm text-muted-foreground mt-1">
@@ -2978,10 +2980,10 @@
 		</p>
 		<div class="flex justify-end gap-1.5 mt-4">
 			<Button variant="default" size="sm" onclick={cancelPersistenceWarn}>
-				Pick another location
+				{m.pick_another_location()}
 			</Button>
 			<Button variant="outline" size="sm" onclick={confirmPersistenceWarn}>
-				Use it anyway
+				{m.use_it_anyway()}
 			</Button>
 		</div>
 	</Dialog.Content>
@@ -2993,15 +2995,15 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<FolderSync class="w-5 h-5" />
-				Relocate stack?
+				{m.relocate_stack()}
 			</Dialog.Title>
 			<Dialog.Description>
-				All {changeLocationFileCount} file{changeLocationFileCount === 1 ? '' : 's'} in the stack folder will be moved.
+				{m.all_changelocationfilecount_file_arg2_in_the_sta({ changeLocationFileCount: orEmpty(changeLocationFileCount), arg2: orEmpty(changeLocationFileCount === 1 ? '' : 's') })}
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="my-3 space-y-1 text-sm">
 			<div class="flex items-start gap-2 text-muted-foreground">
-				<span class="text-xs font-medium text-zinc-500 shrink-0 w-10">From</span>
+				<span class="text-xs font-medium text-zinc-500 shrink-0 w-10">{m.from()}</span>
 				<code class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded break-all">
 					{changeLocationOldDir}
 				</code>
@@ -3010,7 +3012,7 @@
 				<ArrowDown class="w-4 h-4 text-amber-500" />
 			</div>
 			<div class="flex items-start gap-2">
-				<span class="text-xs font-medium text-zinc-500 shrink-0 w-10">To</span>
+				<span class="text-xs font-medium text-zinc-500 shrink-0 w-10">{m.to()}</span>
 				<code class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded break-all">
 					{pendingNewLocation}
 				</code>
@@ -3018,15 +3020,15 @@
 		</div>
 		<div class="flex justify-end gap-1.5 mt-4">
 			<Button variant="outline" size="sm" onclick={cancelChangeLocation} disabled={movingLocation}>
-				Cancel
+				{m.cancel()}
 			</Button>
 			<Button variant="default" size="sm" onclick={confirmChangeLocation} disabled={movingLocation}>
 				{#if movingLocation}
 					<Loader2 class="w-3.5 h-3.5 animate-spin" />
-					Moving...
+					{m.moving()}
 				{:else}
 					<FolderSync class="w-3.5 h-3.5" />
-					Move files
+					{m.move_files()}
 				{/if}
 			</Button>
 		</div>
@@ -3039,15 +3041,15 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<TriangleAlert class="w-5 h-5 text-amber-500" />
-				Stack already exists
+				{m.stack_already_exists()}
 			</Dialog.Title>
 			<Dialog.Description>
-				A stack named "{newStackName}" already exists. Please choose a different name.
+				{m.a_stack_named_newstackname_already_exists_please({ newStackName: orEmpty(newStackName) })}
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="flex justify-end mt-4">
 			<Button size="sm" onclick={() => showExistsWarning = false}>
-				OK
+				{m.ok()}
 			</Button>
 		</div>
 	</Dialog.Content>

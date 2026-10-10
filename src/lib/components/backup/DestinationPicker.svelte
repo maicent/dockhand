@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	/**
 	 * Shared backup-destination picker. Both BackupPanel and CreateBackupModal
 	 * rendered the same Select.Root with the same icon-resolution logic; one
@@ -68,7 +69,7 @@
 					<DIcon class="w-4 h-4 text-muted-foreground" />
 					{dest.name}
 					{#if localOnRemote}
-						<span class="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-600 dark:text-amber-400" title="A local-path repo only works if this environment's Docker daemon is on the same host as Dockhand.">needs same host</span>
+						<span class="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-600 dark:text-amber-400" title={m.a_local_path_repo_only_works_if_this_environment()}>{m.needs_same_host()}</span>
 					{/if}
 				</span>
 			</Select.Item>

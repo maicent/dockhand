@@ -3,6 +3,7 @@
 </script>
 
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import { Label } from '$lib/components/ui/label';
@@ -12,23 +13,23 @@
 	import { Plus, Trash2, HardDrive, Database, Server, ChevronDown } from 'lucide-svelte';
 
 	const VOLUME_DRIVERS = [
-		{ value: 'local', label: 'Local', description: 'Default local driver', icon: HardDrive },
-		{ value: 'nfs', label: 'NFS', description: 'Network file system', icon: Server },
-		{ value: 'cifs', label: 'CIFS', description: 'Windows/SMB shares', icon: Database }
+		{ value: 'local', label: m.local(), description: m.default_local_driver(), icon: HardDrive },
+		{ value: 'nfs', label: m.nfs(), description: m.network_file_system(), icon: Server },
+		{ value: 'cifs', label: m.cifs(), description: m.windows_smb_shares(), icon: Database }
 	];
 
 	const SMB_VERSIONS = [
-		{ value: '2.0', label: 'SMB 2.0' },
-		{ value: '2.1', label: 'SMB 2.1' },
-		{ value: '3.0', label: 'SMB 3.0' },
-		{ value: '3.1.1', label: 'SMB 3.1.1' }
+		{ value: '2.0', label: m.smb_2_0() },
+		{ value: '2.1', label: m.smb_2_1() },
+		{ value: '3.0', label: m.smb_3_0() },
+		{ value: '3.1.1', label: m.smb_3_1_1() }
 	];
 
 	const NFS_VERSIONS = [
-		{ value: '3', label: 'NFSv3' },
-		{ value: '4', label: 'NFSv4' },
-		{ value: '4.1', label: 'NFSv4.1' },
-		{ value: '4.2', label: 'NFSv4.2' }
+		{ value: '3', label: m.nfsv3() },
+		{ value: '4', label: m.nfsv4() },
+		{ value: '4.1', label: m.nfsv4_1() },
+		{ value: '4.2', label: m.nfsv4_2() }
 	];
 
 	import { currentEnvironment, appendEnvParam } from '$lib/stores/environment';
@@ -216,7 +217,7 @@
 <Dialog.Root bind:open onOpenChange={(isOpen) => { if (isOpen) focusFirstInput(); handleOpenChange(isOpen); }}>
 	<Dialog.Content class="max-w-2xl">
 		<Dialog.Header>
-			<Dialog.Title>Create volume</Dialog.Title>
+			<Dialog.Title>{m.create_volume()}</Dialog.Title>
 		</Dialog.Header>
 
 		<div class="space-y-4">
@@ -228,11 +229,11 @@
 
 			<!-- Volume Name -->
 			<div class="space-y-2">
-				<Label for="volume-name">Volume name *</Label>
+				<Label for="volume-name">{m.volume_name()}</Label>
 				<Input
 					id="volume-name"
 					bind:value={name}
-					placeholder="my-volume"
+					placeholder={m.my_volume()}
 					disabled={creating}
 					class={errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 					oninput={() => errors.name = undefined}
@@ -244,7 +245,7 @@
 
 			<!-- Driver -->
 			<div class="space-y-2">
-				<Label for="driver">Driver</Label>
+				<Label for="driver">{m.driver()}</Label>
 				<Select.Root type="single" bind:value={driver} disabled={creating}>
 					<Select.Trigger class="w-full h-9">
 						{@const selectedDriver = VOLUME_DRIVERS.find(d => d.value === driver)}
@@ -253,7 +254,7 @@
 								<svelte:component this={selectedDriver.icon} class="w-4 h-4 mr-2 text-muted-foreground" />
 								{selectedDriver.label}
 							{:else}
-								Select driver
+								{m.select_driver()}
 							{/if}
 						</span>
 					</Select.Trigger>
@@ -270,7 +271,7 @@
 					</Select.Content>
 				</Select.Root>
 				<p class="text-xs text-muted-foreground">
-					Volume driver to use (local is default)
+					{m.volume_driver_to_use_local_is_default()}
 				</p>
 			</div>
 
@@ -279,7 +280,7 @@
 				<!-- CIFS fields -->
 				<div class="grid grid-cols-2 gap-4">
 					<div class="space-y-2">
-						<Label for="cifs-server">Server / IP *</Label>
+						<Label for="cifs-server">{m.server_ip()}</Label>
 						<Input
 							id="cifs-server"
 							bind:value={cifsServer}
@@ -293,11 +294,11 @@
 						{/if}
 					</div>
 					<div class="space-y-2">
-						<Label for="cifs-share">Share path *</Label>
+						<Label for="cifs-share">{m.share_path()}</Label>
 						<Input
 							id="cifs-share"
 							bind:value={cifsShare}
-							placeholder="shared/folder"
+							placeholder={m.shared_folder()}
 							disabled={creating}
 							class={errors.share ? 'border-destructive focus-visible:ring-destructive' : ''}
 							oninput={() => errors.share = undefined}
@@ -309,16 +310,16 @@
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="space-y-2">
-						<Label for="cifs-username">Username</Label>
+						<Label for="cifs-username">{m.username()}</Label>
 						<Input
 							id="cifs-username"
 							bind:value={cifsUsername}
-							placeholder="user"
+							placeholder={m.user_12de()}
 							disabled={creating}
 						/>
 					</div>
 					<div class="space-y-2">
-						<Label for="cifs-password">Password</Label>
+						<Label for="cifs-password">{m.password()}</Label>
 						<Input
 							id="cifs-password"
 							type="password"
@@ -330,7 +331,7 @@
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="space-y-2">
-						<Label for="cifs-version">SMB version</Label>
+						<Label for="cifs-version">{m.smb_version()}</Label>
 						<Select.Root type="single" bind:value={cifsVersion} disabled={creating}>
 							<Select.Trigger class="w-full h-9">
 								{SMB_VERSIONS.find(v => v.value === cifsVersion)?.label ?? 'Select version'}
@@ -343,14 +344,14 @@
 						</Select.Root>
 					</div>
 					<div class="space-y-2">
-						<Label for="cifs-domain">Domain</Label>
+						<Label for="cifs-domain">{m.domain()}</Label>
 						<Input
 							id="cifs-domain"
 							bind:value={cifsDomain}
-							placeholder="WORKGROUP"
+							placeholder={m.workgroup()}
 							disabled={creating}
 						/>
-						<p class="text-xs text-muted-foreground">Optional AD/workgroup domain</p>
+						<p class="text-xs text-muted-foreground">{m.optional_ad_workgroup_domain()}</p>
 					</div>
 				</div>
 
@@ -362,28 +363,28 @@
 						onclick={() => showAdditionalOpts = !showAdditionalOpts}
 					>
 						<ChevronDown class="w-3.5 h-3.5 transition-transform {showAdditionalOpts ? 'rotate-180' : ''}" />
-						Additional options
+						{m.additional_options()}
 					</button>
 					{#if showAdditionalOpts}
 						<div class="space-y-2 pl-1">
 							<div class="flex items-center justify-end">
 								<Button type="button" size="sm" variant="outline" onclick={addDriverOpt} disabled={creating}>
 									<Plus class="w-3 h-3" />
-									Add option
+									{m.add_option()}
 								</Button>
 							</div>
 							{#if driverOpts.length > 0}
 								{#each driverOpts as opt, i}
 									<div class="flex gap-2">
-										<Input bind:value={opt.key} placeholder="Key" disabled={creating} class="flex-1" />
-										<Input bind:value={opt.value} placeholder="Value (optional)" disabled={creating} class="flex-1" />
+										<Input bind:value={opt.key} placeholder={m.key()} disabled={creating} class="flex-1" />
+										<Input bind:value={opt.value} placeholder={m.value_optional()} disabled={creating} class="flex-1" />
 										<Button type="button" size="icon" variant="ghost" onclick={() => removeDriverOpt(i)} disabled={creating}>
 											<Trash2 class="w-4 h-4" />
 										</Button>
 									</div>
 								{/each}
 							{:else}
-								<p class="text-xs text-muted-foreground">Extra mount options appended to the mount string</p>
+								<p class="text-xs text-muted-foreground">{m.extra_mount_options_appended_to_the_mount_string()}</p>
 							{/if}
 						</div>
 					{/if}
@@ -392,7 +393,7 @@
 				<!-- NFS fields -->
 				<div class="grid grid-cols-2 gap-4">
 					<div class="space-y-2">
-						<Label for="nfs-server">Server / IP *</Label>
+						<Label for="nfs-server">{m.server_ip()}</Label>
 						<Input
 							id="nfs-server"
 							bind:value={nfsServer}
@@ -406,11 +407,11 @@
 						{/if}
 					</div>
 					<div class="space-y-2">
-						<Label for="nfs-path">Export path *</Label>
+						<Label for="nfs-path">{m.export_path()}</Label>
 						<Input
 							id="nfs-path"
 							bind:value={nfsPath}
-							placeholder="/exports/data"
+							placeholder={m.exports_data()}
 							disabled={creating}
 							class={errors.path ? 'border-destructive focus-visible:ring-destructive' : ''}
 							oninput={() => errors.path = undefined}
@@ -421,7 +422,7 @@
 					</div>
 				</div>
 				<div class="space-y-2">
-					<Label for="nfs-version">NFS version</Label>
+					<Label for="nfs-version">{m.nfs_version()}</Label>
 					<Select.Root type="single" bind:value={nfsVersion} disabled={creating}>
 						<Select.Trigger class="w-full max-w-[200px] h-9">
 							{NFS_VERSIONS.find(v => v.value === nfsVersion)?.label ?? 'Select version'}
@@ -436,15 +437,15 @@
 				<div class="flex items-center gap-6">
 					<div class="flex items-center gap-2">
 						<TogglePill bind:checked={nfsSoft} onLabel="Soft" offLabel="Hard" />
-						<span class="text-xs text-muted-foreground">mount</span>
+						<span class="text-xs text-muted-foreground">{m.mount()}</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<TogglePill bind:checked={nfsNolock} />
-						<span class="text-xs text-muted-foreground">No lock</span>
+						<span class="text-xs text-muted-foreground">{m.no_lock()}</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<TogglePill bind:checked={nfsReadOnly} />
-						<span class="text-xs text-muted-foreground">Read-only</span>
+						<span class="text-xs text-muted-foreground">{m.read_only_9b19()}</span>
 					</div>
 				</div>
 
@@ -456,28 +457,28 @@
 						onclick={() => showAdditionalOpts = !showAdditionalOpts}
 					>
 						<ChevronDown class="w-3.5 h-3.5 transition-transform {showAdditionalOpts ? 'rotate-180' : ''}" />
-						Additional options
+						{m.additional_options()}
 					</button>
 					{#if showAdditionalOpts}
 						<div class="space-y-2 pl-1">
 							<div class="flex items-center justify-end">
 								<Button type="button" size="sm" variant="outline" onclick={addDriverOpt} disabled={creating}>
 									<Plus class="w-3 h-3" />
-									Add option
+									{m.add_option()}
 								</Button>
 							</div>
 							{#if driverOpts.length > 0}
 								{#each driverOpts as opt, i}
 									<div class="flex gap-2">
-										<Input bind:value={opt.key} placeholder="Key" disabled={creating} class="flex-1" />
-										<Input bind:value={opt.value} placeholder="Value (optional)" disabled={creating} class="flex-1" />
+										<Input bind:value={opt.key} placeholder={m.key()} disabled={creating} class="flex-1" />
+										<Input bind:value={opt.value} placeholder={m.value_optional()} disabled={creating} class="flex-1" />
 										<Button type="button" size="icon" variant="ghost" onclick={() => removeDriverOpt(i)} disabled={creating}>
 											<Trash2 class="w-4 h-4" />
 										</Button>
 									</div>
 								{/each}
 							{:else}
-								<p class="text-xs text-muted-foreground">Extra mount options appended to the mount string</p>
+								<p class="text-xs text-muted-foreground">{m.extra_mount_options_appended_to_the_mount_string()}</p>
 							{/if}
 						</div>
 					{/if}
@@ -486,7 +487,7 @@
 				<!-- Local driver - generic key-value options -->
 				<div class="space-y-2">
 					<div class="flex items-center justify-between">
-						<Label>Driver options</Label>
+						<Label>{m.driver_options()}</Label>
 						<Button
 							type="button"
 							size="sm"
@@ -495,7 +496,7 @@
 							disabled={creating}
 						>
 							<Plus class="w-3 h-3" />
-							Add option
+							{m.add_option()}
 						</Button>
 					</div>
 					{#if driverOpts.length > 0}
@@ -504,13 +505,13 @@
 								<div class="flex gap-2">
 									<Input
 										bind:value={opt.key}
-										placeholder="Key"
+										placeholder={m.key()}
 										disabled={creating}
 										class="flex-1"
 									/>
 									<Input
 										bind:value={opt.value}
-										placeholder="Value"
+										placeholder={m.value()}
 										disabled={creating}
 										class="flex-1"
 									/>
@@ -527,7 +528,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="text-xs text-muted-foreground">No driver options configured</p>
+						<p class="text-xs text-muted-foreground">{m.no_driver_options_configured()}</p>
 					{/if}
 				</div>
 			{/if}
@@ -535,7 +536,7 @@
 			<!-- Labels -->
 			<div class="space-y-2">
 				<div class="flex items-center justify-between">
-					<Label>Labels</Label>
+					<Label>{m.labels()}</Label>
 					<Button
 						type="button"
 						size="sm"
@@ -544,7 +545,7 @@
 						disabled={creating}
 					>
 						<Plus class="w-3 h-3" />
-						Add label
+						{m.add_label_8076()}
 					</Button>
 				</div>
 				{#if labels.length > 0}
@@ -553,13 +554,13 @@
 							<div class="flex gap-2">
 								<Input
 									bind:value={label.key}
-									placeholder="Key"
+									placeholder={m.key()}
 									disabled={creating}
 									class="flex-1"
 								/>
 								<Input
 									bind:value={label.value}
-									placeholder="Value"
+									placeholder={m.value()}
 									disabled={creating}
 									class="flex-1"
 								/>
@@ -576,13 +577,13 @@
 						{/each}
 					</div>
 				{:else}
-					<p class="text-xs text-muted-foreground">No labels configured</p>
+					<p class="text-xs text-muted-foreground">{m.no_labels_configured()}</p>
 				{/if}
 			</div>
 
 			<Dialog.Footer class="pt-4">
 				<Button variant="outline" onclick={() => (open = false)} disabled={creating}>
-					Cancel
+					{m.cancel()}
 				</Button>
 				<Button onclick={handleCreate} disabled={creating}>
 					{creating ? 'Creating...' : 'Create volume'}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { Tag as TagIcon, Check, ChevronDown, ChevronRight, Rows3, Paintbrush, Pencil, Settings2, GripVertical, RotateCcw, ArrowUpDown, Layers } from 'lucide-svelte';
@@ -91,7 +92,7 @@
 				onclick={() => (settingsExpanded = !settingsExpanded)}
 			>
 				<Settings2 class="h-3.5 w-3.5 shrink-0" />
-				<span class="text-xs flex-1 text-left">Settings</span>
+				<span class="text-xs flex-1 text-left">{m_i18n.settings()}</span>
 				{#if settingsExpanded}
 					<ChevronDown class="h-3.5 w-3.5 shrink-0" />
 				{:else}
@@ -102,7 +103,7 @@
 				{#if groupBy !== undefined}
 					<div class="flex items-center gap-2 px-2 py-1.5">
 						<Rows3 class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-						<span class="text-xs min-w-0 flex-1 truncate text-left">Group by tag</span>
+						<span class="text-xs min-w-0 flex-1 truncate text-left">{m_i18n.group_by_tag()}</span>
 						<TogglePill bind:checked={groupBy} />
 					</div>
 					{#if showBands !== undefined && groupBy}
@@ -110,7 +111,7 @@
 						     the icon column lines up on the left and the toggle on the right. -->
 						<div class="flex items-center gap-2 px-2 py-1.5">
 							<Paintbrush class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-							<span class="text-xs min-w-0 flex-1 truncate text-left">Color group bands</span>
+							<span class="text-xs min-w-0 flex-1 truncate text-left">{m_i18n.color_group_bands()}</span>
 							<TogglePill bind:checked={showBands} />
 						</div>
 					{/if}
@@ -118,21 +119,21 @@
 				{#if showTags !== undefined}
 					<div class="flex items-center gap-2 px-2 py-1.5">
 						<TagIcon class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-						<span class="text-xs min-w-0 flex-1 truncate text-left">Show tags</span>
+						<span class="text-xs min-w-0 flex-1 truncate text-left">{m_i18n.show_tags()}</span>
 						<TogglePill bind:checked={showTags} />
 					</div>
 				{/if}
 				{#if inlineEditing !== undefined}
 					<div class="flex items-center gap-2 px-2 py-1.5">
 						<Pencil class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-						<span class="text-xs min-w-0 flex-1 truncate text-left">Inline tag editing</span>
+						<span class="text-xs min-w-0 flex-1 truncate text-left">{m_i18n.inline_tag_editing()}</span>
 						<TogglePill bind:checked={inlineEditing} />
 					</div>
 				{/if}
 				{#if inheritStackTags !== undefined}
 					<div class="flex items-center gap-2 px-2 py-1.5">
 						<Layers class="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-						<span class="text-xs min-w-0 flex-1 truncate text-left">Show tags from stacks</span>
+						<span class="text-xs min-w-0 flex-1 truncate text-left">{m_i18n.show_tags_from_stacks()}</span>
 						<TogglePill bind:checked={inheritStackTags} />
 					</div>
 				{/if}
@@ -140,11 +141,11 @@
 			<div class="my-1 h-px bg-border"></div>
 		{/if}
 		{#if tags.length === 0}
-			<div class="px-2 py-3 text-center text-xs text-muted-foreground">No tags yet</div>
+			<div class="px-2 py-3 text-center text-xs text-muted-foreground">{m_i18n.no_tags_yet()}</div>
 		{:else}
 			<!-- ANY / ALL match mode (same pill as the dashboard env label filter) -->
 			<div class="flex items-center gap-2 px-1 pb-1">
-				<span class="text-2xs text-muted-foreground mr-auto">Match</span>
+				<span class="text-2xs text-muted-foreground mr-auto">{m_i18n.match()}</span>
 				<ToggleSwitch value={mode} leftValue="any" rightValue="all" onchange={(m) => (mode = m as TagFilterMode)} />
 			</div>
 			<div
@@ -183,7 +184,7 @@
 			</div>
 			{#if selected.length > 0 && !reorderMode}
 				<button type="button" class="mt-1 w-full rounded px-2 py-1 text-2xs text-muted-foreground hover:bg-muted" onclick={() => (selected = [])}>
-					Clear
+					{m_i18n.clear()}
 				</button>
 			{/if}
 			{#if tags.length > 1}
@@ -192,7 +193,7 @@
 						<button
 							type="button"
 							class="flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground"
-							title="List tags by name again"
+							title={m_i18n.list_tags_by_name_again()}
 							onclick={() => {
 								tagOrder.reset();
 								dragList = null;
@@ -200,7 +201,7 @@
 							}}
 						>
 							<RotateCcw class="h-3 w-3 shrink-0 text-red-400" />
-							Reset
+							{m_i18n.reset()}
 						</button>
 						<button
 							type="button"
@@ -208,17 +209,17 @@
 							onclick={() => (reorderMode = false)}
 						>
 							<Check class="h-3 w-3 shrink-0 text-emerald-500" />
-							Apply
+							{m_i18n.apply()}
 						</button>
 					{:else}
 						<button
 							type="button"
 							class="flex items-center gap-1 font-medium text-muted-foreground hover:text-foreground"
-							title="Drag tags into the order you want them listed and grouped in"
+							title={m_i18n.drag_tags_into_the_order_you_want_them_listed_an()}
 							onclick={() => (reorderMode = true)}
 						>
 							<ArrowUpDown class="h-3 w-3 shrink-0" />
-							Reorder
+							{m_i18n.reorder()}
 						</button>
 					{/if}
 				</div>

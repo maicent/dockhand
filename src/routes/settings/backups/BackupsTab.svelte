@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -196,8 +198,8 @@
 				imageSavedOk = true;
 				setTimeout(() => { imageSavedOk = false; }, 2000);
 			}
-			else toast.error('Failed to save');
-		} catch { toast.error('Failed to save'); }
+			else toast.error(m_i18n.failed_to_save());
+		} catch { toast.error(m_i18n.failed_to_save()); }
 		finally { savingImage = false; }
 	}
 	let initializingId = $state<number | null>(null);
@@ -450,7 +452,7 @@
 			} else {
 				browseSnapshots = d.snapshots ?? d;
 			}
-		} catch { toast.error('Failed to list snapshots'); }
+		} catch { toast.error(m_i18n.failed_to_list_snapshots()); }
 		finally { browseLoading = false; }
 	}
 
@@ -506,7 +508,7 @@
 			if (envRes.ok) { const envData = await envRes.json(); environments = Array.isArray(envData) ? envData : []; }
 		} catch (error) {
 			console.error('Failed to fetch backup data:', error);
-			toast.error('Failed to fetch backup destinations');
+			toast.error(m_i18n.failed_to_fetch_backup_destinations());
 		} finally {
 			loading = false;
 		}
@@ -539,13 +541,13 @@
 			const res = await fetch(`/api/backup/destinations/${id}/test`, { method: 'POST' });
 			const data = await res.json();
 			if (data.success) {
-				toast.success('Connection test successful');
+				toast.success(m_i18n.connection_test_successful());
 			} else if (data.status === 'needs_init') {
 				toast.warning(data.error || 'Repository needs initialization');
 			} else {
 				toast.error(data.error || 'Connection test failed');
 			}
-		} catch { toast.error('Connection test failed'); }
+		} catch { toast.error(m_i18n.connection_test_failed()); }
 		finally { testingId = null; await fetchData(); }
 	}
 
@@ -555,7 +557,7 @@
 			const res = await fetch(`/api/backup/destinations/${id}/init`, { method: 'POST' });
 			const data = await res.json();
 			toast[data.success ? 'success' : 'error'](data.message || data.error || 'Init failed');
-		} catch { toast.error('Init failed'); }
+		} catch { toast.error(m_i18n.init_failed()); }
 		finally { initializingId = null; await fetchData(); }
 	}
 
@@ -564,12 +566,12 @@
 			const response = await fetch(`/api/backup/destinations/${id}`, { method: 'DELETE' });
 			if (response.ok) {
 				await fetchData();
-				toast.success('Destination deleted');
+				toast.success(m_i18n.destination_deleted());
 			} else {
 				const data = await response.json();
 				toast.error(data.error || 'Failed to delete destination');
 			}
-		} catch { toast.error('Failed to delete destination'); }
+		} catch { toast.error(m_i18n.failed_to_delete_destination()); }
 	}
 
 	onMount(() => { fetchData(); });
@@ -579,7 +581,7 @@
 	<!-- Backup helper image -->
 	<div class="flex items-center gap-3 p-3 border rounded-md bg-muted/20">
 		<Label class="text-xs shrink-0 flex items-center gap-1.5">
-			Backup helper image
+			{m_i18n.backup_helper_image()}
 			<Tooltip.Provider delayDuration={200}>
 				<Tooltip.Root>
 					<Tooltip.Trigger>
@@ -587,7 +589,7 @@
 					</Tooltip.Trigger>
 					<Tooltip.Portal>
 						<Tooltip.Content side="bottom" sideOffset={4} class="!w-80 text-xs">
-							Docker image with restic for backup/restore. Auto-pulled on first run. Change for private registries.
+							{m_i18n.docker_image_with_restic_for_backup_restore_auto()}
 						</Tooltip.Content>
 					</Tooltip.Portal>
 				</Tooltip.Root>
@@ -601,30 +603,30 @@
 
 	<div class="flex justify-between items-center">
 		<div class="flex items-center gap-3">
-			<SearchInput bind:value={searchQuery} placeholder="Filter destinations..." class="h-8 w-64 text-sm" />
+			<SearchInput bind:value={searchQuery} placeholder={m_i18n.filter_destinations()} class="h-8 w-64 text-sm" />
 			<Select.Root type="single" value={statusFilter} onValueChange={(v) => statusFilter = (v as typeof statusFilter) ?? 'all'}>
 				<Select.Trigger class="h-8 w-40 text-sm">
 					{statusFilter === 'success' ? 'Initialized' : statusFilter === 'needs_init' ? 'Needs init' : statusFilter === 'failed' ? 'Failed' : 'All statuses'}
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="all">All statuses</Select.Item>
-					<Select.Item value="success"><CheckCircle class="w-3.5 h-3.5 text-green-500 mr-1.5 inline" />Initialized</Select.Item>
-					<Select.Item value="needs_init"><AlertCircle class="w-3.5 h-3.5 text-amber-500 mr-1.5 inline" />Needs init</Select.Item>
-					<Select.Item value="failed"><XCircle class="w-3.5 h-3.5 text-destructive mr-1.5 inline" />Failed</Select.Item>
+					<Select.Item value="all">{m_i18n.all_statuses()}</Select.Item>
+					<Select.Item value="success"><CheckCircle class="w-3.5 h-3.5 text-green-500 mr-1.5 inline" />{m_i18n.initialized()}</Select.Item>
+					<Select.Item value="needs_init"><AlertCircle class="w-3.5 h-3.5 text-amber-500 mr-1.5 inline" />{m_i18n.needs_init()}</Select.Item>
+					<Select.Item value="failed"><XCircle class="w-3.5 h-3.5 text-destructive mr-1.5 inline" />{m_i18n.failed()}</Select.Item>
 				</Select.Content>
 			</Select.Root>
-			<Badge variant="secondary" class="text-xs">{destinations.length} destination{destinations.length !== 1 ? 's' : ''}</Badge>
+			<Badge variant="secondary" class="text-xs">{m_i18n.length_destination_arg2({ length: orEmpty(destinations.length), arg2: orEmpty(destinations.length !== 1 ? 's' : '') })}</Badge>
 		</div>
 		<div class="flex gap-2">
 			{#if $canAccess('backups', 'manage')}
 				<Button size="sm" onclick={() => openModal()}>
 					<Plus class="w-4 h-4 mr-1" />
-					Add destination
+					{m_i18n.add_destination()}
 				</Button>
 			{/if}
 			<Button size="sm" variant="outline" onclick={testAllDestinations} disabled={testingAll}>
 				{#if testingAll}<Loader2 class="w-3.5 h-3.5 mr-1 animate-spin" />{:else}<Wifi class="w-3.5 h-3.5 mr-1" />{/if}
-				Test all
+				{m_i18n.test_all()}
 			</Button>
 			<Button size="sm" variant="outline" onclick={fetchData}>
 				<RefreshCw class="w-3.5 h-3.5" />
@@ -633,12 +635,12 @@
 	</div>
 
 	{#if loading && destinations.length === 0}
-		<p class="text-muted-foreground text-sm">Loading backup destinations...</p>
+		<p class="text-muted-foreground text-sm">{m_i18n.loading_backup_destinations()}</p>
 	{:else if destinations.length === 0}
 		<EmptyState
 			icon={Archive as unknown as Component}
-			title="No backup destinations"
-			description="Add a backup destination to start protecting your container data"
+			title={m_i18n.no_backup_destinations()}
+			description={m_i18n.add_a_backup_destination_to_start_protecting_you()}
 		/>
 	{:else}
 		<DataGrid
@@ -682,9 +684,9 @@
 					{@const stat = repoStats.get(dest.id)}
 					{#if stat}
 						<div class="flex items-center gap-2 text-xs text-muted-foreground">
-							<span class="flex items-center gap-0.5" title="Total size"><HardDrive class="w-3 h-3" />{formatBytes(stat.totalSize)}</span>
-							<span class="flex items-center gap-0.5" title="Files"><FileStack class="w-3 h-3" />{stat.totalFiles}</span>
-							<span class="flex items-center gap-0.5" title="Snapshots"><Camera class="w-3 h-3" />{stat.snapshots}</span>
+							<span class="flex items-center gap-0.5" title={m_i18n.total_size_4cd3()}><HardDrive class="w-3 h-3" />{formatBytes(stat.totalSize)}</span>
+							<span class="flex items-center gap-0.5" title={m_i18n.files()}><FileStack class="w-3 h-3" />{stat.totalFiles}</span>
+							<span class="flex items-center gap-0.5" title={m_i18n.snapshots()}><Camera class="w-3 h-3" />{stat.snapshots}</span>
 						</div>
 					{:else if loadingStats.has(dest.id)}
 						<Loader2 class="w-3 h-3 animate-spin text-muted-foreground" />
@@ -695,19 +697,19 @@
 					{#if dest.lastTestStatus === 'success'}
 						<div class="flex items-center gap-1.5">
 							<CheckCircle class="w-3.5 h-3.5 text-green-500" />
-							<span class="text-xs text-green-600 dark:text-green-400">Initialized</span>
+							<span class="text-xs text-green-600 dark:text-green-400">{m_i18n.initialized()}</span>
 						</div>
 					{:else if dest.lastTestStatus === 'needs_init'}
 						<div class="flex items-center gap-1.5">
 							<AlertCircle class="w-3.5 h-3.5 text-amber-500" />
-							<span class="text-xs text-amber-600 dark:text-amber-400">Needs init</span>
+							<span class="text-xs text-amber-600 dark:text-amber-400">{m_i18n.needs_init()}</span>
 						</div>
 					{:else if dest.lastTestStatus === 'failed'}
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<div class="flex items-center gap-1.5">
 									<XCircle class="w-3.5 h-3.5 text-destructive" />
-									<span class="text-xs text-destructive">Failed</span>
+									<span class="text-xs text-destructive">{m_i18n.failed()}</span>
 								</div>
 							</Tooltip.Trigger>
 							{#if dest.lastTestError}
@@ -717,12 +719,12 @@
 					{:else if testingAll}
 						<div class="flex items-center gap-1.5">
 							<Loader2 class="w-3.5 h-3.5 text-muted-foreground animate-spin" />
-							<span class="text-xs text-muted-foreground">Testing...</span>
+							<span class="text-xs text-muted-foreground">{m_i18n.testing()}</span>
 						</div>
 					{:else}
 						<div class="flex items-center gap-1.5">
 							<AlertCircle class="w-3.5 h-3.5 text-muted-foreground" />
-							<span class="text-xs text-muted-foreground">Not tested</span>
+							<span class="text-xs text-muted-foreground">{m_i18n.not_tested()}</span>
 						</div>
 					{/if}
 				{:else if column.id === 'actions'}
@@ -731,21 +733,21 @@
 					<div class="flex items-center justify-end gap-0.5" onclick={(e) => e.stopPropagation()}>
 						{#if dest.lastTestStatus === 'success'}
 							<!-- Repo actions (only for initialized repos) -->
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => browseDestination(dest)} title="Browse snapshots">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => browseDestination(dest)} title={m_i18n.browse_snapshots()}>
 								<FolderOpen class="grid-action-icon grid-action-info text-muted-foreground" />
 							</button>
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => runRepoTask(dest.id, 'stats')} disabled={runningTask?.destId === dest.id} title="Repository stats">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => runRepoTask(dest.id, 'stats')} disabled={runningTask?.destId === dest.id} title={m_i18n.repository_stats()}>
 								{#if runningTask?.destId === dest.id && runningTask.task === 'stats'}<Loader2 class="grid-action-icon text-muted-foreground animate-spin" />{:else}<BarChart3 class="grid-action-icon grid-action-info text-muted-foreground" />{/if}
 							</button>
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => runRepoTask(dest.id, 'check')} disabled={runningTask?.destId === dest.id} title="Check integrity">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => runRepoTask(dest.id, 'check')} disabled={runningTask?.destId === dest.id} title={m_i18n.check_integrity()}>
 								{#if runningTask?.destId === dest.id && runningTask.task === 'check'}<Loader2 class="grid-action-icon text-muted-foreground animate-spin" />{:else}<PackageCheck class="grid-action-icon grid-action-info text-muted-foreground" />{/if}
 							</button>
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => verifyDestination(dest)} title="Verify data integrity">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => verifyDestination(dest)} title={m_i18n.verify_data_integrity()}>
 								<FolderCheck class="grid-action-icon grid-action-info text-muted-foreground" />
 							</button>
 							<ConfirmPopover
 								open={confirmAction?.destId === dest.id && confirmAction.task === 'unlock'}
-								action="Unlock" itemType="repository" itemName={dest.name} confirmText="Unlock" position="left" title="Unlock repository"
+								action="Unlock" itemType="repository" itemName={dest.name} confirmText="Unlock" position="left" title={m_i18n.unlock_repository()}
 								onConfirm={() => { confirmAction = null; runRepoTask(dest.id, 'unlock'); }}
 								onOpenChange={(o) => confirmAction = o ? { destId: dest.id, task: 'unlock' } : null}
 							>
@@ -755,7 +757,7 @@
 							</ConfirmPopover>
 							<ConfirmPopover
 								open={confirmAction?.destId === dest.id && confirmAction.task === 'prune'}
-								action="Prune" itemType="unused data from" itemName={dest.name} confirmText="Prune" variant="destructive" position="left" title="Prune unused data"
+								action="Prune" itemType="unused data from" itemName={dest.name} confirmText="Prune" variant="destructive" position="left" title={m_i18n.prune_unused_data()}
 								onConfirm={() => { confirmAction = null; runRepoTask(dest.id, 'prune'); }}
 								onOpenChange={(o) => confirmAction = o ? { destId: dest.id, task: 'prune' } : null}
 							>
@@ -765,7 +767,7 @@
 							</ConfirmPopover>
 							<ConfirmPopover
 								open={confirmAction?.destId === dest.id && confirmAction.task === 'repair'}
-								action="Repair" itemType="index for" itemName={dest.name} confirmText="Repair" variant="destructive" position="left" title="Repair index"
+								action="Repair" itemType="index for" itemName={dest.name} confirmText="Repair" variant="destructive" position="left" title={m_i18n.repair_index()}
 								onConfirm={() => { confirmAction = null; runRepoTask(dest.id, 'repair-index'); }}
 								onOpenChange={(o) => confirmAction = o ? { destId: dest.id, task: 'repair' } : null}
 							>
@@ -776,19 +778,19 @@
 						{/if}
 						<!-- Init (only when needs_init) -->
 						{#if dest.lastTestStatus === 'needs_init'}
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors text-amber-500 hover:text-amber-600" onclick={() => initDestination(dest.id)} disabled={initializingId === dest.id} title="Initialize repository">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors text-amber-500 hover:text-amber-600" onclick={() => initDestination(dest.id)} disabled={initializingId === dest.id} title={m_i18n.initialize_repository()}>
 								{#if initializingId === dest.id}<Loader2 class="w-3 h-3 animate-spin" />{:else}<Database class="w-3 h-3" />{/if}
 							</button>
 						{/if}
 						<!-- Always visible: test, edit, delete -->
-						<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => testDestination(dest.id)} disabled={testingId === dest.id} title="Test connection">
+						<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => testDestination(dest.id)} disabled={testingId === dest.id} title={m_i18n.test_connection()}>
 							{#if testingId === dest.id}<RefreshCw class="grid-action-icon text-muted-foreground animate-spin" />{:else}<Wifi class="grid-action-icon grid-action-restart text-muted-foreground" />{/if}
 						</button>
 						{#if $canAccess('backups', 'manage')}
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => { rotateDestId = dest.id; rotateDestName = dest.name; rotateModalOpen = true; }} title="Rotate repository password">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => { rotateDestId = dest.id; rotateDestName = dest.name; rotateModalOpen = true; }} title={m_i18n.rotate_repository_password()}>
 								<KeyRound class="grid-action-icon grid-action-edit text-muted-foreground" />
 							</button>
-							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => openModal(dest)} title="Edit">
+							<button type="button" class="p-0.5 rounded hover:bg-muted transition-colors opacity-70 hover:opacity-100" onclick={() => openModal(dest)} title={m_i18n.edit()}>
 								<Pencil class="grid-action-icon grid-action-edit text-muted-foreground" />
 							</button>
 							<ConfirmPopover
@@ -796,7 +798,7 @@
 								action="Delete"
 								itemType="destination"
 								itemName={dest.name}
-								title="Remove"
+								title={m_i18n.remove()}
 								position="left"
 								onConfirm={() => deleteDestination(dest.id)}
 								onOpenChange={(open) => confirmDeleteId = open ? dest.id : null}
@@ -826,27 +828,27 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<FolderOpen class="w-5 h-5" />
-				Repository snapshots on
+				{m_i18n.repository_snapshots_on()}
 				<svelte:component this={getRepoTypeIcon(browseDestRepo)} class="w-4 h-4" />
 				<span class="text-amber-600 dark:text-amber-400">{browseDestName}</span>
 			</Dialog.Title>
 		</Dialog.Header>
 		{#if !browseLoading && browseSnapshots.length > 0}
 			<div class="flex items-center gap-2 pb-3 flex-shrink-0">
-				<Input bind:value={browseFilterName} placeholder="Filter by name..." class="h-8 max-w-xs" />
-				<Input bind:value={browseFilterEnv} placeholder="Filter by environment..." class="h-8 max-w-xs" />
+				<Input bind:value={browseFilterName} placeholder={m_i18n.filter_by_name()} class="h-8 max-w-xs" />
+				<Input bind:value={browseFilterEnv} placeholder={m_i18n.filter_by_environment()} class="h-8 max-w-xs" />
 				{#if browseSelectedCount > 0}
 					<button type="button" class="ml-auto inline-flex items-center gap-1.5 rounded-md border border-destructive/40 px-2.5 py-1 text-xs text-destructive transition-colors hover:bg-destructive/10" onclick={() => (bulkDialogOpen = true)}>
-						<Trash2 class="h-3 w-3" /> Delete selected ({browseSelectedCount})
+						<Trash2 class="h-3 w-3" /> {m_i18n.delete_selected_browseselectedcount({ browseSelectedCount: orEmpty(browseSelectedCount) })}
 					</button>
 				{/if}
 			</div>
 		{/if}
 		<div class="flex-1 min-h-0">
 			{#if browseLoading}
-				<LoadingState class="h-full" label="Loading snapshots..." />
+				<LoadingState class="h-full" label={m_i18n.loading_snapshots_8e91()} />
 			{:else if browseSnapshots.length === 0}
-				<div class="flex h-full items-center justify-center"><p class="text-sm text-muted-foreground">No snapshots in this repository.</p></div>
+				<div class="flex h-full items-center justify-center"><p class="text-sm text-muted-foreground">{m_i18n.no_snapshots_in_this_repository()}</p></div>
 			{:else}
 				<DataGrid
 					data={browseGroups}
@@ -886,7 +888,7 @@
 									<span class="truncate">{group.env.name}</span>
 								</span>
 							{:else if group.env}
-								<Badge variant="secondary" class="text-2xs font-normal text-muted-foreground">missing</Badge>
+								<Badge variant="secondary" class="text-2xs font-normal text-muted-foreground">{m_i18n.missing()}</Badge>
 							{:else}
 								<span class="text-xs text-muted-foreground">—</span>
 							{/if}
@@ -912,12 +914,12 @@
 													checked={group.snapshots.length > 0 && group.snapshots.every((s) => selectedSnapshots.has(s.id))}
 													indeterminate={group.snapshots.some((s) => selectedSnapshots.has(s.id)) && !group.snapshots.every((s) => selectedSnapshots.has(s.id))}
 													onCheckedChange={() => toggleGroupAll(group.snapshots)}
-													aria-label="Select all snapshots"
+													aria-label={m_i18n.select_all_snapshots()}
 												/>
 											</Table.Head>
-											<Table.Head class="w-28 py-1.5 text-xs" style="padding-left:8px">ID</Table.Head>
-											<Table.Head class="py-1.5 text-xs" style="padding-left:8px">Created</Table.Head>
-											<Table.Head class="w-16 py-1.5 text-xs text-right" style="padding-right:8px">Browse</Table.Head>
+											<Table.Head class="w-28 py-1.5 text-xs" style="padding-left:8px">{m_i18n.id()}</Table.Head>
+											<Table.Head class="py-1.5 text-xs" style="padding-left:8px">{m_i18n.created()}</Table.Head>
+											<Table.Head class="w-16 py-1.5 text-xs text-right" style="padding-right:8px">{m_i18n.browse()}</Table.Head>
 										</Table.Row>
 									</Table.Header>
 									<Table.Body>
@@ -929,7 +931,7 @@
 												<Table.Cell class="cursor-pointer font-mono text-xs text-muted-foreground py-1" style="padding-left:8px" onclick={() => { snapshotBrowseDestId = browseDestId; snapshotBrowseId = snap.id; snapshotBrowseName = group.name; snapshotBrowseOpen = true; }}>{snap.shortId}</Table.Cell>
 												<Table.Cell class="text-xs py-1" style="padding-left:8px">{formatDateTime(snap.time)} <span class="text-muted-foreground opacity-60">({formatRelativeTime(snap.time)})</span></Table.Cell>
 												<Table.Cell class="text-right py-1">
-													<button type="button" class="inline-flex p-1 rounded hover:bg-muted transition-colors text-muted-foreground" title="Browse snapshot content" onclick={(e) => { e.stopPropagation(); snapshotBrowseDestId = browseDestId; snapshotBrowseId = snap.id; snapshotBrowseName = group.name; snapshotBrowseOpen = true; }}>
+													<button type="button" class="inline-flex p-1 rounded hover:bg-muted transition-colors text-muted-foreground" title={m_i18n.browse_snapshot_content()} onclick={(e) => { e.stopPropagation(); snapshotBrowseDestId = browseDestId; snapshotBrowseId = snap.id; snapshotBrowseName = group.name; snapshotBrowseOpen = true; }}>
 														<FolderOpen class="w-3.5 h-3.5" />
 													</button>
 												</Table.Cell>
@@ -944,7 +946,7 @@
 			{/if}
 		</div>
 		<Dialog.Footer class="pt-4">
-			<Button variant="outline" onclick={() => browseOpen = false}>Close</Button>
+			<Button variant="outline" onclick={() => browseOpen = false}>{m_i18n.close()}</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	// Trigger rebuild for debug logging changes
 	import * as Card from '$lib/components/ui/card';
 	import { releasedEntries } from '$lib/utils/changelog-filter';
@@ -470,7 +472,7 @@
 					<div class="animate-speedy {isJumping ? (clickCount >= 10 ? 'crazy-jumping' : `jumping-${jumpLevel}`) : ''} {hasClicked && !isJumping ? 'clicked' : ''}" onclick={handleLogoClick}>
 						<img
 							src="/logo.svg"
-							alt="Dockhand Logo"
+							alt={m.dockhand_logo()}
 							class="h-36 w-auto object-contain"
 							style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.22));"
 						/>
@@ -486,33 +488,33 @@
 						<!-- Easter Egg Popup -->
 						{#if showEasterEgg}
 							<div class="easter-egg-popup">
-								Stop already, will you? Coming from r/selfhosted?
+								{m.stop_already_will_you_coming_from_r_selfhosted()}
 							</div>
 						{/if}
 					</div>
 
 					<!-- Version Badge + Update Check -->
 					<div class="flex flex-col items-center gap-1">
-						<Badge variant="secondary" class="text-xs">Version {currentVersion}</Badge>
+						<Badge variant="secondary" class="text-xs">{m.version_currentversion({ currentVersion: orEmpty(currentVersion) })}</Badge>
 						{#if checkingUpdate}
 							<span class="flex items-center gap-1 text-xs text-muted-foreground">
 								<Loader2 class="w-3.5 h-3.5 animate-spin" />
-								Checking for updates...
+								{m.checking_for_updates()}
 							</span>
 						{:else if updateAvailable && updateInfo}
 							<button class="flex items-center gap-1 text-xs text-amber-500 hover:text-amber-400 transition-colors" onclick={() => showSelfUpdateDialog = true}>
 								<CircleArrowUp class="w-3.5 h-3.5" />
-								Update available — click to see what's new
+								{m.update_available_click_to_see_whats_new()}
 							</button>
 						{:else if updateCheckDone && !updateAvailable}
 							<button class="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors" onclick={checkForUpdates}>
 								<CheckCircle2 class="w-3.5 h-3.5" />
-								Up to date
+								{m.up_to_date_82fb()}
 							</button>
 						{:else if updateCheckError}
 							<button class="flex items-center gap-1 text-xs text-foreground hover:text-muted-foreground transition-colors" onclick={checkForUpdates} title={updateCheckError}>
 								<TriangleAlert class="w-3.5 h-3.5 shrink-0" />
-								Update check unavailable — click to retry
+								{m.update_check_unavailable_click_to_retry()}
 							</button>
 						{/if}
 					</div>
@@ -534,7 +536,7 @@
 						{#if serverUptime !== null}
 							<div class="flex items-center gap-1 min-w-[8.5rem]">
 								<Clock class="w-3 h-3 shrink-0" />
-								<span class="tabular-nums">Uptime {formatUptime(serverUptime)}</span>
+								<span class="tabular-nums">{m.uptime_arg1({ arg1: orEmpty(formatUptime(serverUptime)) })}</span>
 							</div>
 						{/if}
 					</div>
@@ -546,7 +548,7 @@
 
 					<!-- Website Link -->
 					<a href="https://dockhand.pro" target="_blank" rel="noopener noreferrer" class="text-sm text-primary hover:underline">
-						https://dockhand.pro
+						{m.https_dockhand_pro()}
 					</a>
 				</div>
 			</Card.Content>
@@ -555,12 +557,12 @@
 		<!-- System Stats Card (Right) -->
 		<Card.Root class="w-full h-full">
 			<Card.Header class="pb-2">
-				<Card.Title class="text-sm font-medium">System information</Card.Title>
+				<Card.Title class="text-sm font-medium">{m.system_information()}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				{#if loading}
 					<div class="flex items-center justify-center py-6">
-						<div class="text-sm text-muted-foreground">Loading...</div>
+						<div class="text-sm text-muted-foreground">{m.loading()}</div>
 					</div>
 				{:else if error}
 					<div class="flex items-center justify-center py-6">
@@ -573,17 +575,17 @@
 						<div class="space-y-1.5">
 							<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
 								<Server class="w-3.5 h-3.5" />
-								Docker
+								{m.docker()}
 							</div>
 							<div class="text-sm pl-5 space-y-0.5">
 								<div class="flex items-center gap-2">
-									<span class="text-muted-foreground">Version</span>
+									<span class="text-muted-foreground">{m.version()}</span>
 									<span>{systemInfo.docker.version}</span>
 									<span class="text-muted-foreground/50">|</span>
-									<span class="text-muted-foreground">API</span>
+									<span class="text-muted-foreground">{m.api()}</span>
 									<span>{systemInfo.docker.apiVersion}</span>
 									<span class="text-muted-foreground/50">|</span>
-									<span class="text-muted-foreground">OS/Arch</span>
+									<span class="text-muted-foreground">{m.os_arch()}</span>
 									<span>{systemInfo.docker.os}/{systemInfo.docker.arch}</span>
 								</div>
 							</div>
@@ -593,23 +595,23 @@
 						<div class="space-y-1.5">
 							<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
 								<Plug class="w-3.5 h-3.5" />
-								Connection
+								{m.connection()}
 							</div>
 							<div class="text-sm pl-5">
 								<div class="flex items-center gap-2 flex-wrap">
 									{#if systemInfo.docker.connection.type === 'socket'}
 										<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-violet-500/15 text-violet-600 dark:text-violet-400 shadow-sm ring-1 ring-violet-500/20">
-											Unix Socket
+											{m.unix_socket()}
 										</span>
 										<span class="text-xs font-mono text-muted-foreground">{systemInfo.docker.connection.socketPath}</span>
 									{:else if systemInfo.docker.connection.type === 'https'}
 										<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/15 text-green-600 dark:text-green-400 shadow-sm ring-1 ring-green-500/20">
-											HTTPS (TLS)
+											{m.https_tls()}
 										</span>
 										<span class="text-xs font-mono text-muted-foreground">{systemInfo.docker.connection.host}:{systemInfo.docker.connection.port}</span>
 									{:else}
 										<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400 shadow-sm ring-1 ring-amber-500/20">
-											HTTP
+											{m.http()}
 										</span>
 										<span class="text-xs font-mono text-muted-foreground">{systemInfo.docker.connection.host}:{systemInfo.docker.connection.port}</span>
 									{/if}
@@ -621,17 +623,17 @@
 						<div class="space-y-1.5">
 							<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
 								<Cpu class="w-3.5 h-3.5" />
-								Host
+								{m.host()}
 							</div>
 							<div class="text-sm pl-5">
 								<div class="flex items-center gap-2">
-									<span class="text-muted-foreground">Name</span>
+									<span class="text-muted-foreground">{m.name()}</span>
 									<span>{systemInfo.host.name}</span>
 									<span class="text-muted-foreground/50">|</span>
-									<span class="text-muted-foreground">CPUs</span>
+									<span class="text-muted-foreground">{m.cpus()}</span>
 									<span>{systemInfo.host.cpus}</span>
 									<span class="text-muted-foreground/50">|</span>
-									<span class="text-muted-foreground">Memory</span>
+									<span class="text-muted-foreground">{m.memory()}</span>
 									<span>{formatBytes(systemInfo.host.memory)}</span>
 								</div>
 							</div>
@@ -642,7 +644,7 @@
 						<div class="space-y-1.5">
 							<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
 								<Cpu class="w-3.5 h-3.5" />
-								Runtime
+								{m.runtime()}
 							</div>
 							<div class="text-sm pl-5">
 								<div class="flex items-center gap-2 flex-wrap">
@@ -671,7 +673,7 @@
 									{/if}
 									{#if systemInfo.docker}
 										<span class="text-muted-foreground/50">|</span>
-										<span class="text-muted-foreground">Docker</span>
+										<span class="text-muted-foreground">{m.docker()}</span>
 										<span>{systemInfo.docker.version}</span>
 									{/if}
 								</div>
@@ -683,13 +685,13 @@
 						<div class="space-y-1.5">
 							<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
 								<Database class="w-3.5 h-3.5" />
-								Database
+								{m.database()}
 							</div>
 							<div class="text-sm pl-5 space-y-1">
 								<div class="flex items-center gap-2 flex-wrap">
 									{#if systemInfo.database.type === 'PostgreSQL'}
 										<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/20">
-											PostgreSQL
+											{m.postgresql()}
 										</span>
 										{#if systemInfo.database.host}
 											<span class="text-muted-foreground/50">|</span>
@@ -697,13 +699,13 @@
 										{/if}
 									{:else}
 										<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shadow-sm ring-1 ring-emerald-500/20">
-											SQLite
+											{m.sqlite()}
 										</span>
 									{/if}
 								</div>
 								{#if systemInfo.database.schemaVersion}
 									<div class="flex items-center gap-2">
-										<span class="text-muted-foreground">Schema</span>
+										<span class="text-muted-foreground">{m.schema()}</span>
 										<span class="font-mono text-xs">{systemInfo.database.schemaVersion}</span>
 										{#if systemInfo.database.schemaDate}
 											<span class="text-muted-foreground/60 text-xs">({systemInfo.database.schemaDate})</span>
@@ -723,54 +725,54 @@
 								{:else}
 									<Crown class="w-3.5 h-3.5" />
 								{/if}
-								License
+								{m.license()}
 							</div>
 							<div class="text-sm pl-5">
 								<div class="flex items-center gap-2 flex-wrap">
-									<span class="text-muted-foreground">Edition</span>
+									<span class="text-muted-foreground">{m.edition()}</span>
 									{#if $licenseStore.licenseType === 'enterprise'}
 										<span class="text-amber-500 font-medium flex items-center gap-1">
 											<Crown class="w-3.5 h-3.5 fill-current" />
-											Enterprise
+											{m.enterprise()}
 										</span>
 									{:else if $licenseStore.licenseType === 'smb'}
 										<span class="text-blue-500 font-medium flex items-center gap-1">
 											<Building2 class="w-3.5 h-3.5" />
-											SMB
+											{m.smb()}
 										</span>
 									{:else}
-										<span>Community</span>
+										<span>{m.community()}</span>
 									{/if}
 									{#if $licenseStore.isLicensed && $licenseStore.licensedTo}
 										<span class="text-muted-foreground/50">|</span>
-										<span class="text-muted-foreground">Licensed to</span>
+										<span class="text-muted-foreground">{m.licensed_to()}</span>
 										<span>{$licenseStore.licensedTo}</span>
 									{/if}
 									<span class="text-muted-foreground/50">|</span>
-									<button class="text-primary hover:underline cursor-pointer" onclick={() => showLicenseModal = true}>Terms</button>
+									<button class="text-primary hover:underline cursor-pointer" onclick={() => showLicenseModal = true}>{m.terms()}</button>
 									<span class="text-muted-foreground/50">|</span>
-									<button class="text-primary hover:underline cursor-pointer" onclick={() => showPrivacyModal = true}>Privacy</button>
+									<button class="text-primary hover:underline cursor-pointer" onclick={() => showPrivacyModal = true}>{m.privacy()}</button>
 								</div>
 								<div class="flex items-center gap-2 flex-wrap mt-3 pt-2 border-t border-border/50">
 									<a href="https://github.com/Finsys/dockhand/issues" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline inline-flex items-center gap-1.5 font-medium">
 										<MessageSquarePlus class="w-4 h-4" />
-										Submit issue or idea
+										{m.submit_issue_or_idea()}
 									</a>
 									<span class="text-muted-foreground/50">|</span>
 									<a href="https://discord.gg/rMxW9Y5cQw" target="_blank" rel="noopener noreferrer" class="hover:underline inline-flex items-center gap-1.5 font-medium text-indigo-500 dark:text-indigo-400">
 										<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-										Discord
+										{m.discord()}
 									</a>
 									{#if !$licenseStore.isLicensed}
 										<span class="text-muted-foreground/50">|</span>
 										<a href="https://buymeacoffee.com/dockhand" target="_blank" rel="noopener noreferrer" class="hover:underline inline-flex items-center gap-1.5 font-medium text-amber-600 dark:text-yellow-400">
 											<Coffee class="w-4 h-4" />
-											Buy me a coffee
+											{m.buy_me_a_coffee()}
 										</a>
 									{/if}
 								</div>
 								{#if !$licenseStore.isLicensed}
-									<p class="text-xs text-muted-foreground mt-2">Dockhand Community Edition is free and always will be. No strings attached. Like it? Fuel the dev with caffeine.</p>
+									<p class="text-xs text-muted-foreground mt-2">{m.dockhand_community_edition_is_free_and_always_wi()}</p>
 								{/if}
 							</div>
 						</div>
@@ -783,35 +785,35 @@
 									<Box class="w-4 h-4 text-blue-500" />
 								</div>
 								<div class="text-lg font-bold">{systemInfo.stats.containers.total}</div>
-								<div class="text-2xs text-muted-foreground font-medium">Containers</div>
+								<div class="text-2xs text-muted-foreground font-medium">{m.containers()}</div>
 							</div>
 							<div class="stat-box stat-box-cyan">
 								<div class="stat-icon-wrapper bg-cyan-500/10">
 									<Layers class="w-4 h-4 text-cyan-500" />
 								</div>
 								<div class="text-lg font-bold">{systemInfo.stats.stacks}</div>
-								<div class="text-2xs text-muted-foreground font-medium">Stacks</div>
+								<div class="text-2xs text-muted-foreground font-medium">{m.stacks()}</div>
 							</div>
 							<div class="stat-box stat-box-purple">
 								<div class="stat-icon-wrapper bg-purple-500/10">
 									<Images class="w-4 h-4 text-purple-500" />
 								</div>
 								<div class="text-lg font-bold">{systemInfo.stats.images}</div>
-								<div class="text-2xs text-muted-foreground font-medium">Images</div>
+								<div class="text-2xs text-muted-foreground font-medium">{m.images()}</div>
 							</div>
 							<div class="stat-box stat-box-green">
 								<div class="stat-icon-wrapper bg-green-500/10">
 									<HardDrive class="w-4 h-4 text-green-500" />
 								</div>
 								<div class="text-lg font-bold">{systemInfo.stats.volumes}</div>
-								<div class="text-2xs text-muted-foreground font-medium">Volumes</div>
+								<div class="text-2xs text-muted-foreground font-medium">{m.volumes()}</div>
 							</div>
 							<div class="stat-box stat-box-orange">
 								<div class="stat-icon-wrapper bg-orange-500/10">
 									<Network class="w-4 h-4 text-orange-500" />
 								</div>
 								<div class="text-lg font-bold">{systemInfo.stats.networks}</div>
-								<div class="text-2xs text-muted-foreground font-medium">Networks</div>
+								<div class="text-2xs text-muted-foreground font-medium">{m.networks()}</div>
 							</div>
 						</div>
 						{/if}
@@ -828,12 +830,12 @@
 				<Tabs.List class="w-full grid grid-cols-2">
 					<Tabs.Trigger value="releases" class="flex items-center gap-2">
 						<FileText class="w-4 h-4" />
-						<span>Release notes</span>
+						<span>{m.release_notes()}</span>
 						<Badge variant="secondary" class="text-2xs">{changelog.length}</Badge>
 					</Tabs.Trigger>
 					<Tabs.Trigger value="dependencies" class="flex items-center gap-2">
 						<Package class="w-4 h-4" />
-						<span>Dependencies</span>
+						<span>{m.dependencies()}</span>
 						<Badge variant="secondary" class="text-2xs">{dependencies.length}</Badge>
 					</Tabs.Trigger>
 				</Tabs.List>
@@ -842,7 +844,7 @@
 			<Tabs.Content value="releases" class="px-4 pb-4">
 				{#if loadingChangelog}
 					<div class="flex items-center justify-center py-8">
-						<div class="text-sm text-muted-foreground">Loading releases...</div>
+						<div class="text-sm text-muted-foreground">{m.loading_releases()}</div>
 					</div>
 				{:else if changelogError}
 					<div class="flex items-center justify-center py-8">
@@ -866,11 +868,11 @@
 											<ChevronRight class="w-4 h-4 text-muted-foreground" />
 										{/if}
 										<Tag class="w-4 h-4 text-primary" />
-										<span class="font-semibold">v{release.version}</span>
+										<span class="font-semibold">{m.v_version({ version: orEmpty(release.version) })}</span>
 										{#if index === 0}
-											<Badge variant="default" class="text-2xs">Latest</Badge>
+											<Badge variant="default" class="text-2xs">{m.latest()}</Badge>
 										{/if}
-										<Badge variant="secondary" class="text-2xs">{release.changes.length} changes</Badge>
+										<Badge variant="secondary" class="text-2xs">{m.length_changes({ length: orEmpty(release.changes.length) })}</Badge>
 									</div>
 									<span class="text-xs text-muted-foreground">{formatChangelogDate(release.date)}</span>
 								</div>
@@ -882,12 +884,12 @@
 													{#if change.type === 'feature'}
 														<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-2xs font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shrink-0">
 															<Sparkles class="w-3 h-3" />
-															New
+															{m.new_6403()}
 														</span>
 													{:else if change.type === 'fix'}
 														<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-2xs font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0">
 															<Bug class="w-3 h-3" />
-															Fix
+															{m.fix()}
 														</span>
 													{/if}
 													<ChangelogText text={change.text} />
@@ -907,11 +909,11 @@
 
 			<Tabs.Content value="dependencies" class="px-4 pb-4">
 				<div class="mb-3">
-					<SearchInput bind:value={depsSearch} placeholder="Search packages or licenses..." class="h-7 text-xs" containerClass="w-full max-w-xs" />
+					<SearchInput bind:value={depsSearch} placeholder={m.search_packages_or_licenses()} class="h-7 text-xs" containerClass="w-full max-w-xs" />
 				</div>
 				{#if loadingDeps}
 					<div class="flex items-center justify-center py-8">
-						<div class="text-sm text-muted-foreground">Loading dependencies...</div>
+						<div class="text-sm text-muted-foreground">{m.loading_dependencies()}</div>
 					</div>
 				{:else if depsError}
 					<div class="flex items-center justify-center py-8">
@@ -920,9 +922,9 @@
 				{:else}
 					<div class="space-y-1">
 						<div class="grid grid-cols-[1fr_auto_auto_auto] gap-2 text-2xs font-medium text-muted-foreground px-2 py-1 border-b">
-							<div>Package</div>
-							<div class="w-20 text-center">Version</div>
-							<div class="w-24 text-center">License</div>
+							<div>{m.package()}</div>
+							<div class="w-20 text-center">{m.version()}</div>
+							<div class="w-24 text-center">{m.license()}</div>
 							<div class="w-8"></div>
 						</div>
 						<div class="max-h-[300px] overflow-y-auto pr-2">
@@ -942,7 +944,7 @@
 												target="_blank"
 												rel="noopener noreferrer"
 												class="text-muted-foreground hover:text-foreground transition-colors"
-												title="View on GitHub"
+												title={m.view_on_github()}
 											>
 												<ExternalLink class="w-3.5 h-3.5" />
 											</a>

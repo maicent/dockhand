@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { ArrowRight } from 'lucide-svelte';
 	import { formatFieldName, type AuditDiff, type FieldChange } from '$lib/utils/diff';
 
@@ -71,5 +72,5 @@
 		{/each}
 	</div>
 {:else}
-	<p class="text-sm text-muted-foreground italic">No changes recorded</p>
+	<p class="text-sm text-muted-foreground italic">{m.no_changes_recorded()}</p>
 {/if}

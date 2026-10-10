@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
@@ -79,7 +80,7 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Key class="w-5 h-5" />
-				Change password
+				{m.change_password()}
 			</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4">
@@ -90,43 +91,43 @@
 				</Alert.Root>
 			{/if}
 			<div class="space-y-2">
-				<Label>Current password</Label>
+				<Label>{m.current_password()}</Label>
 				<Input
 					type="password"
 					bind:value={currentPassword}
-					placeholder="Enter current password"
+					placeholder={m.enter_current_password()}
 					autocomplete="current-password"
 				/>
 			</div>
 			<div class="space-y-2">
-				<Label>New password</Label>
+				<Label>{m.new_password()}</Label>
 				<Input
 					type="password"
 					bind:value={newPassword}
-					placeholder="Enter new password"
+					placeholder={m.enter_new_password()}
 					autocomplete="new-password"
 				/>
 				<PasswordStrengthIndicator password={newPassword} />
 			</div>
 			<div class="space-y-2">
-				<Label>Repeat new password</Label>
+				<Label>{m.repeat_new_password()}</Label>
 				<Input
 					type="password"
 					bind:value={newPasswordRepeat}
-					placeholder="Repeat new password"
+					placeholder={m.repeat_new_password()}
 					autocomplete="new-password"
 				/>
 			</div>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={onClose}>Cancel</Button>
+			<Button variant="outline" onclick={onClose}>{m.cancel()}</Button>
 			<Button onclick={changePassword} disabled={saving}>
 				{#if saving}
 					<RefreshCw class="w-4 h-4 animate-spin" />
 				{:else}
 					<Check class="w-4 h-4" />
 				{/if}
-				Change password
+				{m.change_password()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

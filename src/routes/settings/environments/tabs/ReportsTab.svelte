@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Label } from '$lib/components/ui/label';
 	import * as Select from '$lib/components/ui/select';
 	import { TogglePill } from '$lib/components/ui/toggle-pill';
@@ -62,7 +63,7 @@
 			URL.revokeObjectURL(url);
 		} catch (error) {
 			console.error('Failed to download the report:', error);
-			toast.error('Failed to build the report');
+			toast.error(m.failed_to_build_the_report());
 		} finally {
 			downloading = false;
 		}
@@ -77,16 +78,15 @@
 <div class="space-y-4">
 	<div class="flex items-center gap-2 text-sm font-medium">
 		<FileText class="w-4 h-4" />
-		Scheduled state report
+		{m.scheduled_state_report()}
 	</div>
 	<p class="text-xs text-muted-foreground">
-		Mail a report of what is running in this environment, with its vulnerability counts and scan
-		coverage, on a schedule.
+		{m.mail_a_report_of_what_is_running_in_this_environ()}
 	</p>
 
 	{#if !licensed}
 		<div class="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-			A commercial license is required to build a state report.
+			{m.a_commercial_license_is_required_to_build_a_stat()}
 		</div>
 	{:else if reportLoading}
 		<div class="flex items-center justify-center py-4">
@@ -97,22 +97,21 @@
 		<div class="flex items-center gap-2 rounded-md border border-border bg-muted/30 p-3">
 			<Download class="w-4 h-4 text-muted-foreground shrink-0" />
 			<div class="flex-1 min-w-0">
-				<Label>Download this environment's report</Label>
-				<p class="text-xs text-muted-foreground">Build it now, for this environment only.</p>
+				<Label>{m.download_this_environments_report()}</Label>
+				<p class="text-xs text-muted-foreground">{m.build_it_now_for_this_environment_only()}</p>
 			</div>
 			<Button size="sm" variant="outline" disabled={downloading || environmentId === null}
-				onclick={() => downloadNow('pdf')}>PDF</Button>
+				onclick={() => downloadNow('pdf')}>{m.pdf()}</Button>
 			<Button size="sm" variant="outline" disabled={downloading || environmentId === null}
-				onclick={() => downloadNow('csv')}>CSV</Button>
+				onclick={() => downloadNow('csv')}>{m.csv()}</Button>
 		</div>
 
 		<div class="flex items-start gap-2 pt-1">
 			<FileDown class="w-4 h-4 text-sky-500 mt-0.5 shrink-0" />
 			<div class="flex-1">
-				<Label>Send a report on a schedule</Label>
+				<Label>{m.send_a_report_on_a_schedule()}</Label>
 				<p class="text-xs text-muted-foreground">
-					The report lists every container and the vulnerabilities known about its images, and it
-					leaves this installation as a mail attachment.
+					{m.the_report_lists_every_container_and_the_vulnera()}
 				</p>
 			</div>
 			<TogglePill bind:checked={reportEnabled} />
@@ -122,7 +121,7 @@
 			<div class="flex items-start gap-2">
 				<div class="w-4 shrink-0"></div>
 				<div class="flex-1 space-y-2">
-					<Label>Schedule</Label>
+					<Label>{m.schedule()}</Label>
 					<CronEditor value={reportCron} onchange={(cron) => (reportCron = cron)} />
 				</div>
 			</div>
@@ -130,12 +129,12 @@
 			<div class="flex items-start gap-2">
 				<div class="w-4 shrink-0"></div>
 				<div class="flex-1 space-y-2">
-					<Label>Format</Label>
+					<Label>{m.format()}</Label>
 					<Select.Root type="single" bind:value={reportFormat}>
 						<Select.Trigger class="w-full">{formatLabel}</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="pdf">PDF - formatted for reading and filing</Select.Item>
-							<Select.Item value="csv">CSV - for a spreadsheet or another tool</Select.Item>
+							<Select.Item value="pdf">{m.pdf_formatted_for_reading_and_filing()}</Select.Item>
+							<Select.Item value="csv">{m.csv_for_a_spreadsheet_or_another_tool()}</Select.Item>
 						</Select.Content>
 					</Select.Root>
 				</div>
@@ -144,12 +143,10 @@
 			<div class="flex items-start gap-2">
 				<Mail class="w-4 h-4 text-muted-foreground mt-7 shrink-0" />
 				<div class="flex-1 space-y-2">
-					<Label>Send to</Label>
+					<Label>{m.send_to()}</Label>
 					{#if smtpChannels.length === 0}
 						<p class="text-xs text-amber-600 dark:text-amber-400">
-							No SMTP channel is configured. Add one under Settings &gt; Notifications - a webhook
-							channel cannot carry the attachment. Until then, turn the schedule off above:
-							it cannot be saved without a channel.
+							{m.no_smtp_channel_is_configured_add_one_under_sett()}
 						</p>
 					{:else}
 						<Select.Root
@@ -165,7 +162,7 @@
 							</Select.Content>
 						</Select.Root>
 						<p class="text-xs text-muted-foreground">
-							Only SMTP channels are listed; the report is sent as an attachment.
+							{m.only_smtp_channels_are_listed_the_report_is_sent()}
 						</p>
 					{/if}
 				</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Label } from '$lib/components/ui/label';
 	import { TogglePill } from '$lib/components/ui/toggle-pill';
 	import { themeStore } from '$lib/stores/theme';
@@ -33,8 +34,8 @@
 
 <div class="space-y-1">
 	<div class="flex items-center gap-3">
-		<Label>Indentation guides</Label>
+		<Label>{m.indentation_guides()}</Label>
 		<TogglePill {checked} onchange={onToggle} />
 	</div>
-	<p class="text-xs text-muted-foreground">Vertical guides showing nesting depth in the code editor.</p>
+	<p class="text-xs text-muted-foreground">{m.vertical_guides_showing_nesting_depth_in_the_cod()}</p>
 </div>

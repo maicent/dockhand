@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import {
 		ShieldCheck,
 		Activity,
@@ -30,17 +31,17 @@
 		</span>
 	{/if}
 	{#if scannerEnabled}
-		<span title="Vulnerability scanning enabled">
+		<span title={m.vulnerability_scanning_enabled()}>
 			<ShieldCheck class="{compact ? 'w-3.5 h-3.5 glow-green-sm' : 'w-4 h-4 glow-green'} text-green-500" />
 		</span>
 	{/if}
 	{#if collectActivity}
-		<span title="Activity collection enabled">
+		<span title={m.activity_collection_enabled()}>
 			<Activity class="{compact ? 'w-3.5 h-3.5 glow-amber-sm' : 'w-4 h-4 glow-amber'} text-amber-500" />
 		</span>
 	{/if}
 	{#if !online && compact}
-		<span title="Offline">
+		<span title={m.offline()}>
 			<WifiOff class="w-3.5 h-3.5 text-red-500 shrink-0" />
 		</span>
 	{/if}

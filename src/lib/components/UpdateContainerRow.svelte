@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import { ChevronDown, ChevronRight, CheckCircle2, XCircle, Loader2 } from 'lucide-svelte';
 	import type { StepType } from '$lib/utils/update-steps';
@@ -83,7 +84,7 @@
 				class="h-6 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/50"
 				onclick={onForceUpdate}
 			>
-				Update anyway
+				{m.update_anyway()}
 			</Button>
 		{/if}
 	{/if}

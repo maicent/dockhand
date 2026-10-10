@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button';
@@ -96,7 +98,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to fetch users:', error);
-			toast.error('Failed to fetch users');
+			toast.error(m.failed_to_fetch_users());
 		} finally {
 			usersLoading = false;
 		}
@@ -129,9 +131,9 @@
 				const data = await response.json();
 				await fetchUsers();
 				if (data.authDisabled) {
-					toast.success('User deleted. Authentication has been disabled.');
+					toast.success(m.user_deleted_authentication_has_been_disabled());
 				} else {
-					toast.success('User deleted');
+					toast.success(m.user_deleted());
 				}
 				showLastAdminWarning = false;
 				lastAdminDeleteUserId = null;
@@ -151,7 +153,7 @@
 			}
 		} catch (error) {
 			console.error('Failed to delete user:', error);
-			toast.error('Failed to delete user');
+			toast.error(m.failed_to_delete_user());
 		} finally {
 			confirmDeleteUserId = null;
 		}
@@ -180,7 +182,7 @@
 	// Get provider display info
 	function getProviderInfo(user: LocalUser): { icon: typeof KeyRound; label: string; class: string; sortKey: string } {
 		if (!user.isSso) {
-			return { icon: KeyRound, label: 'Local', class: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30', sortKey: 'local' };
+			return { icon: KeyRound, label: m.local(), class: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30', sortKey: 'local' };
 		}
 		const providerParts = user.authProvider?.split(':') || [];
 		const providerType = providerParts[0]?.toLowerCase() || 'sso';
@@ -255,14 +257,14 @@
 				<div>
 					<Card.Title class="text-sm font-medium flex items-center gap-2">
 						<Users class="w-4 h-4" />
-						Users
+						{m.users()}
 					</Card.Title>
-					<p class="text-xs text-muted-foreground mt-1">Manage user accounts for local authentication, SSO, and LDAP.</p>
+					<p class="text-xs text-muted-foreground mt-1">{m.manage_user_accounts_for_local_authentication_ss()}</p>
 				</div>
 				{#if $canAccess('users', 'create')}
 					<Button size="sm" onclick={() => openUserModal(null)}>
 						<UserPlus class="w-4 h-4" />
-						Add user
+						{m.add_user()}
 					</Button>
 				{/if}
 			</div>
@@ -275,15 +277,15 @@
 			{:else if localUsers.length === 0}
 				<EmptyState
 					icon={Users}
-					title="No users configured"
-					description="Create the first user to enable login"
+					title={m.no_users_configured()}
+					description={m.create_the_first_user_to_enable_login()}
 				/>
 			{:else}
 				<!-- Filter bar -->
 				<div class="flex items-center gap-2 mb-3">
-					<SearchInput bind:value={searchQuery} placeholder="Search users..." class="h-8 text-sm" containerClass="flex-1 max-w-xs" />
+					<SearchInput bind:value={searchQuery} placeholder={m.search_users()} class="h-8 text-sm" containerClass="flex-1 max-w-xs" />
 					<div class="flex items-center gap-1 text-xs text-muted-foreground ml-auto">
-						<span>{filteredAndSortedUsers.length} of {localUsers.length} users</span>
+						<span>{m.length_of_arg2_users({ length: orEmpty(filteredAndSortedUsers.length), arg2: orEmpty(localUsers.length) })}</span>
 					</div>
 				</div>
 				<!-- Table -->
@@ -297,7 +299,7 @@
 										class="flex items-center gap-1 hover:text-foreground transition-colors"
 										onclick={() => toggleSort('username')}
 									>
-										User
+										{m.user()}
 										{#if sortField === 'username'}
 											{#if sortDirection === 'asc'}<ArrowUp class="w-3 h-3" />{:else}<ArrowDown class="w-3 h-3" />{/if}
 										{:else}
@@ -311,7 +313,7 @@
 										class="flex items-center gap-1 hover:text-foreground transition-colors"
 										onclick={() => toggleSort('email')}
 									>
-										Email
+										{m.email()}
 										{#if sortField === 'email'}
 											{#if sortDirection === 'asc'}<ArrowUp class="w-3 h-3" />{:else}<ArrowDown class="w-3 h-3" />{/if}
 										{:else}
@@ -319,9 +321,9 @@
 										{/if}
 									</button>
 								</th>
-								<th class="text-left py-1.5 px-3 font-medium w-[8%]">MFA</th>
+								<th class="text-left py-1.5 px-3 font-medium w-[8%]">{m.mfa()}</th>
 								{#if $licenseStore.isEnterprise}
-									<th class="text-left py-1.5 px-3 font-medium w-[25%]">Roles</th>
+									<th class="text-left py-1.5 px-3 font-medium w-[25%]">{m.roles()}</th>
 								{/if}
 								<th class="text-left py-1.5 px-3 font-medium w-[15%]">
 									<button
@@ -329,7 +331,7 @@
 										class="flex items-center gap-1 hover:text-foreground transition-colors"
 										onclick={() => toggleSort('provider')}
 									>
-										Provider
+										{m.provider()}
 										{#if sortField === 'provider'}
 											{#if sortDirection === 'asc'}<ArrowUp class="w-3 h-3" />{:else}<ArrowDown class="w-3 h-3" />{/if}
 										{:else}
@@ -356,7 +358,7 @@
 											<div class="flex items-center gap-1.5">
 												<span class="font-medium">{user.username}</span>
 												{#if !user.isActive}
-													<Badge variant="destructive" class="text-2xs px-1 py-0 h-4">Disabled</Badge>
+													<Badge variant="destructive" class="text-2xs px-1 py-0 h-4">{m.disabled()}</Badge>
 												{/if}
 											</div>
 										</div>
@@ -370,7 +372,7 @@
 										{#if user.mfaEnabled}
 											<Badge variant="outline" class="text-2xs px-1.5 py-0 h-4 gap-1 rounded-sm bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30">
 												<Shield class="w-2.5 h-2.5" />
-												Enabled
+												{m.enabled()}
 											</Badge>
 										{:else}
 											<span class="text-muted-foreground">—</span>
@@ -389,7 +391,7 @@
 														</Badge>
 													{/each}
 													{#if hiddenRolesCount > 0}
-														<span class="text-2xs text-muted-foreground">+{hiddenRolesCount} more</span>
+														<span class="text-2xs text-muted-foreground">{m.hiddenrolescount_more({ hiddenRolesCount: orEmpty(hiddenRolesCount) })}</span>
 													{/if}
 												</div>
 											{:else}
@@ -438,7 +440,7 @@
 								<tr>
 									<td colspan={$licenseStore.isEnterprise ? 6 : 5} class="py-8 text-center text-muted-foreground">
 										<Search class="w-8 h-8 mx-auto mb-2 opacity-50" />
-										<p>No users found matching "{searchQuery}"</p>
+										<p>{m.no_users_found_matching_searchquery({ searchQuery: orEmpty(searchQuery) })}</p>
 									</td>
 								</tr>
 							{/each}
@@ -465,17 +467,17 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2 text-destructive">
 				<AlertTriangle class="w-5 h-5" />
-				Delete last admin?
+				{m.delete_last_admin()}
 			</Dialog.Title>
 			<Dialog.Description class="text-left">
-				This is the only admin account. Deleting it will <strong>disable authentication</strong> and allow anyone to access Dockhand without logging in.
+				{m.this_is_the_only_admin_account_deleting_it_will()} <strong>{m.disable_authentication()}</strong> {m.and_allow_anyone_to_access_dockhand_without_logg()}
 			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={cancelLastAdminDelete}>Cancel</Button>
+			<Button variant="outline" onclick={cancelLastAdminDelete}>{m.cancel()}</Button>
 			<Button variant="destructive" onclick={confirmLastAdminDelete}>
 				<Trash2 class="w-4 h-4" />
-				Delete and disable auth
+				{m.delete_and_disable_auth()}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -213,20 +214,20 @@
 			<Dialog.Title class="flex items-center gap-2">
 				{#if isEditing}
 					<Pencil class="w-5 h-5" />
-					Edit OIDC provider
+					{m_i18n.edit_oidc_provider()}
 				{:else}
 					<LogIn class="w-5 h-5" />
-					Add OIDC provider
+					{m_i18n.add_oidc_provider()}
 				{/if}
 			</Dialog.Title>
 		</Dialog.Header>
 
 		<Tabs.Root bind:value={formActiveTab} class="flex-1 flex flex-col overflow-hidden">
 			<Tabs.List class="flex-shrink-0 grid w-full grid-cols-2">
-				<Tabs.Trigger value="general">General</Tabs.Trigger>
+				<Tabs.Trigger value="general">{m_i18n.general()}</Tabs.Trigger>
 				<Tabs.Trigger value="role-mapping" class="flex items-center gap-1.5">
 					<Crown class="w-3.5 h-3.5 text-amber-500" />
-					Role mapping
+					{m_i18n.role_mapping()}
 				</Tabs.Trigger>
 			</Tabs.List>
 
@@ -240,13 +241,13 @@
 
 				<!-- Basic Settings -->
 				<div class="space-y-4">
-					<h4 class="text-sm font-medium text-muted-foreground">Basic settings</h4>
+					<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.basic_settings()}</h4>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="space-y-2">
-							<Label>Name <span class="text-destructive">*</span></Label>
+							<Label>{m_i18n.name()} <span class="text-destructive">*</span></Label>
 							<Input
 								bind:value={formName}
-								placeholder="Okta, Auth0, Azure AD..."
+								placeholder={m_i18n.okta_auth0_azure_ad()}
 								class={formErrors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 								oninput={() => formErrors.name = undefined}
 							/>
@@ -255,10 +256,10 @@
 							{/if}
 						</div>
 						<div class="space-y-2">
-							<Label>Issuer URL <span class="text-destructive">*</span></Label>
+							<Label>{m_i18n.issuer_url()} <span class="text-destructive">*</span></Label>
 							<Input
 								bind:value={formIssuerUrl}
-								placeholder="https://example.okta.com"
+								placeholder={m_i18n.https_example_okta_com()}
 								class={formErrors.issuerUrl ? 'border-destructive focus-visible:ring-destructive' : ''}
 								oninput={() => formErrors.issuerUrl = undefined}
 							/>
@@ -273,21 +274,21 @@
 							onCheckedChange={(checked) => formEnabled = checked === true}
 						/>
 						<Label class="text-sm font-normal cursor-pointer" onclick={() => formEnabled = !formEnabled}>
-							Enable this OIDC provider
+							{m_i18n.enable_this_oidc_provider()}
 						</Label>
 					</div>
 				</div>
 
 				<!-- Client Credentials -->
 				<div class="space-y-4">
-					<h4 class="text-sm font-medium text-muted-foreground">Client credentials</h4>
-					<p class="text-xs text-muted-foreground">Get these from your identity provider's application settings.</p>
+					<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.client_credentials()}</h4>
+					<p class="text-xs text-muted-foreground">{m_i18n.get_these_from_your_identity_providers_applicati()}</p>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="space-y-2">
-							<Label>Client ID <span class="text-destructive">*</span></Label>
+							<Label>{m_i18n.client_id()} <span class="text-destructive">*</span></Label>
 							<Input
 								bind:value={formClientId}
-								placeholder="your-client-id"
+								placeholder={m_i18n.your_client_id()}
 								class={formErrors.clientId ? 'border-destructive focus-visible:ring-destructive' : ''}
 								oninput={() => formErrors.clientId = undefined}
 							/>
@@ -296,7 +297,7 @@
 							{/if}
 						</div>
 						<div class="space-y-2">
-							<Label>Client secret {#if !isEditing}<span class="text-destructive">*</span>{/if}</Label>
+							<Label>{m_i18n.client_secret()} {#if !isEditing}<span class="text-destructive">*</span>{/if}</Label>
 							<Input
 								type="password"
 								bind:value={formClientSecret}
@@ -313,54 +314,54 @@
 
 				<!-- Redirect & Scopes -->
 				<div class="space-y-4">
-					<h4 class="text-sm font-medium text-muted-foreground">Redirect settings</h4>
+					<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.redirect_settings()}</h4>
 					<div class="space-y-2">
-						<Label>Redirect URI <span class="text-destructive">*</span></Label>
+						<Label>{m_i18n.redirect_uri()} <span class="text-destructive">*</span></Label>
 						<Input
 							bind:value={formRedirectUri}
-							placeholder="https://dockhand.example.com/api/auth/oidc/callback"
+							placeholder={m_i18n.https_dockhand_example_com_api_auth_oidc_callbac()}
 							class={formErrors.redirectUri ? 'border-destructive focus-visible:ring-destructive' : ''}
 							oninput={() => formErrors.redirectUri = undefined}
 						/>
 						{#if formErrors.redirectUri}
 							<p class="text-xs text-destructive">{formErrors.redirectUri}</p>
 						{:else}
-							<p class="text-xs text-muted-foreground">Add this URI to your identity provider's allowed callback URLs.</p>
+							<p class="text-xs text-muted-foreground">{m_i18n.add_this_uri_to_your_identity_providers_allowed()}</p>
 						{/if}
 					</div>
 					<div class="space-y-2">
-						<Label>Scopes</Label>
+						<Label>{m_i18n.scopes()}</Label>
 						<Input
 							bind:value={formScopes}
-							placeholder="openid profile email"
+							placeholder={m_i18n.openid_profile_email()}
 						/>
 					</div>
 				</div>
 
 				<!-- Claim Mapping -->
 				<div class="space-y-4">
-					<h4 class="text-sm font-medium text-muted-foreground">Claim mapping</h4>
-					<p class="text-xs text-muted-foreground">Map OIDC claims to user attributes.</p>
+					<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.claim_mapping()}</h4>
+					<p class="text-xs text-muted-foreground">{m_i18n.map_oidc_claims_to_user_attributes()}</p>
 					<div class="grid grid-cols-3 gap-4">
 						<div class="space-y-2">
-							<Label>Username claim</Label>
+							<Label>{m_i18n.username_claim()}</Label>
 							<Input
 								bind:value={formUsernameClaim}
-								placeholder="preferred_username"
+								placeholder={m_i18n.preferred_username()}
 							/>
 						</div>
 						<div class="space-y-2">
-							<Label>Email claim</Label>
+							<Label>{m_i18n.email_claim()}</Label>
 							<Input
 								bind:value={formEmailClaim}
-								placeholder="email"
+								placeholder={m_i18n.email_a88b()}
 							/>
 						</div>
 						<div class="space-y-2">
-							<Label>Display name claim</Label>
+							<Label>{m_i18n.display_name_claim()}</Label>
 							<Input
 								bind:value={formDisplayNameClaim}
-								placeholder="name"
+								placeholder={m_i18n.name_6ae9()}
 							/>
 						</div>
 					</div>
@@ -374,15 +375,15 @@
 						<div class="text-center">
 							<h3 class="text-lg font-medium mb-2 flex items-center justify-center gap-2">
 								<Crown class="w-5 h-5 text-amber-500" />
-								Enterprise feature
+								{m_i18n.enterprise_feature()}
 							</h3>
 							<p class="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-								Role mapping allows you to automatically assign Dockhand roles based on your identity provider's groups or claims. This feature requires an enterprise license.
+								{m_i18n.role_mapping_allows_you_to_automatically_assign()}
 							</p>
 							{#if onNavigateToLicense}
 								<Button onclick={() => { open = false; onNavigateToLicense?.(); }}>
 									<Key class="w-4 h-4" />
-									Activate license
+									{m_i18n.activate_license()}
 								</Button>
 							{/if}
 						</div>
@@ -390,24 +391,24 @@
 				{:else}
 					<!-- Admin Mapping (Simple) -->
 					<div class="space-y-4">
-						<h4 class="text-sm font-medium text-muted-foreground">Groups/roles claim</h4>
-						<p class="text-xs text-muted-foreground">Grant admin access based on claim values from your identity provider.</p>
+						<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.groups_roles_claim()}</h4>
+						<p class="text-xs text-muted-foreground">{m_i18n.grant_admin_access_based_on_claim_values_from_yo()}</p>
 						<div class="grid grid-cols-2 gap-4">
 							<div class="space-y-2">
-								<Label>Claim name</Label>
+								<Label>{m_i18n.claim_name()}</Label>
 								<Input
 									bind:value={formAdminClaim}
-									placeholder="groups, roles, etc."
+									placeholder={m_i18n.groups_roles_etc()}
 								/>
-								<p class="text-xs text-muted-foreground">Name of the claim containing roles/groups</p>
+								<p class="text-xs text-muted-foreground">{m_i18n.name_of_the_claim_containing_roles_groups()}</p>
 							</div>
 							<div class="space-y-2">
-								<Label>Admin value(s)</Label>
+								<Label>{m_i18n.admin_value_s()}</Label>
 								<Input
 									bind:value={formAdminValue}
-									placeholder="admin, Administrators"
+									placeholder={m_i18n.admin_administrators()}
 								/>
-								<p class="text-xs text-muted-foreground">Comma-separated values that grant Admin role</p>
+								<p class="text-xs text-muted-foreground">{m_i18n.comma_separated_values_that_grant_admin_role()}</p>
 							</div>
 						</div>
 					</div>
@@ -416,8 +417,8 @@
 					<div class="space-y-4">
 						<div class="flex items-center justify-between">
 							<div>
-								<h4 class="text-sm font-medium text-muted-foreground">Claim to role mappings</h4>
-								<p class="text-xs text-muted-foreground mt-0.5">Map claim values from your identity provider to Dockhand roles.</p>
+								<h4 class="text-sm font-medium text-muted-foreground">{m_i18n.claim_to_role_mappings()}</h4>
+								<p class="text-xs text-muted-foreground mt-0.5">{m_i18n.map_claim_values_from_your_identity_provider_to()}</p>
 							</div>
 							<Button
 								size="sm"
@@ -425,13 +426,13 @@
 								onclick={addRoleMapping}
 							>
 								<Plus class="w-4 h-4" />
-								Add mapping
+								{m_i18n.add_mapping()}
 							</Button>
 						</div>
 
 						{#if formRoleMappings.length === 0}
 							<div class="text-center py-6 text-muted-foreground text-sm border border-dashed rounded-lg">
-								No role mappings configured. Click "Add mapping" to create one.
+								{m_i18n.no_role_mappings_configured_click_add_mapping_to()}
 							</div>
 						{:else}
 							<div class="space-y-2">
@@ -439,15 +440,15 @@
 									<div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
 										<div class="flex-1 grid grid-cols-2 gap-3">
 											<div class="space-y-1">
-												<Label class="text-xs">Claim value</Label>
+												<Label class="text-xs">{m_i18n.claim_value()}</Label>
 												<Input
 													bind:value={mapping.claim_value}
-													placeholder="e.g., developers, admins"
+													placeholder={m_i18n.e_g_developers_admins()}
 													class="h-8"
 												/>
 											</div>
 											<div class="space-y-1">
-												<Label class="text-xs">Dockhand role</Label>
+												<Label class="text-xs">{m_i18n.dockhand_role()}</Label>
 												<Select.Root
 													type="single"
 													value={mapping.role_id ? String(mapping.role_id) : undefined}
@@ -461,7 +462,7 @@
 														{#if mapping.role_id}
 															{roles.find(r => r.id === mapping.role_id)?.name || 'Select role...'}
 														{:else}
-															Select role...
+															{m_i18n.select_role_ef3e()}
 														{/if}
 													</Select.Trigger>
 													<Select.Content>
@@ -495,7 +496,7 @@
 		</Tabs.Root>
 
 		<Dialog.Footer class="flex-shrink-0 border-t pt-4">
-			<Button variant="outline" onclick={handleClose}>Cancel</Button>
+			<Button variant="outline" onclick={handleClose}>{m_i18n.cancel()}</Button>
 			<Button onclick={save} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />

@@ -1,4 +1,6 @@
 <script lang='ts'>
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { toast } from 'svelte-sonner';
@@ -51,7 +53,7 @@
 			providers = await response.json();
 		} catch (e) {
 			console.error('Failed to fetch secret providers:', e);
-			toast.error('Failed to fetch secret providers');
+			toast.error(m.failed_to_fetch_secret_providers());
 		} finally {
 			loading = false;
 		}
@@ -90,7 +92,7 @@
 					: `${provider.name} is now the default for new stacks`,
 			);
 		} catch {
-			toast.error('Failed to save the default secret provider');
+			toast.error(m.failed_to_save_the_default_secret_provider());
 		} finally {
 			savingDefaultId = null;
 		}
@@ -127,13 +129,13 @@
 				// Deleting the default leaves the stored id dangling; the API resolves
 				// it against the live list, so re-read rather than assuming.
 				if (defaultProviderId === id) await fetchDefaultProvider();
-				toast.success('Secret provider deleted');
+				toast.success(m.secret_provider_deleted());
 			} else {
 				const data = await response.json();
 				toast.error(data.error || 'Failed to delete secret provider');
 			}
 		} catch {
-			toast.error('Failed to delete secret provider');
+			toast.error(m.failed_to_delete_secret_provider());
 		}
 	}
 
@@ -156,7 +158,7 @@
 				);
 			}
 		} catch {
-			toast.error('Connection test failed');
+			toast.error(m.connection_test_failed());
 		} finally {
 			testingId = null;
 		}
@@ -172,29 +174,29 @@
 	<div class="flex justify-between items-center">
 		<div class="flex items-center gap-3">
 			<Badge variant="secondary" class="text-xs"
-				>{providers.length} total</Badge
+				>{m.length_total({ length: orEmpty(providers.length) })}</Badge
 			>
 		</div>
 		<div class="flex gap-2">
 			{#if $canAccess("secrets", "create")}
 				<Button size="sm" onclick={() => openModal()}>
 					<Plus class="w-4 h-4" />
-					Add secret provider
+					{m.add_secret_provider()}
 				</Button>
 			{/if}
 			<Button size="sm" variant="outline" onclick={fetchProviders}
-				>Refresh</Button
+				>{m.refresh()}</Button
 			>
 		</div>
 	</div>
 
 	{#if loading && providers.length === 0}
-		<p class="text-muted-foreground text-sm">Loading secret providers...</p>
+		<p class="text-muted-foreground text-sm">{m.loading_secret_providers()}</p>
 	{:else if providers.length === 0}
 		<EmptyState
 			icon={KeyRound}
-			title="No secret providers"
-			description="Add a provider (1Password, Infisical, HashiCorp Vault, ...) to load secrets at deploy time"
+			title={m.no_secret_providers()}
+			description={m.add_a_provider_1password_infisical_hashicorp_vau()}
 		/>
 	{:else}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -215,7 +217,7 @@
 											class="text-xs gap-1 border-amber-500/50 text-amber-600 dark:text-amber-400"
 										>
 											<Star class="w-3 h-3 fill-current" />
-											Default
+											{m.default_label_808d()}
 										</Badge>
 									{/if}
 								</div>
@@ -226,9 +228,9 @@
 						</Card.Header>
 						<Card.Content class="space-y-3">
 							<div class="text-xs text-muted-foreground">
-								Added {new Date(
+								{m.added_arg1({ arg1: orEmpty(new Date(
 									provider.createdAt,
-								).toLocaleDateString()}
+								).toLocaleDateString()) })}
 							</div>
 							<div class="flex gap-2 pt-2 min-h-[32px]">
 								{#if $canAccess("secrets", "view")}
@@ -250,7 +252,7 @@
 												<PlugZap class="w-3 h-3" />
 											{/if}
 										</span>
-										Test
+										{m.test()}
 									</Button>
 								{/if}
 								{#if $canAccess("secrets", "edit")}
@@ -285,7 +287,7 @@
 										action="Delete"
 										itemType="secret provider"
 										itemName={provider.name}
-										title="Remove"
+										title={m.remove()}
 										position="left"
 										autoHideMs={0}
 										onConfirm={() =>
@@ -305,10 +307,10 @@
 										{/snippet}
 										{#snippet extraContent()}
 											{#if loadingAffected}
-												<p class="text-xs text-muted-foreground">Checking which stacks use this provider...</p>
+												<p class="text-xs text-muted-foreground">{m.checking_which_stacks_use_this_provider()}</p>
 											{:else if deleteAffectedStacks.length > 0}
 												<p class="text-xs text-amber-600 dark:text-amber-500">
-													This unbinds {deleteAffectedStacks.length} stack{deleteAffectedStacks.length === 1 ? '' : 's'}; their next deploy drops the injected secrets:
+													{m.this_unbinds_length_stack_arg2_their_next_deploy({ length: orEmpty(deleteAffectedStacks.length), arg2: orEmpty(deleteAffectedStacks.length === 1 ? '' : 's') })}
 												</p>
 												<ul class="mt-1 text-xs text-muted-foreground list-disc list-inside max-h-24 overflow-y-auto">
 													{#each deleteAffectedStacks as s}

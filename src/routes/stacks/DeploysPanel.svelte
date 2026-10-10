@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
 	/**
 	 * Deploys tab: the recorded history of deploy runs for this stack (GET
 	 * /api/stacks/{name}/deploys), rendered as a dense DataGrid. Each run is one
@@ -171,9 +172,9 @@
 			const l = new Map(logs);
 			l.delete(run.id);
 			logs = l;
-			toast.success('Deploy run deleted');
+			toast.success(m.deploy_run_deleted());
 		} catch {
-			toast.error('Failed to delete deploy run');
+			toast.error(m.failed_to_delete_deploy_run());
 		} finally {
 			const d = new Set(deletingIds);
 			d.delete(run.id);
@@ -315,8 +316,8 @@
 		{#snippet emptyState()}
 			<div class="flex min-h-[40vh] flex-col items-center justify-center py-10 text-center">
 				<Clock class="mb-3 h-10 w-10 text-muted-foreground/40" />
-				<p class="text-sm text-muted-foreground">No deploy runs yet.</p>
-				<p class="mt-1 text-xs text-muted-foreground">Deploy this stack — its run history appears here.</p>
+				<p class="text-sm text-muted-foreground">{m.no_deploy_runs_yet()}</p>
+				<p class="mt-1 text-xs text-muted-foreground">{m.deploy_this_stack_its_run_history_appears_here()}</p>
 			</div>
 		{/snippet}
 
@@ -373,7 +374,7 @@
 							open={confirmDeleteId === run.id}
 							action="Delete"
 							itemType="deploy run"
-							title="Delete this run"
+							title={m.delete_this_run()}
 							position="left"
 							disabled={deletingIds.has(run.id)}
 							onConfirm={() => deleteRun(run)}
@@ -399,7 +400,7 @@
 			<div class="w-full p-4 pl-12 shadow-inner bg-muted text-xs">
 				<div class="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3">
 					<div>
-						<div class="text-muted-foreground">Containers</div>
+						<div class="text-muted-foreground">{m.containers()}</div>
 						<div>{view.containerSummary}</div>
 						{#if view.containerNames.length > 0}
 							<div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -413,11 +414,11 @@
 						{/if}
 					</div>
 					<div>
-						<div class="text-muted-foreground">Build</div>
+						<div class="text-muted-foreground">{m.build()}</div>
 						<div>{view.buildStatus}</div>
 					</div>
 					<div>
-						<div class="text-muted-foreground">Triggered by</div>
+						<div class="text-muted-foreground">{m.triggered_by()}</div>
 						<div>{view.trigger}</div>
 					</div>
 				</div>
@@ -425,7 +426,7 @@
 					<div class="mt-2 space-y-1">
 						{#if view.imagesBuilt.length > 0}
 							<div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-								<span class="text-muted-foreground">Built:</span>
+								<span class="text-muted-foreground">{m.built()}</span>
 								{#each view.imagesBuilt as img}
 									<span class="inline-flex items-center gap-1">
 										<ContainerIcon image={img} showFallbackWhenOff class="w-3 h-3 shrink-0" />
@@ -436,7 +437,7 @@
 						{/if}
 						{#if view.imagesPulled.length > 0}
 							<div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-								<span class="text-muted-foreground">Pulled:</span>
+								<span class="text-muted-foreground">{m.pulled()}</span>
 								{#each view.imagesPulled as img}
 									<span class="inline-flex items-center gap-1">
 										<ContainerIcon image={img} showFallbackWhenOff class="w-3 h-3 shrink-0" />
@@ -451,7 +452,7 @@
 					{#if panelState.truncated}
 						<div class="mb-1">
 							<span class="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
-								<AlertTriangle class="h-2.5 w-2.5" /> Log truncated
+								<AlertTriangle class="h-2.5 w-2.5" /> {m.log_truncated()}
 							</span>
 						</div>
 					{/if}
@@ -460,7 +461,7 @@
 						     LogViewer with logs="" -- the two mean opposite things, so this case
 						     gets its own message. -->
 						<div class="rounded-md border border-dashed border-zinc-300 px-3 py-6 text-center text-muted-foreground dark:border-zinc-700">
-							Protocol no longer available.
+							{m.protocol_no_longer_available()}
 						</div>
 					{:else if logEntry?.status === 'error'}
 						<div class="rounded-md border border-dashed border-destructive/40 px-3 py-6 text-center text-destructive">
@@ -485,7 +486,7 @@
 							role="separator"
 							aria-orientation="horizontal"
 							tabindex="0"
-							title="Drag to resize"
+							title={m.drag_to_resize()}
 						>
 							<GripHorizontal class="h-3 w-3 text-white opacity-0 transition-opacity group-hover:opacity-100 {dragging ? 'opacity-100' : ''}" />
 						</div>

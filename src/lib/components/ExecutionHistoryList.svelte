@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m as m_i18n } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	/**
 	 * Shared backup execution-history table. Renders a list of schedule executions
 	 * (run time, trigger, duration, status, detail/error) with failed rows expandable
@@ -74,20 +76,20 @@
 {:else if executions.length === 0}
 	<div class="flex min-h-[60vh] flex-col items-center justify-center py-10 text-center">
 		<Clock class="mb-3 h-10 w-10 text-muted-foreground/40" />
-		<p class="text-sm text-muted-foreground">No backup runs yet.</p>
-		<p class="mt-1 text-xs text-muted-foreground">Run a backup — its history appears here.</p>
+		<p class="text-sm text-muted-foreground">{m_i18n.no_backup_runs_yet()}</p>
+		<p class="mt-1 text-xs text-muted-foreground">{m_i18n.run_a_backup_its_history_appears_here()}</p>
 	</div>
 {:else}
 	<div class="overflow-x-auto">
 		<table class="w-full text-xs">
 			<thead>
 				<tr class="border-b text-left text-muted-foreground">
-					<th class="py-1.5 pl-2 font-medium">Run</th>
-					<th class="py-1.5 pl-2 text-center font-medium">Trigger</th>
-					<th class="py-1.5 pl-2 font-medium">Duration</th>
-					<th class="py-1.5 pl-2 text-center font-medium">Status</th>
-					<th class="py-1.5 pl-2 font-medium">Detail</th>
-					{#if showRepo}<th class="py-1.5 pl-2 font-medium">Repo</th>{/if}
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.run()}</th>
+					<th class="py-1.5 pl-2 text-center font-medium">{m_i18n.trigger()}</th>
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.duration()}</th>
+					<th class="py-1.5 pl-2 text-center font-medium">{m_i18n.status()}</th>
+					<th class="py-1.5 pl-2 font-medium">{m_i18n.detail()}</th>
+					{#if showRepo}<th class="py-1.5 pl-2 font-medium">{m_i18n.repo()}</th>{/if}
 					<th class="py-1.5 pr-2 font-medium"></th>
 				</tr>
 			</thead>
@@ -115,7 +117,7 @@
 							{#if exec.errorMessage}
 								<span class="text-destructive">{cleanError(exec.errorMessage)}</span>
 							{:else if exec.status === 'success' && exec.details?.dataAdded !== undefined}
-								<span class="text-muted-foreground">{exec.details.filesNew ?? 0} new · {exec.details.filesChanged ?? 0} changed · {formatBytes(exec.details.dataAdded ?? 0)}</span>
+								<span class="text-muted-foreground">{m_i18n.arg1_new_arg2_changed_arg3({ arg1: orEmpty(exec.details.filesNew ?? 0), arg2: orEmpty(exec.details.filesChanged ?? 0), arg3: orEmpty(formatBytes(exec.details.dataAdded ?? 0)) })}</span>
 							{:else}
 								<span class="text-muted-foreground/60">—</span>
 							{/if}
@@ -133,7 +135,7 @@
 						<td class="py-1.5 pr-2 text-right">
 							<div class="flex items-center justify-end gap-0.5">
 								{#if onViewLog}
-									<button type="button" class="rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" onclick={() => onViewLog?.(exec.id)} title="View log">
+									<button type="button" class="rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" onclick={() => onViewLog?.(exec.id)} title={m_i18n.view_log()}>
 										<FileText class="h-3 w-3" />
 									</button>
 								{/if}
@@ -150,7 +152,7 @@
 							<td colspan={showRepo ? 7 : 6} class="px-2 py-2">
 								<div class="rounded-md border border-l-[3px] border-destructive/40 border-l-destructive bg-destructive/5 p-2.5">
 									<div class="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-destructive">
-										<X class="h-3 w-3" /> Backup failed
+										<X class="h-3 w-3" /> {m_i18n.backup_failed()}
 									</div>
 									<pre class="whitespace-pre-wrap break-all font-mono text-[11px] text-destructive/90">{exec.errorMessage}</pre>
 								</div>

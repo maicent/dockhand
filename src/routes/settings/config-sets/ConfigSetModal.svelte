@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages.js';
+	import { orEmpty } from '$lib/i18n.js';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
@@ -10,14 +12,14 @@
 
 	// Protocol options for ports
 	const protocolOptions = [
-		{ value: 'tcp', label: 'TCP' },
-		{ value: 'udp', label: 'UDP' }
+		{ value: 'tcp', label: m.tcp() },
+		{ value: 'udp', label: m.udp() }
 	];
 
 	// Mode options for volumes
 	const volumeModeOptions = [
-		{ value: 'rw', label: 'RW' },
-		{ value: 'ro', label: 'RO' }
+		{ value: 'rw', label: m.rw() },
+		{ value: 'ro', label: m.ro() }
 	];
 
 	export interface ConfigSet {
@@ -207,7 +209,7 @@
 <Dialog.Root bind:open onOpenChange={(o) => { if (o) { formError = ''; formErrors = {}; focusFirstInput(); } }}>
 	<Dialog.Content class="max-w-3xl max-h-[90vh] overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title>{isEditing ? 'Edit' : 'Add'} config set</Dialog.Title>
+			<Dialog.Title>{m.arg1_config_set({ arg1: orEmpty(isEditing ? 'Edit' : 'Add') })}</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-4">
 			{#if formError}
@@ -216,11 +218,11 @@
 
 			<div class="grid grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<Label for="cfg-name">Name *</Label>
+					<Label for="cfg-name">{m.name_d145()}</Label>
 					<Input
 						id="cfg-name"
 						bind:value={formName}
-						placeholder="production-web"
+						placeholder={m.production_web()}
 						class={formErrors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
 						oninput={() => formErrors.name = undefined}
 					/>
@@ -229,36 +231,36 @@
 					{/if}
 				</div>
 				<div class="space-y-2">
-					<Label for="cfg-description">Description</Label>
-					<Input id="cfg-description" bind:value={formDescription} placeholder="Common settings for web services" />
+					<Label for="cfg-description">{m.description()}</Label>
+					<Input id="cfg-description" bind:value={formDescription} placeholder={m.common_settings_for_web_services()} />
 				</div>
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<Label for="cfg-network">Network mode</Label>
+					<Label for="cfg-network">{m.network_mode()}</Label>
 					<Select.Root type="single" value={formNetworkMode} onValueChange={(v) => formNetworkMode = v}>
 						<Select.Trigger class="w-full">
 							<span>{formNetworkMode === 'bridge' ? 'Bridge' : formNetworkMode === 'host' ? 'Host' : 'None'}</span>
 						</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="bridge" label="Bridge" />
-							<Select.Item value="host" label="Host" />
-							<Select.Item value="none" label="None" />
+							<Select.Item value="bridge" label={m.bridge()} />
+							<Select.Item value="host" label={m.host()} />
+							<Select.Item value="none" label={m.none()} />
 						</Select.Content>
 					</Select.Root>
 				</div>
 				<div class="space-y-2">
-					<Label for="cfg-restart">Restart policy</Label>
+					<Label for="cfg-restart">{m.restart_policy_5de8()}</Label>
 					<Select.Root type="single" value={formRestartPolicy} onValueChange={(v) => formRestartPolicy = v}>
 						<Select.Trigger class="w-full">
 							<span>{formRestartPolicy === 'no' ? 'No' : formRestartPolicy === 'always' ? 'Always' : formRestartPolicy === 'on-failure' ? 'On failure' : 'Unless stopped'}</span>
 						</Select.Trigger>
 						<Select.Content>
-							<Select.Item value="no" label="No" />
-							<Select.Item value="always" label="Always" />
-							<Select.Item value="on-failure" label="On failure" />
-							<Select.Item value="unless-stopped" label="Unless stopped" />
+							<Select.Item value="no" label={m.no()} />
+							<Select.Item value="always" label={m.always()} />
+							<Select.Item value="on-failure" label={m.on_failure()} />
+							<Select.Item value="unless-stopped" label={m.unless_stopped()} />
 						</Select.Content>
 					</Select.Root>
 				</div>
@@ -267,15 +269,15 @@
 			<!-- Environment Variables -->
 			<div class="space-y-2 border-t pt-4">
 				<div class="flex justify-between items-center">
-					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Environment variables</Label>
+					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.environment_variables()}</Label>
 					<Button type="button" size="sm" variant="ghost" onclick={addEnvVar} class="h-7 text-xs">
-						<Plus class="w-3.5 h-3.5" />Add
+						<Plus class="w-3.5 h-3.5" />{m.add()}
 					</Button>
 				</div>
 				{#each formEnvVars as envVar, i}
 					<div class="flex gap-2 items-center">
-						<Input bind:value={envVar.key} placeholder="KEY" class="flex-1 h-8" />
-						<Input bind:value={envVar.value} placeholder="value" class="flex-1 h-8" />
+						<Input bind:value={envVar.key} placeholder={m.key_dd65()} class="flex-1 h-8" />
+						<Input bind:value={envVar.value} placeholder={m.value_f32b()} class="flex-1 h-8" />
 						<Button type="button" size="icon" variant="ghost" onclick={() => removeEnvVar(i)} disabled={formEnvVars.length === 1} class="h-8 w-8">
 							<Trash2 class="w-3 h-3 text-muted-foreground" />
 						</Button>
@@ -286,15 +288,15 @@
 			<!-- Labels -->
 			<div class="space-y-2 border-t pt-4">
 				<div class="flex justify-between items-center">
-					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Labels</Label>
+					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.labels()}</Label>
 					<Button type="button" size="sm" variant="ghost" onclick={addLabel} class="h-7 text-xs">
-						<Plus class="w-3.5 h-3.5" />Add
+						<Plus class="w-3.5 h-3.5" />{m.add()}
 					</Button>
 				</div>
 				{#each formLabels as label, i}
 					<div class="flex gap-2 items-center">
-						<Input bind:value={label.key} placeholder="label.key" class="flex-1 h-8" />
-						<Input bind:value={label.value} placeholder="value" class="flex-1 h-8" />
+						<Input bind:value={label.key} placeholder={m.label_key()} class="flex-1 h-8" />
+						<Input bind:value={label.value} placeholder={m.value_f32b()} class="flex-1 h-8" />
 						<Button type="button" size="icon" variant="ghost" onclick={() => removeLabel(i)} disabled={formLabels.length === 1} class="h-8 w-8">
 							<Trash2 class="w-3 h-3 text-muted-foreground" />
 						</Button>
@@ -305,9 +307,9 @@
 			<!-- Ports -->
 			<div class="space-y-2 border-t pt-4">
 				<div class="flex justify-between items-center">
-					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Port mappings</Label>
+					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.port_mappings()}</Label>
 					<Button type="button" size="sm" variant="ghost" onclick={addPort} class="h-7 text-xs">
-						<Plus class="w-3.5 h-3.5" />Add
+						<Plus class="w-3.5 h-3.5" />{m.add()}
 					</Button>
 				</div>
 				{#each formPorts as port, i}
@@ -315,23 +317,23 @@
 						<div>
 							<Input
 								bind:value={port.hostPort}
-								placeholder="Host port"
+								placeholder={m.host_port()}
 								class="h-8 {hasPortError(i, 'host') ? 'border-destructive focus-visible:ring-destructive' : ''}"
 								oninput={() => validatePort(i, 'host')}
 							/>
 							{#if hasPortError(i, 'host')}
-								<p class="text-xs text-destructive mt-0.5">Invalid port (1-65535)</p>
+								<p class="text-xs text-destructive mt-0.5">{m.invalid_port_1_65535()}</p>
 							{/if}
 						</div>
 						<div>
 							<Input
 								bind:value={port.containerPort}
-								placeholder="Container port"
+								placeholder={m.container_port()}
 								class="h-8 {hasPortError(i, 'container') ? 'border-destructive focus-visible:ring-destructive' : ''}"
 								oninput={() => validatePort(i, 'container')}
 							/>
 							{#if hasPortError(i, 'container')}
-								<p class="text-xs text-destructive mt-0.5">Invalid port (1-65535)</p>
+								<p class="text-xs text-destructive mt-0.5">{m.invalid_port_1_65535()}</p>
 							{/if}
 						</div>
 						<ToggleGroup
@@ -349,15 +351,15 @@
 			<!-- Volumes -->
 			<div class="space-y-2 border-t pt-4">
 				<div class="flex justify-between items-center">
-					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Volume mappings</Label>
+					<Label class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{m.volume_mappings()}</Label>
 					<Button type="button" size="sm" variant="ghost" onclick={addVolume} class="h-7 text-xs">
-						<Plus class="w-3.5 h-3.5" />Add
+						<Plus class="w-3.5 h-3.5" />{m.add()}
 					</Button>
 				</div>
 				{#each formVolumes as vol, i}
 					<div class="grid grid-cols-[1fr_1fr_5rem_auto] gap-2 items-center">
-						<Input bind:value={vol.hostPath} placeholder="Host path" class="h-8" />
-						<Input bind:value={vol.containerPath} placeholder="Container path" class="h-8" />
+						<Input bind:value={vol.hostPath} placeholder={m.host_path()} class="h-8" />
+						<Input bind:value={vol.containerPath} placeholder={m.container_path()} class="h-8" />
 						<ToggleGroup
 							value={vol.mode}
 							options={volumeModeOptions}
@@ -371,7 +373,7 @@
 			</div>
 		</div>
 		<Dialog.Footer>
-			<Button variant="outline" onclick={handleClose}>Cancel</Button>
+			<Button variant="outline" onclick={handleClose}>{m.cancel()}</Button>
 			<Button onclick={save} disabled={formSaving}>
 				{#if formSaving}
 					<RefreshCw class="w-4 h-4 mr-1 animate-spin" />
