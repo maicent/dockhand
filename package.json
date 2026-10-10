@@ -17,7 +17,8 @@
 		"test:e2e": "npx playwright test integration/e2e/",
 		"generate:legal": "node scripts/generate-legal-pages.ts",
 		"generate:openapi": "tsx scripts/generate-openapi.ts",
-		"generate:openapi:check": "tsx scripts/generate-openapi.ts --check"
+		"generate:openapi:check": "tsx scripts/generate-openapi.ts --check",
+		"i18n:extract": "tsx scripts/i18n-extract.ts"
 	},
 	"dependencies": {
 		"@1password/sdk": "0.4.1-beta.1",
